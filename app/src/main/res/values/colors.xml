@@ -3,4 +3,16 @@
     <color name="colorPrimary">#507EBD</color>
     <color name="colorPrimaryDark">#12528c</color> <!-- 274E98 -->
     <color name="colorAccent">#bd7c50</color> <!-- bd5068 -->
+
+
+
+    <color name="action_bar_background">#66000000</color>
+    <color name="glass_background_color">#66000000</color>
+    <color name="glass_text_color">#ffffff</color>
+    <color name="score_text_color">#ffffff</color>
+    <color name="button_text_color">#cce1f7</color>
+    <color name="button_background_color">#427fc2</color>
+    <color name="shroud_color">#cc000000</color>
+    <color name="fragment_background_color">#000000</color>
+    <color name="splash_background">#195fb4</color>
 </resources>

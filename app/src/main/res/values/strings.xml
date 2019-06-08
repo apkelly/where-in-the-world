@@ -1,3 +1,32 @@
 <resources>
     <string name="app_name">Where In The World</string>
+    <string name="app_id">290270591207</string>
+
+    <string name="game_mode">Game Mode</string>
+    <string name="game_mode_solo">Solo</string>
+    <string name="game_mode_quick_challenge">Quick Challenge</string>
+    <string name="game_mode_friend_challenge">Challenge Friends</string>
+    <string name="play_again">Play Again</string>
+    <string name="main_menu">Main Menu</string>
+    <string name="sign_out">Sign Out</string>
+    <string name="achievements">Achievements</string>
+    <string name="leaderboards">Leaderboards</string>
+    <string name="leaderboard">Leaderboard</string>
+    <string name="btn_guess">Guess the location</string>
+    <string name="score">Score: %1$s</string>
+    <string name="difficulty_dialog_title">Select Game Difficulty</string>
+    <string name="signin_other_error">There was an issue with sign in. Please try again later.</string>
+
+    <string name="confirm_guess">Tap to confirm guess</string>
+    <string name="tutorial_snippet">To make a guess, press and hold on\nthe map to drop a pin like this one.</string>
+
+    <string name="admob_game_over_banner">ca-app-pub-3549947232359470/1573544941</string>
+    <string name="admob_game_over_interstitial">ca-app-pub-3549947232359470/2154492545</string>
+
+    <string name="cd_welcome_background">Eiffel Tower, Mount Rushmore and Christ the Redeamer alternating background</string>
+
+    <!-- BaseGameUtils -->
+    <string name="sign_in_failed">Failed to sign in. Please check your network connection and try again.</string>
+    <string name="app_misconfigured">The application is incorrectly configured. Check that the package name and signing certificate match the client ID created in Developer Console. Also, if the application is not yet published, check that the account you are trying to sign in with is listed as a tester account. See logs for more information.</string>
+    <string name="license_failed">License check failed.</string>
 </resources>

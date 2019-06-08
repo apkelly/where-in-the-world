@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="score_text_size">36sp</dimen>
+    <dimen name="timer_text_size">36sp</dimen>
+    <dimen name="round_text_size">36sp</dimen>
+    <dimen name="game_mode_margin">32dp</dimen>
+    <dimen name="game_mode_margin_land">32dp</dimen>
+    <dimen name="game_mode_button_margin">8dp</dimen>
+    <dimen name="button_text_size">16sp</dimen>
+    <dimen name="status_bar_height">25dp</dimen>
+    <dimen name="location_pin_text_size">14sp</dimen>
+    <dimen name="game_over_line_width">1.5dp</dimen>
+    <dimen name="window_adapter_padding">8dp</dimen>
+    <dimen name="window_adatper_text_size">16sp</dimen>
+</resources>
