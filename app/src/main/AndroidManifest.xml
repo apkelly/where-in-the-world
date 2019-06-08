@@ -2,6 +2,12 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
           package="com.swizel.android.whereintheworld">
 
+    <uses-permission android:name="android.permission.INTERNET"/>
+
+    <uses-feature
+            android:glEsVersion="0x00020000"
+            android:required="true"/>
+
     <application
             android:allowBackup="true"
             android:icon="@mipmap/ic_launcher"
@@ -15,6 +21,11 @@
                 <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
         </activity>
+
+        <meta-data android:name="com.google.android.geo.API_KEY"
+                   android:value="AIzaSyCMudcLpsHojogabT4TtOn2MybYVhEQxvc"/>
+
+
     </application>
 
 </manifest>

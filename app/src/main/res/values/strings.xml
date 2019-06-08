@@ -20,9 +20,6 @@
     <string name="confirm_guess">Tap to confirm guess</string>
     <string name="tutorial_snippet">To make a guess, press and hold on\nthe map to drop a pin like this one.</string>
 
-    <string name="admob_game_over_banner">ca-app-pub-3549947232359470/1573544941</string>
-    <string name="admob_game_over_interstitial">ca-app-pub-3549947232359470/2154492545</string>
-
     <string name="cd_welcome_background">Eiffel Tower, Mount Rushmore and Christ the Redeamer alternating background</string>
 
     <!-- BaseGameUtils -->
