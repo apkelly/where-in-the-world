@@ -5,15 +5,18 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import com.swizel.android.whereintheworld.R
 import com.swizel.android.whereintheworld.model.GameType
 import com.swizel.android.whereintheworld.utils.AnalyticsUtils
 import com.swizel.android.whereintheworld.utils.MultiTransitionDrawable
+import com.swizel.android.whereintheworld.viewmodels.WhereInTheWorldViewModel
 import kotlinx.android.synthetic.main.fragment_welcome.*
 
 
 class WelcomeFragment : Fragment() {
+    private val viewModel: WhereInTheWorldViewModel by viewModels({ requireActivity() })
 
     private lateinit var multiTransitionDrawable: MultiTransitionDrawable
 
@@ -36,9 +39,9 @@ class WelcomeFragment : Fragment() {
 
         btn_solo_mode.setOnClickListener {
             AnalyticsUtils.trackButtonClick(requireContext(), "SoloGame")
-            findNavController().navigate(R.id.nav_to_dialog, Bundle().apply {
-                putSerializable("gameType", GameType.SOLO)
-            })
+            viewModel.gameType = GameType.SOLO
+
+            findNavController().navigate(R.id.nav_to_dialog)
         }
 
         btn_quick_challenge_mode.setOnClickListener {

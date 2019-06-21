@@ -4,26 +4,24 @@ import android.app.AlertDialog
 import android.app.Dialog
 import android.os.Bundle
 import androidx.fragment.app.DialogFragment
+import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import com.swizel.android.whereintheworld.R
 import com.swizel.android.whereintheworld.model.GameDifficulty
 import com.swizel.android.whereintheworld.model.GameType
+import com.swizel.android.whereintheworld.viewmodels.WhereInTheWorldViewModel
 
 class GameDifficultyDialogFragment : DialogFragment() {
+
+    private val viewModel: WhereInTheWorldViewModel by viewModels({ requireActivity() })
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
         val builder = AlertDialog.Builder(activity)
 
         builder.setTitle(R.string.difficulty_dialog_title)
-            .setItems(arrayOf("Easy", "Medium", "Hard", "Extreme")) { dialog, which ->
-                val gameType = arguments!!.getSerializable("gameType") as GameType
-
-                // FIXME: don't pass args in bundle, set them in a viewmodel.
-                findNavController().navigate(R.id.nav_to_streetview, Bundle().apply {
-                    putSerializable("gameType", gameType)
-                    putSerializable("difficulty", getDifficultyForChoice(which))
-                })
-
+            .setItems(arrayOf("Easy", "Medium", "Hard", "Extreme")) { _, which ->
+                viewModel.gameDifficulty = getDifficultyForChoice(which)
+                findNavController().navigate(R.id.nav_to_streetview)
             }
 
         // Create dialog.

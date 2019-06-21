@@ -16,14 +16,20 @@ import android.widget.TextView
 import androidx.annotation.DrawableRes
 import androidx.appcompat.content.res.AppCompatResources
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.viewModels
+import androidx.navigation.fragment.findNavController
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.GoogleMapOptions
 import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.*
 import com.swizel.android.whereintheworld.Config
 import com.swizel.android.whereintheworld.R
+import com.swizel.android.whereintheworld.viewmodels.WhereInTheWorldViewModel
+
 
 class GuessLocationFragment : Fragment() {
+
+    private val viewModel: WhereInTheWorldViewModel by viewModels({ requireActivity() })
 
     companion object {
         private val MAP_CENTER = LatLng(25.0, 0.0)
@@ -62,6 +68,7 @@ class GuessLocationFragment : Fragment() {
                 googleMap.setOnInfoWindowClickListener { marker ->
                     if (!tutorialPin) {
                         marker.hideInfoWindow()
+                        confirmGuessClicked(marker.position)
                         //  getListener().onConfirmGuessClicked(marker.position, arguments!!.getLong("timeTaken"))
                     }
                 }
@@ -100,6 +107,20 @@ class GuessLocationFragment : Fragment() {
         val ft = fragmentManager!!.beginTransaction()
         ft.replace(R.id.mapStub, mapFragment)
         ft.commit()
+    }
+
+    private fun confirmGuessClicked(location: LatLng) {
+        // Set guessed location for current round.
+//        GameState.getInstance().updateGuessForCurrentRound(location, timeTaken)
+        viewModel.setGuessForCurrentRound(location)
+
+        val nextRound = viewModel.configureNextRound()
+        if (nextRound < Config.MAX_ROUNDS) {
+            findNavController().navigate(R.id.nav_to_streetview)
+        } else {
+
+            findNavController().navigate(R.id.nav_to_game_over)
+        }
     }
 
     private fun createMarkerOptions(location: LatLng): MarkerOptions {
