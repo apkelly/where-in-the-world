@@ -112,7 +112,7 @@ class GuessLocationFragment : Fragment() {
     private fun confirmGuessClicked(location: LatLng) {
         // Set guessed location for current round.
 //        GameState.getInstance().updateGuessForCurrentRound(location, timeTaken)
-        viewModel.setGuessForCurrentRound(location)
+        viewModel.setGuessForCurrentRound(location, 0L)
 
         val nextRound = viewModel.configureNextRound()
         if (nextRound < Config.MAX_ROUNDS) {

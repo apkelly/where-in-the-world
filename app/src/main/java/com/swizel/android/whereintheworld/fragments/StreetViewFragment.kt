@@ -53,7 +53,10 @@ class StreetViewFragment : Fragment() {
                     setOnStreetViewPanoramaChangeListener { streetViewPanoramaLocation ->
                         if (streetViewPanoramaLocation != null) {
                             println("streetViewPanoramaLocation : $streetViewPanoramaLocation")
-                            streetViewLocationAcquired(streetViewPanoramaLocation.position)
+                            streetViewLocationAcquired(
+                                streetViewPanoramaLocation.panoId,
+                                streetViewPanoramaLocation.position
+                            )
                         }
                     }
                 }
@@ -144,9 +147,10 @@ class StreetViewFragment : Fragment() {
         }
     }
 
-    private fun streetViewLocationAcquired(location: LatLng) {
+    private fun streetViewLocationAcquired(id: String, location: LatLng) {
         if (!locationUpdated) {
             println("streetViewLocationAcquired : $location")
+            viewModel.setStreetViewForCurrentRound(id, location)
 //            GameState.getInstance().updateLocationForCurrentRound(location)
             locationUpdated = true
 //            mHandler.removeCallbacks(mLocationUpdate)

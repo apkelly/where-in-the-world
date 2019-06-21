@@ -9,10 +9,11 @@ import androidx.fragment.app.viewModels
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.GoogleMapOptions
 import com.google.android.gms.maps.SupportMapFragment
-import com.google.android.gms.maps.model.CameraPosition
-import com.google.android.gms.maps.model.LatLng
+import com.google.android.gms.maps.model.*
+import com.swizel.android.whereintheworld.Config
 import com.swizel.android.whereintheworld.R
 import com.swizel.android.whereintheworld.utils.AnalyticsUtils
+import com.swizel.android.whereintheworld.utils.ImageUtils
 import com.swizel.android.whereintheworld.viewmodels.WhereInTheWorldViewModel
 import kotlinx.android.synthetic.main.fragment_game_over.*
 
@@ -49,6 +50,8 @@ class GameOverFragment : Fragment() {
             getMapAsync { googleMap ->
                 googleMap.uiSettings.isMyLocationButtonEnabled = false
                 googleMap.isIndoorEnabled = false
+
+                drawPlayerGuesses(googleMap)
             }
         }
 
@@ -63,5 +66,41 @@ class GameOverFragment : Fragment() {
         val ft = fragmentManager!!.beginTransaction()
         ft.replace(R.id.mapStub, mapFragment)
         ft.commit()
+    }
+
+    private fun drawPlayerGuesses(googleMap: GoogleMap) {
+        val markerIcon = resources.getDrawable(R.drawable.ic_action_location)
+
+        // Draw locations for game.
+        viewModel.guesses.filterNotNull().forEachIndexed { index, guess ->
+            // Draw actual locations
+            googleMap.addMarker(
+                MarkerOptions().position(guess.panoramaLatLng)
+                    .anchor(Config.MAP_LOCATION_H_ANCHOR, Config.MAP_LOCATION_V_ANCHOR)
+                    .icon(BitmapDescriptorFactory.fromBitmap(ImageUtils.drawableToBitmap(markerIcon, index + 1)))
+            )
+
+            // Add hue to pin icon.
+            val pinIcon = resources.getDrawable(R.drawable.ic_action_pin).mutate()
+            // TODO: Give each player a colour, tint the drawable and match colour to scores.
+            // pinIcon.setColorFilter(Color.RED, PorterDuff.Mode.MULTIPLY);
+
+            guess.guessedLatLng?.let { guessedLatLng ->
+                // Draw guesses for all players.
+                googleMap.addMarker(
+                    MarkerOptions().position(guessedLatLng)
+                        .anchor(Config.MAP_GUESS_H_ANCHOR, Config.MAP_GUESS_V_ANCHOR)
+                        .icon(BitmapDescriptorFactory.fromBitmap(ImageUtils.drawableToBitmap(pinIcon)))
+                )
+
+                // Draw lines.
+                val rectOptions = PolylineOptions()
+                    .add(guess.panoramaLatLng)
+                    .add(guessedLatLng)
+                    .width(resources.getDimensionPixelSize(R.dimen.game_over_line_width).toFloat())
+                googleMap.addPolyline(rectOptions)
+
+            }
+        }
     }
 }

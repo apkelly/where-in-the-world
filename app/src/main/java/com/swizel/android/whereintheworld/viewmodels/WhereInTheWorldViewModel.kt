@@ -5,6 +5,7 @@ import com.google.android.gms.maps.model.LatLng
 import com.swizel.android.whereintheworld.Config
 import com.swizel.android.whereintheworld.model.GameDifficulty
 import com.swizel.android.whereintheworld.model.GameType
+import com.swizel.android.whereintheworld.model.Guess
 import java.util.*
 
 class WhereInTheWorldViewModel : ViewModel() {
@@ -13,14 +14,19 @@ class WhereInTheWorldViewModel : ViewModel() {
     var gameType: GameType? = null
     var currentRound: Int = 0
     var remainingStreetViewTimer: Long = 0
-    var guesses = Array<LatLng?>(Config.MAX_ROUNDS) { null }
+    var guesses = Array<Guess?>(Config.MAX_ROUNDS) { null }
 
     fun calculateScore(): Int {
         return Random().nextInt(Int.MAX_VALUE)
     }
 
-    fun setGuessForCurrentRound(location: LatLng) {
-        guesses[currentRound] = location
+    fun setStreetViewForCurrentRound(panoramaId: String, location: LatLng) {
+        guesses[currentRound] = Guess(panoramaId, location)
+    }
+
+    fun setGuessForCurrentRound(location: LatLng, timeTaken: Long) {
+        guesses[currentRound]?.guessedLatLng = location
+        guesses[currentRound]?.guessTime = timeTaken
     }
 
     fun configureNextRound(): Int {
