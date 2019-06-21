@@ -3,6 +3,7 @@ apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-android-extensions'
 apply plugin: 'kotlin-kapt'
 apply plugin: "androidx.navigation.safeargs.kotlin"
+apply plugin: 'io.fabric'
 
 // Load keystore config details.
 def keystorePropertiesFile = rootProject.file("keystore.properties")
@@ -57,25 +58,21 @@ dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
     implementation"org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version"
     implementation 'androidx.appcompat:appcompat:1.1.0-beta01'
-    implementation 'androidx.fragment:fragment-ktx:1.1.0-alpha09'
-    implementation 'androidx.core:core-ktx:1.2.0-alpha01'
-    implementation 'androidx.constraintlayout:constraintlayout:2.0.0-beta1'
-    implementation 'androidx.navigation:navigation-fragment-ktx:2.1.0-alpha04'
-    implementation 'androidx.navigation:navigation-ui-ktx:2.1.0-alpha04'
+    implementation 'androidx.fragment:fragment-ktx:1.1.0-beta01'
+    implementation 'androidx.core:core-ktx:1.2.0-alpha02'
+    implementation 'androidx.constraintlayout:constraintlayout:2.0.0-beta2'
+    implementation 'androidx.navigation:navigation-fragment-ktx:2.1.0-alpha05'
+    implementation 'androidx.navigation:navigation-ui-ktx:2.1.0-alpha05'
 
-    implementation 'com.google.android.gms:play-services-maps:16.1.0'
+    implementation 'com.google.android.gms:play-services-maps:17.0.0'
 
     // Firebase
-    implementation 'com.google.firebase:firebase-core:16.0.9'
-
-    //Dagger
-    implementation "com.google.dagger:dagger:$daggerVersion"
-    implementation "com.google.dagger:dagger-android-support:$daggerVersion"
-    kapt "com.google.dagger:dagger-compiler:$daggerVersion"
-    kapt "com.google.dagger:dagger-android-processor:$daggerVersion"
+    implementation 'com.google.firebase:firebase-core:17.0.0'
+    implementation 'com.crashlytics.sdk.android:crashlytics:2.10.1'
 
     // Testing
     testImplementation 'junit:junit:4.12'
     androidTestImplementation 'androidx.test.ext:junit:1.1.1'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.2.0'
 }
+apply plugin: 'com.google.gms.google-services'
