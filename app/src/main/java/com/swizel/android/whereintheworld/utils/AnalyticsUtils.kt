@@ -19,23 +19,36 @@ class AnalyticsUtils {
             firebaseAnalytics.logEvent(FirebaseAnalytics.Event.SELECT_CONTENT, bundle)
         }
 
-        fun trackLevelStart(context: Context, difficulty: GameDifficulty) {
+        fun trackGameStart(context: Context, difficulty: GameDifficulty) {
             val firebaseAnalytics = FirebaseAnalytics.getInstance(context)
 
             val bundle = Bundle()
-            bundle.putSerializable(FirebaseAnalytics.Param.LEVEL, difficulty)
+            bundle.putSerializable(FirebaseAnalytics.Param.LEVEL, difficulty.value)
+            bundle.putSerializable(FirebaseAnalytics.Param.LEVEL_NAME, difficulty.name)
 
             firebaseAnalytics.logEvent(FirebaseAnalytics.Event.LEVEL_START, bundle)
         }
 
-        fun trackLevelEnd(context: Context, difficulty: GameDifficulty) {
+        fun trackGameEnd(context: Context, difficulty: GameDifficulty) {
             val firebaseAnalytics = FirebaseAnalytics.getInstance(context)
 
             val bundle = Bundle()
-            bundle.putSerializable(FirebaseAnalytics.Param.LEVEL, difficulty)
+            bundle.putSerializable(FirebaseAnalytics.Param.LEVEL, difficulty.value)
+            bundle.putSerializable(FirebaseAnalytics.Param.LEVEL_NAME, difficulty.name)
 
             firebaseAnalytics.logEvent(FirebaseAnalytics.Event.LEVEL_END, bundle)
         }
+
+        fun trackScore(context: Context, score:Int) {
+            val firebaseAnalytics = FirebaseAnalytics.getInstance(context)
+
+            val bundle = Bundle()
+            bundle.putSerializable(FirebaseAnalytics.Param.SCORE, score)
+
+            firebaseAnalytics.logEvent(FirebaseAnalytics.Event.POST_SCORE, bundle)
+
+        }
+
     }
 
 }

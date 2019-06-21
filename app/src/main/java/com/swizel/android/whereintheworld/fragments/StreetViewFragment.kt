@@ -29,7 +29,7 @@ class StreetViewFragment : Fragment() {
     private lateinit var streetViewPanorama: StreetViewPanorama
     private lateinit var countDownTimer: CountDownTimer
 
-    private val originalTimeMillis: Long = 0
+    private var originalTimeMillis: Long = 0
     private var locationUpdated = false
     private var countdownTimerStarted = false
 
@@ -52,7 +52,7 @@ class StreetViewFragment : Fragment() {
                 streetViewPanorama = panorama.apply {
                     setOnStreetViewPanoramaChangeListener { streetViewPanoramaLocation ->
                         if (streetViewPanoramaLocation != null) {
-                            System.out.println("streetViewPanoramaLocation : $streetViewPanoramaLocation")
+                            println("streetViewPanoramaLocation : $streetViewPanoramaLocation")
                             streetViewLocationAcquired(streetViewPanoramaLocation.position)
                         }
                     }
@@ -66,6 +66,13 @@ class StreetViewFragment : Fragment() {
 
             findNavController().navigate(R.id.nav_to_guess_location)
         }
+
+        originalTimeMillis = TimeUnit.MINUTES.toMillis(2)
+        if (viewModel.remainingStreetViewTimer == 0L) {
+            viewModel.remainingStreetViewTimer = originalTimeMillis
+        }
+
+        setTimerColor(viewModel.remainingStreetViewTimer)
 
         val ft = fragmentManager!!.beginTransaction()
         ft.replace(R.id.streetViewStub, streetViewFragment)
@@ -138,19 +145,18 @@ class StreetViewFragment : Fragment() {
     }
 
     private fun streetViewLocationAcquired(location: LatLng) {
-//        if (!locationUpdated) {
-        System.out.println("streetViewLocationAcquired : $location")
+        if (!locationUpdated) {
+            println("streetViewLocationAcquired : $location")
 //            GameState.getInstance().updateLocationForCurrentRound(location)
-//            locationUpdated = true
+            locationUpdated = true
 //            mHandler.removeCallbacks(mLocationUpdate)
 
-        if (!countdownTimerStarted) {
-            toggleStreetViewEnabled(true)
-            btn_guess.isEnabled = true
-
-            countDownTimer.start()
+            if (!countdownTimerStarted) {
+                toggleStreetViewEnabled(true)
+                btn_guess.isEnabled = true
+                countDownTimer.start()
+            }
         }
-//        }
     }
 
     private fun toggleStreetViewEnabled(enabled: Boolean) {

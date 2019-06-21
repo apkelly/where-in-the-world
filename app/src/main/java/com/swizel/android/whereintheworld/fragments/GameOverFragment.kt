@@ -12,6 +12,7 @@ import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.LatLng
 import com.swizel.android.whereintheworld.R
+import com.swizel.android.whereintheworld.utils.AnalyticsUtils
 import com.swizel.android.whereintheworld.viewmodels.WhereInTheWorldViewModel
 import kotlinx.android.synthetic.main.fragment_game_over.*
 
@@ -51,7 +52,13 @@ class GameOverFragment : Fragment() {
             }
         }
 
-        score.text = "${viewModel.calculateScore()}"
+        val playerScore = viewModel.calculateScore()
+        score.text = "$playerScore"
+
+        viewModel.gameDifficulty?.let { difficulty ->
+            AnalyticsUtils.trackGameEnd(requireContext(), difficulty)
+            AnalyticsUtils.trackScore(requireContext(), playerScore)
+        }
 
         val ft = fragmentManager!!.beginTransaction()
         ft.replace(R.id.mapStub, mapFragment)
