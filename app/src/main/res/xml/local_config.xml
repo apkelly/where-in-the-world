@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<defaultsMap>
+    <entry>
+        <key>easy_config</key>
+        <value>{"num_rounds":3,"locations":[{"lat":51.510357,"lon":-0.116773,"hint":"Big
+            Ben","country":"England"},{"lat":51.50853,"lon":-0.076132,"hint":"Tower of
+            London","country":"England"},{"lat":-33.856159,"lon":151.215256,"hint":"Sydney Opera
+            House","country":"Australia"},{"lat":48.858093,"lon":2.294694,"hint":"Eiffel
+            Tower","country":"France"}],"radius_m":50}
+        </value>
+    </entry>
+</defaultsMap>

@@ -16,5 +16,4 @@ object Config {
 
     const val MAPPING_DROPPED_PIN_ANIMATION_SPEED_MS = 750L
 
-    const val MAX_ROUNDS = 3
 }

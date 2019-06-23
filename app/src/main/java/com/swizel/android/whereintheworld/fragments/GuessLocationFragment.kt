@@ -24,6 +24,7 @@ import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.*
 import com.swizel.android.whereintheworld.Config
 import com.swizel.android.whereintheworld.R
+import com.swizel.android.whereintheworld.utils.SettingsUtils
 import com.swizel.android.whereintheworld.viewmodels.WhereInTheWorldViewModel
 
 
@@ -86,15 +87,15 @@ class GuessLocationFragment : Fragment() {
                     tutorialPin = false
 
                     // Remove tutorial after user has managed to drop their first pin.
-//                    SettingsUtils.addPreference(activity, SettingsUtils.FIRST_EVER_GUESS, false)
+                    SettingsUtils.addPreference(requireContext(), SettingsUtils.FIRST_EVER_GUESS, false)
 
                     // Animate pin into position.
                     dropPinEffect(droppedPin)
                 }
 
                 // Show a tutorial pin for the first ever guess.
-//                val firstEverGuess = SettingsUtils.getBooleanPreference(activity, SettingsUtils.FIRST_EVER_GUESS, true)
-                if (true) {
+                val firstEverGuess = SettingsUtils.getBooleanPreference(requireContext(), SettingsUtils.FIRST_EVER_GUESS, true)
+                if (firstEverGuess) {
                     infoWindowAdapter.setSnippetResId(R.string.tutorial_snippet)
                     droppedPin = googleMap.addMarker(createMarkerOptions(TUTORIAL_PIN))
                     droppedPin?.showInfoWindow()
@@ -115,7 +116,7 @@ class GuessLocationFragment : Fragment() {
         viewModel.setGuessForCurrentRound(location, 0L)
 
         val nextRound = viewModel.configureNextRound()
-        if (nextRound < Config.MAX_ROUNDS) {
+        if (nextRound < viewModel.getNumRounds()) {
             findNavController().navigate(R.id.nav_to_streetview)
         } else {
 

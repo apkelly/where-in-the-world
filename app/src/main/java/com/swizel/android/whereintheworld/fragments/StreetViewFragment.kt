@@ -13,7 +13,6 @@ import com.google.android.gms.maps.StreetViewPanorama
 import com.google.android.gms.maps.StreetViewPanoramaOptions
 import com.google.android.gms.maps.SupportStreetViewPanoramaFragment
 import com.google.android.gms.maps.model.LatLng
-import com.swizel.android.whereintheworld.Config
 import com.swizel.android.whereintheworld.R
 import com.swizel.android.whereintheworld.utils.AnalyticsUtils
 import com.swizel.android.whereintheworld.viewmodels.WhereInTheWorldViewModel
@@ -42,7 +41,7 @@ class StreetViewFragment : Fragment() {
 
         val options = StreetViewPanoramaOptions().apply {
             streetNamesEnabled(false)
-            position(LatLng(-33.8688, 151.2093), 500) // FIXME: Sydney
+            position(viewModel.getLocation(), viewModel.getRadius()) // FIXME: Sydney - -33.8688, 151.2093
         }
 
         streetViewFragment = SupportStreetViewPanoramaFragment.newInstance(options).apply {
@@ -63,7 +62,7 @@ class StreetViewFragment : Fragment() {
             }
         }
 
-        round_number.text = "${viewModel.currentRound + 1}/${Config.MAX_ROUNDS}"
+        round_number.text = "${viewModel.currentRound + 1}/${viewModel.getNumRounds()}"
         btn_guess.setOnClickListener {
             AnalyticsUtils.trackButtonClick(requireContext(), "onGuessClicked")
 

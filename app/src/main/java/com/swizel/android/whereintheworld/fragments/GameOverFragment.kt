@@ -58,10 +58,8 @@ class GameOverFragment : Fragment() {
         val playerScore = viewModel.calculateScore()
         score.text = "$playerScore"
 
-        viewModel.gameDifficulty?.let { difficulty ->
-            AnalyticsUtils.trackGameEnd(requireContext(), difficulty)
-            AnalyticsUtils.trackScore(requireContext(), playerScore)
-        }
+        AnalyticsUtils.trackGameEnd(requireContext(), viewModel.getGameDifficulty()!!)
+        AnalyticsUtils.trackScore(requireContext(), playerScore)
 
         val ft = fragmentManager!!.beginTransaction()
         ft.replace(R.id.mapStub, mapFragment)

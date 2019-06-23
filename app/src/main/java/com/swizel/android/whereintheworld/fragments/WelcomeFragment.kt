@@ -27,12 +27,11 @@ class WelcomeFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        val backgroundIds: IntArray
-//        if (resources.getBoolean(R.bool.landscape)) {
-//            backgroundIds = intArrayOf(R.drawable.welcome_rushmore, R.drawable.welcome_taj_mahal, R.drawable.welcome_pyramids)
-//        } else {
-        backgroundIds = intArrayOf(R.drawable.welcome_eiffel, R.drawable.welcome_pisa, R.drawable.welcome_christ)
-//        }
+        val backgroundIds = if (resources.getBoolean(R.bool.landscape)) {
+            intArrayOf(R.drawable.welcome_rushmore, R.drawable.welcome_taj_mahal, R.drawable.welcome_pyramids)
+        } else {
+            intArrayOf(R.drawable.welcome_eiffel, R.drawable.welcome_pisa, R.drawable.welcome_christ)
+        }
 
         multiTransitionDrawable = MultiTransitionDrawable(welcome_background, backgroundIds)
 

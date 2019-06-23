@@ -8,7 +8,6 @@ import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import com.swizel.android.whereintheworld.R
 import com.swizel.android.whereintheworld.model.GameDifficulty
-import com.swizel.android.whereintheworld.model.GameType
 import com.swizel.android.whereintheworld.utils.AnalyticsUtils
 import com.swizel.android.whereintheworld.viewmodels.WhereInTheWorldViewModel
 
@@ -20,11 +19,17 @@ class GameDifficultyDialogFragment : DialogFragment() {
         val builder = AlertDialog.Builder(activity)
 
         builder.setTitle(R.string.difficulty_dialog_title)
-            .setItems(arrayOf("Easy", "Medium", "Hard", "Extreme")) { _, which ->
-                viewModel.gameDifficulty = getDifficultyForChoice(which)
-                viewModel.gameDifficulty?.let {difficulty ->
-                    AnalyticsUtils.trackGameStart(requireContext(), difficulty)
-                }
+            .setItems(
+                arrayOf(
+                    getString(R.string.difficulty_easy),
+                    getString(R.string.difficulty_medium),
+                    getString(R.string.difficulty_hard),
+                    getString(R.string.difficulty_extreme)
+                )
+            ) { _, which ->
+                val difficulty = getDifficultyForChoice(which)
+                viewModel.startGame(difficulty)
+                AnalyticsUtils.trackGameStart(requireContext(), difficulty)
 
                 findNavController().navigate(R.id.nav_to_streetview)
             }
