@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import com.google.android.gms.maps.GoogleMap
@@ -67,7 +68,7 @@ class GameOverFragment : Fragment() {
     }
 
     private fun drawPlayerGuesses(googleMap: GoogleMap) {
-        val markerIcon = resources.getDrawable(R.drawable.ic_action_location)
+        val markerIcon = ContextCompat.getDrawable(requireContext(), R.drawable.ic_action_location)!!
 
         // Draw locations for game.
         viewModel.guesses.filterNotNull().forEachIndexed { index, guess ->
@@ -79,7 +80,7 @@ class GameOverFragment : Fragment() {
             )
 
             // Add hue to pin icon.
-            val pinIcon = resources.getDrawable(R.drawable.ic_action_pin).mutate()
+            val pinIcon = ContextCompat.getDrawable(requireContext(), R.drawable.ic_action_pin)!!.mutate()
             // TODO: Give each player a colour, tint the drawable and match colour to scores.
             // pinIcon.setColorFilter(Color.RED, PorterDuff.Mode.MULTIPLY);
 

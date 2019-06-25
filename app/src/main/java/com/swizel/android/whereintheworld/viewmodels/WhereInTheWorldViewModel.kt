@@ -1,5 +1,6 @@
 package com.swizel.android.whereintheworld.viewmodels
 
+import android.location.Location
 import androidx.lifecycle.ViewModel
 import com.google.android.gms.maps.model.LatLng
 import com.google.firebase.remoteconfig.FirebaseRemoteConfig
@@ -15,6 +16,30 @@ import java.util.*
 import java.util.concurrent.TimeUnit
 
 class WhereInTheWorldViewModel : ViewModel() {
+
+    companion object {
+        private val np = LatLng(90.0, 0.0)
+        private val sp = LatLng(-90.0, 0.0)
+        private val east = LatLng(0.0, -90.0)
+        private val west = LatLng(0.0, 90.0)
+
+        // Greatest distance between 2 points seems to be North Pole and South Pole (not East/West).
+        // This is the worst possible distance you can be away with a guessed location.
+        private var GREATEST_DISTANCE = distanceBetweenPointsInMeters(np, sp)
+
+        private fun distanceBetweenPointsInMeters(location1: LatLng, location2: LatLng): Float {
+            val results = FloatArray(3)
+            Location.distanceBetween(
+                location1.latitude,
+                location1.longitude,
+                location2.latitude,
+                location2.longitude,
+                results
+            )
+
+            return results[0]
+        }
+    }
 
     private var gameDifficulty: GameDifficulty? = null
     private var gameConfig: JSONObject? = null
@@ -91,7 +116,15 @@ class WhereInTheWorldViewModel : ViewModel() {
     }
 
     fun calculateScore(): Int {
-        return Random().nextInt(Int.MAX_VALUE)
+        var totalScore = 0f
+
+        guesses.filterNotNull().forEach { guess ->
+            val roundScore = GREATEST_DISTANCE - distanceBetweenPointsInMeters(guess.panoramaLatLng, guess.guessedLatLng!!)
+            // If the player had any hints, then we reduce the score accordingly for that round.
+            totalScore += (roundScore * guess.hint.multiplier)
+        }
+
+        return totalScore.toInt()
     }
 
     fun setStreetViewForCurrentRound(panoramaId: String, location: LatLng) {
@@ -110,5 +143,7 @@ class WhereInTheWorldViewModel : ViewModel() {
 
         return currentRound
     }
+
+
 
 }
