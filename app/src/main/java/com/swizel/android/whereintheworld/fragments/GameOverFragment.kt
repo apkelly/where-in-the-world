@@ -42,8 +42,8 @@ class GameOverFragment : Fragment() {
         options.mapType(GoogleMap.MAP_TYPE_SATELLITE)
         options.compassEnabled(false)
         options.rotateGesturesEnabled(false)
-        options.zoomControlsEnabled(false)
-        options.zoomGesturesEnabled(false)
+        options.zoomControlsEnabled(true)
+        options.zoomGesturesEnabled(true)
         options.mapToolbarEnabled(false)
         options.tiltGesturesEnabled(false)
 

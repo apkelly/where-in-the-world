@@ -126,7 +126,8 @@ class WhereInTheWorldViewModel : ViewModel() {
             totalScore += (roundScore * guess.hint.multiplier)
         }
 
-        return totalScore.toLong()
+        // Convert score from meters to kilometers.
+        return totalScore.toLong() / 1000
     }
 
     fun setStreetViewForCurrentRound(panoramaId: String, location: LatLng) {
