@@ -52,8 +52,6 @@ android {
     }
 }
 
-ext.daggerVersion = '2.23.1'
-
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
     implementation"org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version"
@@ -64,6 +62,9 @@ dependencies {
     implementation 'androidx.navigation:navigation-fragment-ktx:2.1.0-alpha05'
     implementation 'androidx.navigation:navigation-ui-ktx:2.1.0-alpha05'
 
+    // Google Play Games and Maps
+    implementation 'com.google.android.gms:play-services-auth:17.0.0'
+    implementation 'com.google.android.gms:play-services-games:18.0.0'
     implementation 'com.google.android.gms:play-services-maps:17.0.0'
 
     // Firebase

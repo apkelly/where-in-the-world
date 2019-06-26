@@ -13,7 +13,7 @@
     <string name="leaderboards">Leaderboards</string>
     <string name="leaderboard">Leaderboard</string>
     <string name="btn_guess">Guess the location</string>
-    <string name="score">Score: %1$s</string>
+    <string name="score">Score: %1$d</string>
     <string name="difficulty_dialog_title">Select Game Difficulty</string>
     <string name="signin_other_error">There was an issue with sign in. Please try again later.</string>
 

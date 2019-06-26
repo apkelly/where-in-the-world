@@ -39,7 +39,7 @@ class AnalyticsUtils {
             firebaseAnalytics.logEvent(FirebaseAnalytics.Event.LEVEL_END, bundle)
         }
 
-        fun trackScore(context: Context, score:Int) {
+        fun trackScore(context: Context, score: Long) {
             val firebaseAnalytics = FirebaseAnalytics.getInstance(context)
 
             val bundle = Bundle()

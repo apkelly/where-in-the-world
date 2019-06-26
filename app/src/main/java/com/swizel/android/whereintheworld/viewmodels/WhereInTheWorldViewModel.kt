@@ -10,6 +10,7 @@ import com.swizel.android.whereintheworld.R
 import com.swizel.android.whereintheworld.model.GameDifficulty
 import com.swizel.android.whereintheworld.model.GameType
 import com.swizel.android.whereintheworld.model.Guess
+import com.swizel.android.whereintheworld.model.Hint
 import org.json.JSONObject
 import org.json.JSONTokener
 import java.util.*
@@ -55,15 +56,15 @@ class WhereInTheWorldViewModel : ViewModel() {
                     .setMinimumFetchIntervalInSeconds(TimeUnit.MINUTES.toSeconds(10))
                     .build()
             )
-            setDefaultsAsync(R.xml.local_config)
-                .addOnCompleteListener { task ->
-                    if (task.isSuccessful) {
-                        println("Defaults Succeeded : ${getString("easy_config")}")
-                    } else {
-                        println("Defaults failed")
-                    }
-                }
         }
+        setDefaultsAsync(R.xml.local_config)
+            .addOnCompleteListener { task ->
+                if (task.isSuccessful) {
+                    println("Defaults Succeeded : ${getString("easy_config")}")
+                } else {
+                    println("Defaults failed")
+                }
+            }
     }
 
     init {
@@ -115,25 +116,27 @@ class WhereInTheWorldViewModel : ViewModel() {
         throw IllegalStateException("Didn't get a location")
     }
 
-    fun calculateScore(): Int {
+    fun calculateScore(): Long {
         var totalScore = 0f
 
         guesses.filterNotNull().forEach { guess ->
-            val roundScore = GREATEST_DISTANCE - distanceBetweenPointsInMeters(guess.panoramaLatLng, guess.guessedLatLng!!)
+            val roundScore =
+                GREATEST_DISTANCE - distanceBetweenPointsInMeters(guess.panoramaLatLng, guess.guessedLatLng!!)
             // If the player had any hints, then we reduce the score accordingly for that round.
             totalScore += (roundScore * guess.hint.multiplier)
         }
 
-        return totalScore.toInt()
+        return totalScore.toLong()
     }
 
     fun setStreetViewForCurrentRound(panoramaId: String, location: LatLng) {
         guesses[currentRound] = Guess(panoramaId, location)
     }
 
-    fun setGuessForCurrentRound(location: LatLng, timeTaken: Long) {
+    fun setGuessForCurrentRound(location: LatLng, timeTaken: Long, hint: Hint = Hint.NONE) {
         guesses[currentRound]?.guessedLatLng = location
         guesses[currentRound]?.guessTime = timeTaken
+        guesses[currentRound]?.hint = hint
     }
 
     fun configureNextRound(): Int {
@@ -143,7 +146,6 @@ class WhereInTheWorldViewModel : ViewModel() {
 
         return currentRound
     }
-
 
 
 }

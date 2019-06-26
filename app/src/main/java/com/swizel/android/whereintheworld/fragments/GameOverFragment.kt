@@ -57,7 +57,7 @@ class GameOverFragment : Fragment() {
         }
 
         val playerScore = viewModel.calculateScore()
-        score.text = "$playerScore"
+        score.text = getString(R.string.score, playerScore)
 
         AnalyticsUtils.trackGameEnd(requireContext(), viewModel.getGameDifficulty()!!)
         AnalyticsUtils.trackScore(requireContext(), playerScore)
