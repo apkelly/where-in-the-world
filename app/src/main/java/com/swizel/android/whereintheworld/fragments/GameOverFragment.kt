@@ -7,6 +7,10 @@ import android.view.ViewGroup
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import com.google.android.gms.auth.api.signin.GoogleSignIn
+import com.google.android.gms.auth.api.signin.GoogleSignInAccount
+import com.google.android.gms.auth.api.signin.GoogleSignInOptions
+import com.google.android.gms.games.Games
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.GoogleMapOptions
 import com.google.android.gms.maps.SupportMapFragment
@@ -25,9 +29,12 @@ class GameOverFragment : Fragment() {
 
     companion object {
         private val MAP_CENTER = LatLng(25.0, 0.0)
+        private const val RC_ACHIEVEMENT_UI = 1234
+        private const val RC_LEADERBOARD_UI = 2345
     }
 
     private lateinit var mapFragment: SupportMapFragment
+    private var googleSignInAccount: GoogleSignInAccount? = null
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         return inflater.inflate(R.layout.fragment_game_over, container, false)
@@ -57,6 +64,57 @@ class GameOverFragment : Fragment() {
         }
 
         val playerScore = viewModel.calculateScore()
+
+        val googleClientSignIn = GoogleSignIn.getClient(
+            requireContext(), GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+                .requestScopes(Games.SCOPE_GAMES_LITE)
+                .build()
+        )
+
+        // Enable Google Play Games buttons if we're signed in.
+        googleClientSignIn.silentSignIn()
+            .addOnSuccessListener { account ->
+                googleSignInAccount = account
+
+                Games.getLeaderboardsClient(requireContext(), account)
+                    .submitScore(Config.getLeaderboardId(viewModel.getGameDifficulty()!!), playerScore)
+
+                btn_achievements.isEnabled = true
+                btn_all_leaderboards.isEnabled = true
+                // TODO: Show a sign-out button.
+            }
+            .addOnFailureListener {
+                btn_achievements.isEnabled = false
+                btn_all_leaderboards.isEnabled = false
+                // TODO: Show a sign-in button
+            }
+
+        btn_achievements.setOnClickListener {
+            AnalyticsUtils.trackButtonClick(requireContext(), "Achievements")
+
+            // Launch generic Achievements screen
+            googleSignInAccount?.let { account ->
+                Games.getAchievementsClient(requireContext(), account)
+                    .achievementsIntent
+                    .addOnSuccessListener { intent ->
+                        startActivityForResult(intent, RC_ACHIEVEMENT_UI)
+                    }
+            }
+        }
+
+        btn_all_leaderboards.setOnClickListener {
+            AnalyticsUtils.trackButtonClick(requireContext(), "Leaderboards")
+
+            // Launch generic Leaderboard screen
+            googleSignInAccount?.let { account ->
+                Games.getLeaderboardsClient(requireContext(), account)
+                    .allLeaderboardsIntent
+                    .addOnSuccessListener { intent ->
+                        startActivityForResult(intent, RC_LEADERBOARD_UI)
+                    }
+            }
+        }
+
         score.text = getString(R.string.score, playerScore)
 
         AnalyticsUtils.trackGameEnd(requireContext(), viewModel.getGameDifficulty()!!)
