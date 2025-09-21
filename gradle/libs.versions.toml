@@ -1,0 +1,112 @@
+# Gradle Version Catalog for Where In The World
+# This file lists all plugin and library dependencies used in the project.
+# Placed at: gradle/libs.versions.toml
+
+[versions]
+compileSdk = "36"
+minSdk = "24"
+targetSdk = "36"
+
+# Build plugins
+android_gradle_version = "8.13.0"
+kotlin_version = "2.2.10"
+ksp_version = "2.2.10-2.0.2"
+googleServices = "4.4.3"
+desugar_jdk_libs_version = "2.1.5"
+
+# AndroidX
+activity_compose_version = "1.11.0"
+appcompat_version = "1.7.1"
+androidx_compose_bom_version = "2025.09.00"
+fragmentKtx = "1.8.9"
+coreKtx = "1.17.0"
+constraintlayout = "2.2.1"
+constraintlayout_compose_version = "1.1.1"
+lifecycle_version = "2.9.4"
+navigation = "2.9.4"
+navigation3 = "1.0.0-alpha09"
+
+# Google Play Services
+playServicesAuth = "21.4.0"
+playServicesGames = "24.0.0"
+playServicesMaps = "19.2.0"
+
+# Firebase
+firebase_bom_version = "34.3.0"
+firebase_crashlytics_plugin = "3.0.6"
+firebase_performance_plugin = "2.0.1"
+
+#firebaseCore = "21.1.1"
+#crashlytics = "2.10.1"
+#firebaseConfig = "23.0.1"
+spotless_plugin_version = "7.2.1"
+
+[libraries]
+build-gradle = { module = "com.android.tools.build:gradle", version.ref = "android_gradle_version" }
+jetbrains-kotlin-android = { module = "org.jetbrains.kotlin:kotlin-gradle-plugin", version.ref = "kotlin_version" }
+ksp-gradle-plugin = { module = "com.google.devtools.ksp:com.google.devtools.ksp.gradle.plugin", version.ref = "ksp_version" }
+spotless = { module = "com.diffplug.spotless:spotless-plugin-gradle", version.ref = "spotless_plugin_version" }
+
+# AndroidX core stack
+androidx-fragment-ktx = { module = "androidx.fragment:fragment-ktx", version.ref = "fragmentKtx" }
+androidx-core-ktx = { module = "androidx.core:core-ktx", version.ref = "coreKtx" }
+androidx-constraintlayout = { module = "androidx.constraintlayout:constraintlayout", version.ref = "constraintlayout" }
+androidx-navigation-fragment-ktx = { module = "androidx.navigation:navigation-fragment-ktx", version.ref = "navigation" }
+androidx-navigation-ui-ktx = { module = "androidx.navigation:navigation-ui-ktx", version.ref = "navigation" }
+
+# Google Play services
+play-services-auth = { module = "com.google.android.gms:play-services-auth", version.ref = "playServicesAuth" }
+play-services-games = { module = "com.google.android.gms:play-services-games", version.ref = "playServicesGames" }
+play-services-maps = { module = "com.google.android.gms:play-services-maps", version.ref = "playServicesMaps" }
+
+# Firebase
+google-firebase-bom = { module = "com.google.firebase:firebase-bom", version.ref = "firebase_bom_version" }
+google-firebase-analytics = { module = "com.google.firebase:firebase-analytics" }
+google-firebase-crashlytics = { module = "com.google.firebase:firebase-crashlytics" }
+google-firebase-performance = { module = "com.google.firebase:firebase-perf" }
+google-firebase-remoteconfig = { module = "com.google.firebase:firebase-config" }
+
+#firebase-core = { module = "com.google.firebase:firebase-core", version.ref = "firebaseCore" }
+#crashlytics = { module = "com.crashlytics.sdk.android:crashlytics", version.ref = "crashlytics" }
+#firebase-config = { module = "com.google.firebase:firebase-config", version.ref = "firebaseConfig" }
+
+# ApplicationComposeConvention
+androidx-activity-compose = { module = "androidx.activity:activity-compose", version.ref = "activity_compose_version" }
+androidx-appcompat = { module = "androidx.appcompat:appcompat", version.ref = "appcompat_version" }
+androidx-compose-bom = { group = "androidx.compose", name = "compose-bom", version.ref = "androidx_compose_bom_version" }
+androidx-compose-material3 = { group = "androidx.compose.material3", name = "material3", version="1.5.0-alpha04" }
+androidx-compose-material-iconsExtended = { group = "androidx.compose.material", name = "material-icons-extended" }
+androidx-compose-ui = { group = "androidx.compose.ui", name = "ui" }
+androidx-compose-ui-tooling = { group = "androidx.compose.ui", name = "ui-tooling" }
+androidx-compose-ui-tooling-preview = { module = "androidx.compose.ui:ui-tooling-preview", name="ui-tooling-preview-android"}
+androidx-compose-adaptive = { group = "androidx.compose.material3.adaptive", name = "adaptive" }
+androidx-constraintlayout-compose = { module = "androidx.constraintlayout:constraintlayout-compose", version.ref = "constraintlayout_compose_version" }
+androidx-lifecycle-runtime-compose = { module = "androidx.lifecycle:lifecycle-runtime-compose", version.ref = "lifecycle_version" }
+
+# ApplicationConvention
+core-library-desugaring = { module = "com.android.tools:desugar_jdk_libs", version.ref = "desugar_jdk_libs_version" }
+
+# LibraryNavigationConvention
+androidx-navigation3-runtime = { module = "androidx.navigation3:navigation3-runtime", version.ref = "navigation3" }
+androidx-navigation3-ui = { module = "androidx.navigation3:navigation3-ui", version.ref = "navigation3" }
+
+[plugins]
+com-android-application = { id = "com.android.application", version.ref = "android_gradle_version" }
+com-android-library = { id = "com.android.library", version.ref = "android_gradle_version" }
+org-jetbrains-kotlin-plugin-compose = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin_version" }
+org-jetbrains-kotlin-plugin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin_version" }
+com-google-devtools-ksp = { id = "com.google.devtools.ksp", version.ref = "ksp_version" }
+google-services = { id = "com.google.gms.google-services", version.ref = "googleServices" }
+firebase-crashlytics = { id = "com.google.firebase.crashlytics", version.ref = "firebase_crashlytics_plugin" }
+firebase-performance = { id = "com.google.firebase.firebase-perf", version.ref = "firebase_performance_plugin" }
+spotless = { id = "com.diffplug.spotless", version.ref = "spotless_plugin_version" }
+
+app-android-application = { id = "com.swizel.android.plugins.android.application" }
+app-android-application-compose = { id = "com.swizel.android.plugins.android.application.compose" }
+app-android-application-filename = { id = "com.swizel.android.plugins.android.application.filename" }
+app-android-application-signing = { id = "com.swizel.android.plugins.android.application.signing" }
+app-android-application-versions = { id = "com.swizel.android.plugins.android.application.version" }
+app-android-library = { id = "com.swizel.android.plugins.android.library" }
+app-android-library-compose = { id = "com.swizel.android.plugins.android.library.compose" }
+app-android-library-namespace = { id = "com.swizel.android.plugins.android.library.namespace" }
+app-android-library-navigation = { id = "com.swizel.android.plugins.android.library.navigation" }

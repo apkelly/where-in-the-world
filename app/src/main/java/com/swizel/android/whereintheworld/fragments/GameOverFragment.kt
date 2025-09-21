@@ -20,7 +20,7 @@ import com.swizel.android.whereintheworld.R
 import com.swizel.android.whereintheworld.utils.AnalyticsUtils
 import com.swizel.android.whereintheworld.utils.ImageUtils
 import com.swizel.android.whereintheworld.viewmodels.WhereInTheWorldViewModel
-import kotlinx.android.synthetic.main.fragment_game_over.*
+//import kotlinx.android.synthetic.main.fragment_game_over.*
 
 
 class GameOverFragment : Fragment() {
@@ -71,51 +71,51 @@ class GameOverFragment : Fragment() {
                 .build()
         )
 
-        // Enable Google Play Games buttons if we're signed in.
-        googleClientSignIn.silentSignIn()
-            .addOnSuccessListener { account ->
-                googleSignInAccount = account
-
-                Games.getLeaderboardsClient(requireContext(), account)
-                    .submitScore(Config.getLeaderboardId(viewModel.getGameDifficulty()!!), playerScore)
-
-                btn_achievements.isEnabled = true
-                btn_all_leaderboards.isEnabled = true
-                // TODO: Show a sign-out button.
-            }
-            .addOnFailureListener {
-                btn_achievements.isEnabled = false
-                btn_all_leaderboards.isEnabled = false
-                // TODO: Show a sign-in button
-            }
-
-        btn_achievements.setOnClickListener {
-            AnalyticsUtils.trackButtonClick(requireContext(), "Achievements")
-
-            // Launch generic Achievements screen
-            googleSignInAccount?.let { account ->
-                Games.getAchievementsClient(requireContext(), account)
-                    .achievementsIntent
-                    .addOnSuccessListener { intent ->
-                        startActivityForResult(intent, RC_ACHIEVEMENT_UI)
-                    }
-            }
-        }
-
-        btn_all_leaderboards.setOnClickListener {
-            AnalyticsUtils.trackButtonClick(requireContext(), "Leaderboards")
-
-            // Launch generic Leaderboard screen
-            googleSignInAccount?.let { account ->
-                Games.getLeaderboardsClient(requireContext(), account)
-                    .allLeaderboardsIntent
-                    .addOnSuccessListener { intent ->
-                        startActivityForResult(intent, RC_LEADERBOARD_UI)
-                    }
-            }
-        }
-
-        score.text = getString(R.string.score, playerScore)
+//        // Enable Google Play Games buttons if we're signed in.
+//        googleClientSignIn.silentSignIn()
+//            .addOnSuccessListener { account ->
+//                googleSignInAccount = account
+//
+//                Games.getLeaderboardsClient(requireContext(), account)
+//                    .submitScore(Config.getLeaderboardId(viewModel.getGameDifficulty()!!), playerScore)
+//
+//                btn_achievements.isEnabled = true
+//                btn_all_leaderboards.isEnabled = true
+//                // TODO: Show a sign-out button.
+//            }
+//            .addOnFailureListener {
+//                btn_achievements.isEnabled = false
+//                btn_all_leaderboards.isEnabled = false
+//                // TODO: Show a sign-in button
+//            }
+//
+//        btn_achievements.setOnClickListener {
+//            AnalyticsUtils.trackButtonClick(requireContext(), "Achievements")
+//
+//            // Launch generic Achievements screen
+//            googleSignInAccount?.let { account ->
+//                Games.getAchievementsClient(requireContext(), account)
+//                    .achievementsIntent
+//                    .addOnSuccessListener { intent ->
+//                        startActivityForResult(intent, RC_ACHIEVEMENT_UI)
+//                    }
+//            }
+//        }
+//
+//        btn_all_leaderboards.setOnClickListener {
+//            AnalyticsUtils.trackButtonClick(requireContext(), "Leaderboards")
+//
+//            // Launch generic Leaderboard screen
+//            googleSignInAccount?.let { account ->
+//                Games.getLeaderboardsClient(requireContext(), account)
+//                    .allLeaderboardsIntent
+//                    .addOnSuccessListener { intent ->
+//                        startActivityForResult(intent, RC_LEADERBOARD_UI)
+//                    }
+//            }
+//        }
+//
+//        score.text = getString(R.string.score, playerScore)
 
         AnalyticsUtils.trackGameEnd(requireContext(), viewModel.getGameDifficulty()!!)
         AnalyticsUtils.trackScore(requireContext(), playerScore)

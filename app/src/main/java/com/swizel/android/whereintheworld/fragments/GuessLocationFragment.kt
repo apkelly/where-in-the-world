@@ -26,6 +26,7 @@ import com.swizel.android.whereintheworld.Config
 import com.swizel.android.whereintheworld.R
 import com.swizel.android.whereintheworld.utils.SettingsUtils
 import com.swizel.android.whereintheworld.viewmodels.WhereInTheWorldViewModel
+import androidx.core.graphics.createBitmap
 
 
 class GuessLocationFragment : Fragment() {
@@ -105,7 +106,7 @@ class GuessLocationFragment : Fragment() {
             }
         }
 
-        val ft = fragmentManager!!.beginTransaction()
+        val ft = requireFragmentManager().beginTransaction()
         ft.replace(R.id.mapStub, mapFragment)
         ft.commit()
     }
@@ -128,21 +129,17 @@ class GuessLocationFragment : Fragment() {
         return MarkerOptions().position(location)
             .anchor(Config.MAP_GUESS_H_ANCHOR, Config.MAP_GUESS_V_ANCHOR)
             .infoWindowAnchor(Config.MAP_INFO_H_ANCHOR, Config.MAP_INFO_V_ANCHOR)
-            .icon(
-                BitmapDescriptorFactory.fromBitmap(
-                    getBitmapFromVectorDrawable(R.drawable.ic_action_pin)
-                )
-            )
+            .also {
+                getBitmapFromVectorDrawable(R.drawable.ic_action_pin)?.let { bitmap ->
+                    it.icon(BitmapDescriptorFactory.fromBitmap(bitmap))
+                }
+            }
     }
 
     private fun getBitmapFromVectorDrawable(@DrawableRes drawableId: Int): Bitmap? {
         val drawable = AppCompatResources.getDrawable(requireContext(), drawableId)
         return if (drawable != null) {
-            val bitmap = Bitmap.createBitmap(
-                drawable.intrinsicWidth,
-                drawable.intrinsicHeight,
-                Bitmap.Config.ARGB_8888
-            )
+            val bitmap = createBitmap(drawable.intrinsicWidth, drawable.intrinsicHeight)
             val canvas = Canvas(bitmap);
             drawable.setBounds(0, 0, canvas.width, canvas.height)
             drawable.draw(canvas)

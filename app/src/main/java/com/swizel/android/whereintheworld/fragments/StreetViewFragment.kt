@@ -16,7 +16,7 @@ import com.google.android.gms.maps.model.LatLng
 import com.swizel.android.whereintheworld.R
 import com.swizel.android.whereintheworld.utils.AnalyticsUtils
 import com.swizel.android.whereintheworld.viewmodels.WhereInTheWorldViewModel
-import kotlinx.android.synthetic.main.fragment_streetview.*
+//import kotlinx.android.synthetic.main.fragment_streetview.*
 import java.util.concurrent.TimeUnit
 
 
@@ -62,12 +62,12 @@ class StreetViewFragment : Fragment() {
             }
         }
 
-        round_number.text = "${viewModel.currentRound + 1}/${viewModel.getNumRounds()}"
-        btn_guess.setOnClickListener {
-            AnalyticsUtils.trackButtonClick(requireContext(), "onGuessClicked")
-
-            findNavController().navigate(R.id.nav_to_guess_location)
-        }
+//        round_number.text = "${viewModel.currentRound + 1}/${viewModel.getNumRounds()}"
+//        btn_guess.setOnClickListener {
+//            AnalyticsUtils.trackButtonClick(requireContext(), "onGuessClicked")
+//
+//            findNavController().navigate(R.id.nav_to_guess_location)
+//        }
 
         originalTimeMillis = TimeUnit.MINUTES.toMillis(2)
         if (viewModel.remainingStreetViewTimer == 0L) {
@@ -104,46 +104,46 @@ class StreetViewFragment : Fragment() {
     }
 
     private fun startTimer() {
-        countDownTimer = object : CountDownTimer(viewModel.remainingStreetViewTimer, 10) {
-            override fun onTick(millis: Long) {
-                var millisUntilFinished = millis
-                countdownTimerStarted = true
-
-                viewModel.remainingStreetViewTimer = millisUntilFinished
-
-                setTimerColor(millisUntilFinished)
-
-                val minutes = TimeUnit.MILLISECONDS.toMinutes(millisUntilFinished)
-                millisUntilFinished -= TimeUnit.MINUTES.toMillis(minutes)
-                val seconds = TimeUnit.MILLISECONDS.toSeconds(millisUntilFinished)
-                millisUntilFinished -= TimeUnit.SECONDS.toMillis(seconds)
-
-                countdown_timer.text = String.format("%02d:%02d.%03d", minutes, seconds, millisUntilFinished)
-            }
-
-            override fun onFinish() {
-                toggleStreetViewEnabled(false)
-                setTimerColor(0)
-                countdown_timer.text = "00:00.000"
-            }
-        }
-
-        if (locationUpdated && !countdownTimerStarted) {
-            toggleStreetViewEnabled(true)
-            btn_guess.isEnabled = true
-            countDownTimer.start()
-        }
+//        countDownTimer = object : CountDownTimer(viewModel.remainingStreetViewTimer, 10) {
+//            override fun onTick(millis: Long) {
+//                var millisUntilFinished = millis
+//                countdownTimerStarted = true
+//
+//                viewModel.remainingStreetViewTimer = millisUntilFinished
+//
+//                setTimerColor(millisUntilFinished)
+//
+//                val minutes = TimeUnit.MILLISECONDS.toMinutes(millisUntilFinished)
+//                millisUntilFinished -= TimeUnit.MINUTES.toMillis(minutes)
+//                val seconds = TimeUnit.MILLISECONDS.toSeconds(millisUntilFinished)
+//                millisUntilFinished -= TimeUnit.SECONDS.toMillis(seconds)
+//
+//                countdown_timer.text = String.format("%02d:%02d.%03d", minutes, seconds, millisUntilFinished)
+//            }
+//
+//            override fun onFinish() {
+//                toggleStreetViewEnabled(false)
+//                setTimerColor(0)
+//                countdown_timer.text = "00:00.000"
+//            }
+//        }
+//
+//        if (locationUpdated && !countdownTimerStarted) {
+//            toggleStreetViewEnabled(true)
+//            btn_guess.isEnabled = true
+//            countDownTimer.start()
+//        }
     }
 
     private fun setTimerColor(millisUntilFinished: Long) {
         val halfTime = originalTimeMillis / 2
         val quarterTime = originalTimeMillis / 4
 
-        when {
-            millisUntilFinished < quarterTime -> countdown_timer.setTextColor(Color.RED)
-            millisUntilFinished < halfTime -> countdown_timer.setTextColor(Color.YELLOW)
-            else -> countdown_timer.setTextColor(Color.WHITE)
-        }
+//        when {
+//            millisUntilFinished < quarterTime -> countdown_timer.setTextColor(Color.RED)
+//            millisUntilFinished < halfTime -> countdown_timer.setTextColor(Color.YELLOW)
+//            else -> countdown_timer.setTextColor(Color.WHITE)
+//        }
     }
 
     private fun streetViewLocationAcquired(id: String, location: LatLng) {
@@ -154,11 +154,11 @@ class StreetViewFragment : Fragment() {
             locationUpdated = true
 //            mHandler.removeCallbacks(mLocationUpdate)
 
-            if (!countdownTimerStarted) {
-                toggleStreetViewEnabled(true)
-                btn_guess.isEnabled = true
-                countDownTimer.start()
-            }
+//            if (!countdownTimerStarted) {
+//                toggleStreetViewEnabled(true)
+//                btn_guess.isEnabled = true
+//                countDownTimer.start()
+//            }
         }
     }
 

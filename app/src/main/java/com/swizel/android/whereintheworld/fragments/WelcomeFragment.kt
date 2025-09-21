@@ -16,7 +16,7 @@ import com.swizel.android.whereintheworld.model.GameType
 import com.swizel.android.whereintheworld.utils.AnalyticsUtils
 import com.swizel.android.whereintheworld.utils.MultiTransitionDrawable
 import com.swizel.android.whereintheworld.viewmodels.WhereInTheWorldViewModel
-import kotlinx.android.synthetic.main.fragment_welcome.*
+//import kotlinx.android.synthetic.main.fragment_welcome.*
 
 
 class WelcomeFragment : Fragment() {
@@ -45,69 +45,69 @@ class WelcomeFragment : Fragment() {
             intArrayOf(R.drawable.welcome_eiffel, R.drawable.welcome_pisa, R.drawable.welcome_christ)
         }
 
-        multiTransitionDrawable = MultiTransitionDrawable(welcome_background, backgroundIds)
-
-        btn_solo_mode.setOnClickListener {
-            AnalyticsUtils.trackButtonClick(requireContext(), "SoloGame")
-            viewModel.gameType = GameType.SOLO
-
-            findNavController().navigate(R.id.nav_to_dialog)
-        }
-
-        btn_quick_challenge_mode.setOnClickListener {
-            AnalyticsUtils.trackButtonClick(requireContext(), "QuickChallenge")
-        }
-
-        btn_friend_challenge_mode.setOnClickListener {
-            AnalyticsUtils.trackButtonClick(requireContext(), "FriendChallenge")
-        }
-
-        val googleClientSignIn = GoogleSignIn.getClient(
-            requireContext(), GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-                .requestScopes(Games.SCOPE_GAMES_LITE)
-                .build()
-        )
-
-        // Enable Google Play Games buttons if we're signed in.
-        googleClientSignIn.silentSignIn()
-            .addOnSuccessListener { account ->
-                googleSignInAccount = account
-
-                btn_achievements.isEnabled = true
-                btn_all_leaderboards.isEnabled = true
-                // TODO: Show a sign-out button.
-            }
-            .addOnFailureListener {
-                btn_achievements.isEnabled = false
-                btn_all_leaderboards.isEnabled = false
-                // TODO: Show a sign-in button
-            }
-
-        btn_achievements.setOnClickListener {
-            AnalyticsUtils.trackButtonClick(requireContext(), "Achievements")
-
-            // Launch generic Achievements screen
-            googleSignInAccount?.let { account ->
-                Games.getAchievementsClient(requireContext(), account)
-                    .achievementsIntent
-                    .addOnSuccessListener { intent ->
-                        startActivityForResult(intent, RC_ACHIEVEMENT_UI)
-                    }
-            }
-        }
-
-        btn_all_leaderboards.setOnClickListener {
-            AnalyticsUtils.trackButtonClick(requireContext(), "Leaderboards")
-
-            // Launch generic Leaderboard screen
-            googleSignInAccount?.let { account ->
-                Games.getLeaderboardsClient(requireContext(), account)
-                    .allLeaderboardsIntent
-                    .addOnSuccessListener { intent ->
-                        startActivityForResult(intent, RC_LEADERBOARD_UI)
-                    }
-            }
-        }
+        multiTransitionDrawable = MultiTransitionDrawable(view.findViewById(R.id.welcome_background), backgroundIds)
+//
+//        btn_solo_mode.setOnClickListener {
+//            AnalyticsUtils.trackButtonClick(requireContext(), "SoloGame")
+//            viewModel.gameType = GameType.SOLO
+//
+//            findNavController().navigate(R.id.nav_to_dialog)
+//        }
+//
+//        btn_quick_challenge_mode.setOnClickListener {
+//            AnalyticsUtils.trackButtonClick(requireContext(), "QuickChallenge")
+//        }
+//
+//        btn_friend_challenge_mode.setOnClickListener {
+//            AnalyticsUtils.trackButtonClick(requireContext(), "FriendChallenge")
+//        }
+//
+//        val googleClientSignIn = GoogleSignIn.getClient(
+//            requireContext(), GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+//                .requestScopes(Games.SCOPE_GAMES_LITE)
+//                .build()
+//        )
+//
+//        // Enable Google Play Games buttons if we're signed in.
+//        googleClientSignIn.silentSignIn()
+//            .addOnSuccessListener { account ->
+//                googleSignInAccount = account
+//
+//                btn_achievements.isEnabled = true
+//                btn_all_leaderboards.isEnabled = true
+//                // TODO: Show a sign-out button.
+//            }
+//            .addOnFailureListener {
+//                btn_achievements.isEnabled = false
+//                btn_all_leaderboards.isEnabled = false
+//                // TODO: Show a sign-in button
+//            }
+//
+//        btn_achievements.setOnClickListener {
+//            AnalyticsUtils.trackButtonClick(requireContext(), "Achievements")
+//
+//            // Launch generic Achievements screen
+//            googleSignInAccount?.let { account ->
+//                Games.getAchievementsClient(requireContext(), account)
+//                    .achievementsIntent
+//                    .addOnSuccessListener { intent ->
+//                        startActivityForResult(intent, RC_ACHIEVEMENT_UI)
+//                    }
+//            }
+//        }
+//
+//        btn_all_leaderboards.setOnClickListener {
+//            AnalyticsUtils.trackButtonClick(requireContext(), "Leaderboards")
+//
+//            // Launch generic Leaderboard screen
+//            googleSignInAccount?.let { account ->
+//                Games.getLeaderboardsClient(requireContext(), account)
+//                    .allLeaderboardsIntent
+//                    .addOnSuccessListener { intent ->
+//                        startActivityForResult(intent, RC_LEADERBOARD_UI)
+//                    }
+//            }
+//        }
     }
 
     override fun onPause() {
