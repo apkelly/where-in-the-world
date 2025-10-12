@@ -1,6 +1,8 @@
 <resources>
     <string name="app_name">Where In The World</string>
     <string name="app_id">290270591207</string>
+    <string name="game_services_project_id">290270591207</string>
+    <string name="bolt_startup" translatable="false">bolt.startup</string>
 
     <string name="game_mode">Game Mode</string>
     <string name="game_mode_solo">Solo</string>
@@ -25,7 +27,7 @@
     <string name="confirm_guess">Tap to confirm guess</string>
     <string name="tutorial_snippet">To make a guess, press and hold on\nthe map to drop a pin like this one.</string>
 
-    <string name="cd_welcome_background">Eiffel Tower, Mount Rushmore and Christ the Redeamer alternating background</string>
+    <string name="cd_welcome_background">Eiffel Tower, Mount Rushmore and Christ the Redeemer alternating background</string>
 
     <!-- BaseGameUtils -->
     <string name="sign_in_failed">Failed to sign in. Please check your network connection and try again.</string>

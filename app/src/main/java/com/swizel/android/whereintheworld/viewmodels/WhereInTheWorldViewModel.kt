@@ -57,7 +57,7 @@ class WhereInTheWorldViewModel : ViewModel() {
                     .build()
             )
         }
-        setDefaultsAsync(R.xml.local_config)
+        setDefaultsAsync(R.xml.remote_config_defaults)
             .addOnCompleteListener { task ->
                 if (task.isSuccessful) {
                     println("Defaults Succeeded : ${getString("easy_config")}")

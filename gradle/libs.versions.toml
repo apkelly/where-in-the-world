@@ -11,28 +11,32 @@ targetSdk = "36"
 android_gradle_version = "8.13.0"
 kotlin_version = "2.2.10"
 ksp_version = "2.2.10-2.0.2"
-googleServices = "4.4.3"
+googleServices = "4.4.4"
 desugar_jdk_libs_version = "2.1.5"
 
 # AndroidX
 activity_compose_version = "1.11.0"
 appcompat_version = "1.7.1"
-androidx_compose_bom_version = "2025.09.00"
+androidx_compose_bom_version = "2025.10.00"
 fragmentKtx = "1.8.9"
 coreKtx = "1.17.0"
 constraintlayout = "2.2.1"
 constraintlayout_compose_version = "1.1.1"
+koin_version = "4.1.1"
+koin_compose_version = "4.1.1"
 lifecycle_version = "2.9.4"
 navigation = "2.9.4"
-navigation3 = "1.0.0-alpha09"
+navigation3 = "1.0.0-alpha11"
+timber_version = "5.0.1"
 
 # Google Play Services
 playServicesAuth = "21.4.0"
 playServicesGames = "24.0.0"
-playServicesMaps = "19.2.0"
+playServicesGamesv2 = "21.0.0"
+playServicesMaps = "6.12.1"
 
 # Firebase
-firebase_bom_version = "34.3.0"
+firebase_bom_version = "34.4.0"
 firebase_crashlytics_plugin = "3.0.6"
 firebase_performance_plugin = "2.0.1"
 
@@ -46,18 +50,18 @@ build-gradle = { module = "com.android.tools.build:gradle", version.ref = "andro
 jetbrains-kotlin-android = { module = "org.jetbrains.kotlin:kotlin-gradle-plugin", version.ref = "kotlin_version" }
 ksp-gradle-plugin = { module = "com.google.devtools.ksp:com.google.devtools.ksp.gradle.plugin", version.ref = "ksp_version" }
 spotless = { module = "com.diffplug.spotless:spotless-plugin-gradle", version.ref = "spotless_plugin_version" }
+jakewharton-timber = { module = "com.jakewharton.timber:timber", version.ref = "timber_version" }
 
 # AndroidX core stack
 androidx-fragment-ktx = { module = "androidx.fragment:fragment-ktx", version.ref = "fragmentKtx" }
 androidx-core-ktx = { module = "androidx.core:core-ktx", version.ref = "coreKtx" }
 androidx-constraintlayout = { module = "androidx.constraintlayout:constraintlayout", version.ref = "constraintlayout" }
-androidx-navigation-fragment-ktx = { module = "androidx.navigation:navigation-fragment-ktx", version.ref = "navigation" }
-androidx-navigation-ui-ktx = { module = "androidx.navigation:navigation-ui-ktx", version.ref = "navigation" }
 
 # Google Play services
 play-services-auth = { module = "com.google.android.gms:play-services-auth", version.ref = "playServicesAuth" }
 play-services-games = { module = "com.google.android.gms:play-services-games", version.ref = "playServicesGames" }
-play-services-maps = { module = "com.google.android.gms:play-services-maps", version.ref = "playServicesMaps" }
+play-services-gamesv2 = { module = "com.google.android.gms:play-services-games-v2", version.ref = "playServicesGamesv2" }
+play-services-maps = { module = "com.google.maps.android:maps-compose", version.ref = "playServicesMaps" }
 
 # Firebase
 google-firebase-bom = { module = "com.google.firebase:firebase-bom", version.ref = "firebase_bom_version" }
@@ -70,11 +74,14 @@ google-firebase-remoteconfig = { module = "com.google.firebase:firebase-config" 
 #crashlytics = { module = "com.crashlytics.sdk.android:crashlytics", version.ref = "crashlytics" }
 #firebase-config = { module = "com.google.firebase:firebase-config", version.ref = "firebaseConfig" }
 
+koin-android = { module = "io.insert-koin:koin-android", version.ref = "koin_version" }
+koin-androidx-compose = { module = "io.insert-koin:koin-androidx-compose", version.ref = "koin_compose_version" }
+
 # ApplicationComposeConvention
 androidx-activity-compose = { module = "androidx.activity:activity-compose", version.ref = "activity_compose_version" }
 androidx-appcompat = { module = "androidx.appcompat:appcompat", version.ref = "appcompat_version" }
 androidx-compose-bom = { group = "androidx.compose", name = "compose-bom", version.ref = "androidx_compose_bom_version" }
-androidx-compose-material3 = { group = "androidx.compose.material3", name = "material3", version="1.5.0-alpha04" }
+androidx-compose-material3 = { group = "androidx.compose.material3", name = "material3", version="1.5.0-alpha06" }
 androidx-compose-material-iconsExtended = { group = "androidx.compose.material", name = "material-icons-extended" }
 androidx-compose-ui = { group = "androidx.compose.ui", name = "ui" }
 androidx-compose-ui-tooling = { group = "androidx.compose.ui", name = "ui-tooling" }
