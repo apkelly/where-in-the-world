@@ -1,5 +1,7 @@
 package com.swizel.android.whereintheworld.navigation
 
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -29,13 +31,24 @@ internal object GameOverScreenSpec : ScreenSpec<GameOverNavKey>() {
             viewModel.fetchUiState()
         }
 
+        val launcher =
+            rememberLauncherForActivityResult(ActivityResultContracts.StartActivityForResult()) { _ ->
+                // We don't care about the result.
+            }
+
         GameOverScreen(
             uiState = uiState,
             isExpandedWidth = LocalWindowSizeClass.current.isExpandedWidth(),
             onAction = { action ->
-                viewModel.onAction(action) { route ->
-                    navigateTo(route)
-                }
+                viewModel.onAction(
+                    action = action,
+                    navigateTo = { route ->
+                        navigateTo(route)
+                    },
+                    launchIntent = { intent ->
+                        launcher.launch(intent)
+                    }
+                )
             },
         )
     }

@@ -4,11 +4,20 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
+import com.google.android.gms.maps.GoogleMap
+import com.google.android.gms.maps.GoogleMapOptions
 import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.LatLng
 import com.google.maps.android.compose.GoogleMap
+import com.google.maps.android.compose.MapProperties
+import com.google.maps.android.compose.MapType
+import com.google.maps.android.compose.MapUiSettings
 import com.google.maps.android.compose.Marker
 import com.google.maps.android.compose.rememberCameraPositionState
 import com.google.maps.android.compose.rememberUpdatedMarkerState
@@ -24,6 +33,9 @@ internal data class GuessLocationUiState(
     val dummy: String
 )
 
+private val MAP_CENTER = LatLng(25.0, 0.0)
+private val TUTORIAL_PIN = LatLng(15.0, 0.0)
+
 @Composable
 internal fun GuessLocationScreen(
     uiState: UiState<GuessLocationUiState>,
@@ -33,23 +45,39 @@ internal fun GuessLocationScreen(
     BasicScaffold(
         uiState = uiState,
     ) { data ->
-        Text("Guess Location Screen")
-
-        val singapore = LatLng(1.35, 103.87)
-        val singaporeMarkerState = rememberUpdatedMarkerState(position = singapore)
         val cameraPositionState = rememberCameraPositionState {
-            position = CameraPosition.fromLatLngZoom(singapore, 10f)
+            position = CameraPosition.fromLatLngZoom(MAP_CENTER, 2f)
         }
-        GoogleMap(
-            modifier = Modifier.fillMaxSize(),
-            cameraPositionState = cameraPositionState
-        ) {
-            Marker(
-                state = singaporeMarkerState,
-                title = "Singapore",
-                snippet = "Marker in Singapore"
+        var mapProperties by remember {
+            mutableStateOf(
+                MapProperties(
+                    maxZoomPreference = 15f,
+                    minZoomPreference = 2f,
+                    mapType = MapType.SATELLITE
+                )
             )
         }
+
+        var mapUiSettings by remember {
+            mutableStateOf(
+                MapUiSettings(
+                    mapToolbarEnabled = false,
+                    tiltGesturesEnabled = false,
+                    rotationGesturesEnabled = false,
+                    compassEnabled = false,
+                    zoomControlsEnabled = true,
+                    zoomGesturesEnabled = true,
+                    myLocationButtonEnabled = false,
+                )
+            )
+        }
+
+        GoogleMap(
+            modifier = Modifier.fillMaxSize(),
+            cameraPositionState = cameraPositionState,
+            properties = mapProperties,
+            uiSettings = mapUiSettings,
+        )
 
     }
 }
