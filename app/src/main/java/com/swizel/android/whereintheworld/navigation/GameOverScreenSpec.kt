@@ -31,10 +31,11 @@ internal object GameOverScreenSpec : ScreenSpec<GameOverNavKey>() {
             viewModel.fetchUiState()
         }
 
-        val launcher =
-            rememberLauncherForActivityResult(ActivityResultContracts.StartActivityForResult()) { _ ->
-                // We don't care about the result.
-            }
+        val launcher = rememberLauncherForActivityResult(
+            ActivityResultContracts.StartActivityForResult()
+        ) { _ ->
+            // We don't care about the result.
+        }
 
         GameOverScreen(
             uiState = uiState,

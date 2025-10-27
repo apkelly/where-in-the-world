@@ -6,11 +6,15 @@ import com.google.android.gms.maps.model.LatLng
 import com.swizel.android.whereintheworld.screens.GuessLocationUiState
 import com.swizel.android.whereintheworld.composables.LoadingType
 import com.swizel.android.whereintheworld.composables.UiState
-import com.swizel.android.whereintheworld.screens.StreetViewUiState
+import com.swizel.android.whereintheworld.model.GameState
+import com.swizel.android.whereintheworld.navigation.GameOverNavKey
+import com.swizel.android.whereintheworld.navigation.StreetViewNavKey
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 
-internal class GuessLocationViewModel: ViewModel() {
+internal class GuessLocationViewModel(
+    private val gameState: GameState,
+): ViewModel() {
 
     private val _uiState = MutableStateFlow<UiState<GuessLocationUiState>>(UiState(isLoading = LoadingType.LOADING))
     val uiState = _uiState.asStateFlow()
@@ -19,13 +23,14 @@ internal class GuessLocationViewModel: ViewModel() {
         _uiState.value = UiState(
             isLoading = LoadingType.NOT_LOADING,
             data = GuessLocationUiState(
-                dummy = "dummy"
+                numRounds = gameState.numRounds,
+                currentRound = gameState.currentRound
             )
         )
     }
 
     sealed class Action {
-        data class GuessLocation(val location: LatLng, val timeTaken: Long) : Action()
+        data class GuessLocation(val location: LatLng?, val timeTaken: Long) : Action()
     }
 
     fun onAction(
@@ -34,23 +39,12 @@ internal class GuessLocationViewModel: ViewModel() {
     ) {
         when (action) {
             is Action.GuessLocation -> {
-
-//        guesses[currentRound]?.guessedLatLng = location
-//        guesses[currentRound]?.guessTime = timeTaken
-//        guesses[currentRound]?.hint = hint
-
-//         // Increment round and reset streetview counter.
-//        currentRound += 1
-//        remainingStreetViewTimer = 0
-
-//        val numRounds = gameConfig?.getInt("num_rounds") ?: throw IllegalStateException("No game config.")
-
-//        if (currentRound < viewModel.getNumRounds()) {
-//            navigateTo(R.id.nav_to_streetview)
-//        } else {
-//
-//            navigateTo(R.id.nav_to_game_over)
-//        }
+                gameState.setGuessForCurrentRound(action.location, action.timeTaken)
+                if (gameState.prepareNextRound()) {
+                    navigateTo(StreetViewNavKey)
+                } else {
+                    navigateTo(GameOverNavKey)
+                }
             }
         }
     }

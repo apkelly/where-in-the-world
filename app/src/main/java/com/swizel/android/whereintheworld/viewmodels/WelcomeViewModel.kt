@@ -10,6 +10,7 @@ import com.swizel.android.whereintheworld.screens.WelcomeUiState
 import com.swizel.android.whereintheworld.composables.LoadingType
 import com.swizel.android.whereintheworld.composables.UiState
 import com.swizel.android.whereintheworld.model.GameDifficulty
+import com.swizel.android.whereintheworld.model.GameState
 import com.swizel.android.whereintheworld.model.GameType
 import com.swizel.android.whereintheworld.navigation.GameOverNavKey
 import com.swizel.android.whereintheworld.navigation.GuessLocationNavKey
@@ -23,6 +24,7 @@ import kotlinx.coroutines.launch
 internal class WelcomeViewModel(
     private val googleClientHelper: GoogleClientHelper,
     private val diagnostics: Diagnostics,
+    private val gameState: GameState,
 ) : ViewModel() {
 
     private val _uiState =
@@ -53,9 +55,7 @@ internal class WelcomeViewModel(
                     )
                 }
             )
-
         }
-
     }
 
     sealed class Action {
@@ -91,6 +91,7 @@ internal class WelcomeViewModel(
                     gameType = GameType.SOLO,
                     gameDifficulty = action.gameDifficulty
                 )
+                gameState.newGame(action.gameDifficulty)
                 navigateTo(StreetViewNavKey)
             }
 
@@ -99,6 +100,7 @@ internal class WelcomeViewModel(
                     gameType = GameType.QUICK_CHALLENGE,
                     gameDifficulty = action.gameDifficulty
                 )
+                gameState.newGame(action.gameDifficulty)
                 navigateTo(GuessLocationNavKey)
             }
 
@@ -107,6 +109,7 @@ internal class WelcomeViewModel(
                     gameType = GameType.FRIEND_CHALLENGE,
                     gameDifficulty = action.gameDifficulty
                 )
+                gameState.newGame(action.gameDifficulty)
                 navigateTo(GameOverNavKey)
             }
 

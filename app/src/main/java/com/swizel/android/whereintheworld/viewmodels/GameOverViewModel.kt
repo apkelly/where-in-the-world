@@ -8,6 +8,7 @@ import com.google.android.gms.games.PlayGames
 import com.swizel.android.whereintheworld.screens.GameOverUiState
 import com.swizel.android.whereintheworld.composables.LoadingType
 import com.swizel.android.whereintheworld.composables.UiState
+import com.swizel.android.whereintheworld.model.GameState
 import com.swizel.android.whereintheworld.navigation.WelcomeNavKey
 import com.swizel.android.whereintheworld.screens.StreetViewUiState
 import com.swizel.android.whereintheworld.utils.Diagnostics
@@ -17,8 +18,8 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 
 internal class GameOverViewModel(
-    private val googleClientHelper: GoogleClientHelper,
     private val diagnostics: Diagnostics,
+    private val gameState: GameState,
 ): ViewModel() {
 
     private val _uiState = MutableStateFlow<UiState<GameOverUiState>>(UiState(isLoading = LoadingType.LOADING))
@@ -28,7 +29,8 @@ internal class GameOverViewModel(
         _uiState.value = UiState(
             isLoading = LoadingType.NOT_LOADING,
             data = GameOverUiState(
-                guesses = emptyList()
+                guesses = gameState.guesses,
+                score = gameState.calculateScore(),
             )
         )
     }

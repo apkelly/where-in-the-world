@@ -30,7 +30,8 @@ import com.swizel.android.whereintheworld.viewmodels.GuessLocationViewModel
 
 @Immutable
 internal data class GuessLocationUiState(
-    val dummy: String
+    val numRounds: Int,
+    val currentRound: Int,
 )
 
 private val MAP_CENTER = LatLng(25.0, 0.0)
@@ -77,6 +78,9 @@ internal fun GuessLocationScreen(
             cameraPositionState = cameraPositionState,
             properties = mapProperties,
             uiSettings = mapUiSettings,
+            onMapLongClick = { location ->
+                onAction(GuessLocationViewModel.Action.GuessLocation(location = location, 100L))
+            }
         )
 
     }
@@ -89,7 +93,10 @@ private fun GuessLocationScreenPreview() {
         GuessLocationScreen(
             uiState = UiState(
                 isLoading = LoadingType.NOT_LOADING,
-                data = GuessLocationUiState(dummy = "dummy")
+                data = GuessLocationUiState(
+                    numRounds = 5,
+                    currentRound = 1
+                )
             ),
             isExpandedWidth = false,
             onAction = { }

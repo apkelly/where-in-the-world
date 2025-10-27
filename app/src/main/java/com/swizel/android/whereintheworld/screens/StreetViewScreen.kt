@@ -44,7 +44,9 @@ import java.util.concurrent.TimeUnit
 
 @Immutable
 internal data class StreetViewUiState(
-    val dummy: String
+    val numRounds: Int,
+    val currentRound: Int,
+    val panoramaLatLng: LatLng,
 )
 
 @OptIn(MapsExperimentalFeature::class)
@@ -57,13 +59,6 @@ internal fun StreetViewScreen(
     BasicScaffold(
         uiState = uiState,
     ) { data ->
-
-        val singapore = LatLng(1.35, 103.87)
-        val cameraPositionState = rememberStreetViewCameraPositionState {
-            StreetViewCameraPositionState().setPosition(position = singapore)
-//            position = CameraPosition.fromLatLngZoom(singapore, 10f)
-        }
-
         val countdownTimer = remember {
             object : CountDownTimer(50_000, 10) {
                 override fun onTick(millis: Long) {
@@ -101,7 +96,7 @@ internal fun StreetViewScreen(
                 modifier = Modifier.fillMaxSize(),
                 isStreetNamesEnabled = false,
                 streetViewPanoramaOptionsFactory = {
-                    StreetViewPanoramaOptions().position(singapore, StreetViewSource.OUTDOOR)
+                    StreetViewPanoramaOptions().position(data.panoramaLatLng, StreetViewSource.OUTDOOR)
                 },
             )
 
@@ -125,7 +120,7 @@ internal fun StreetViewScreen(
                         color = Color.White
                     )
                     Text(
-                        text = "1/5",
+                        text = "${data.currentRound + 1}/${data.numRounds}",
                         modifier = Modifier
                             .systemBarsPadding(),
                         style = WhereInTheWorldTheme.typography.headlineLarge,
@@ -159,7 +154,11 @@ private fun StreetViewScreenPreview() {
         StreetViewScreen(
             uiState = UiState(
                 isLoading = LoadingType.NOT_LOADING,
-                data = StreetViewUiState(dummy = "dummy")
+                data = StreetViewUiState(
+                    numRounds = 5,
+                    currentRound = 1,
+                    panoramaLatLng = LatLng(0.0, 0.0)
+                )
             ),
             isExpandedWidth = false,
             onAction = { }

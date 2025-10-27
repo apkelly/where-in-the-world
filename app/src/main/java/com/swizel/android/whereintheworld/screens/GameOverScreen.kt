@@ -1,9 +1,14 @@
 package com.swizel.android.whereintheworld.screens
 
-import android.graphics.Color
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -12,8 +17,11 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
 import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.PinConfig
@@ -33,7 +41,8 @@ import com.swizel.android.whereintheworld.viewmodels.GameOverViewModel
 
 @Immutable
 internal data class GameOverUiState(
-    val guesses: List<Guess>
+    val guesses: List<Guess>,
+    val score: Long
 )
 
 @Composable
@@ -72,26 +81,62 @@ internal fun GameOverScreen(
             )
         }
 
-        GoogleMap(
-            modifier = Modifier.fillMaxWidth().aspectRatio(0.5f),
-            cameraPositionState = cameraPositionState,
-            properties = mapProperties,
-            uiSettings = mapUiSettings,
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .aspectRatio(1f),
         ) {
-            data.guesses.forEachIndexed { index, guess ->
-                // A guessed LatLng will be missing if the user didn't make a guess quick enough.
-                guess.guessedLatLng?.let { guessedLocation ->
-                    val pinConfig = PinConfig.builder()
-                        .setBackgroundColor(Color.MAGENTA)
-                        .build()
+            GoogleMap(
+                modifier = Modifier
+                    .fillMaxSize(),
+                cameraPositionState = cameraPositionState,
+                properties = mapProperties,
+                uiSettings = mapUiSettings,
+            ) {
+                data.guesses.forEachIndexed { index, guess ->
+                    // A guessed LatLng will be missing if the user didn't make a guess quick enough.
+                    guess.panoramaLatLng.let { panoramaLatLng ->
+                        val pinConfig = PinConfig.builder()
+                            .setBackgroundColor(android.graphics.Color.YELLOW)
+                            .build()
 
-                    AdvancedMarker(
-                        state = MarkerState(position = guessedLocation),
-                        title = "Guess for round ${index + 1}",
-                        pinConfig = pinConfig
-                    )
+                        AdvancedMarker(
+                            state = MarkerState(position = panoramaLatLng),
+                            title = "Location for round ${index + 1}",
+                            pinConfig = pinConfig
+                        )
+                    }
+
+                    guess.guessedLatLng?.let { guessedLocation ->
+                        val pinConfig = PinConfig.builder()
+                            .setBackgroundColor(android.graphics.Color.MAGENTA)
+                            .build()
+
+                        AdvancedMarker(
+                            state = MarkerState(position = guessedLocation),
+                            title = "Guess for round ${index + 1}",
+                            pinConfig = pinConfig
+                        )
+                    }
                 }
             }
+        }
+
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.spacedBy(16.dp),
+        ) {
+            Text(text = "GAME OVER!", color = Color.Red)
+            Text("Score : ${data.score}")
+            Button(
+                onClick = {
+                    onAction(GameOverViewModel.Action.PlayAgain)
+                },
+                content = {
+                    Text("Play Again?")
+
+                }
+            )
         }
     }
 }
@@ -104,7 +149,8 @@ private fun GameOverScreenPreview() {
             uiState = UiState(
                 isLoading = LoadingType.NOT_LOADING,
                 data = GameOverUiState(
-                    guesses = emptyList()
+                    guesses = emptyList(),
+                    score = 0,
                 )
             ),
             isExpandedWidth = false,

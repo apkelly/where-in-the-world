@@ -35,10 +35,11 @@ internal object WelcomeScreenSpec : ScreenSpec<WelcomeNavKey>() {
             }
         }
 
-        val launcher =
-            rememberLauncherForActivityResult(ActivityResultContracts.StartActivityForResult()) { _ ->
-                // We don't care about the result.
-            }
+        val launcher = rememberLauncherForActivityResult(
+            ActivityResultContracts.StartActivityForResult()
+        ) { _ ->
+            // We don't care about the result.
+        }
 
         WelcomeScreen(
             uiState = uiState,

@@ -5,6 +5,7 @@ import androidx.navigation3.runtime.NavKey
 import com.swizel.android.whereintheworld.screens.StreetViewUiState
 import com.swizel.android.whereintheworld.composables.LoadingType
 import com.swizel.android.whereintheworld.composables.UiState
+import com.swizel.android.whereintheworld.model.GameState
 import com.swizel.android.whereintheworld.model.GameType
 import com.swizel.android.whereintheworld.navigation.GuessLocationNavKey
 import com.swizel.android.whereintheworld.navigation.StreetViewNavKey
@@ -15,6 +16,7 @@ import kotlinx.coroutines.flow.asStateFlow
 
 internal class StreetViewViewModel(
     private val diagnostics: Diagnostics,
+    private val gameState: GameState,
 ): ViewModel() {
 
     private val _uiState = MutableStateFlow<UiState<StreetViewUiState>>(UiState(isLoading = LoadingType.LOADING))
@@ -24,7 +26,9 @@ internal class StreetViewViewModel(
         _uiState.value = UiState(
             isLoading = LoadingType.NOT_LOADING,
             data = StreetViewUiState(
-                dummy = "dummy"
+                numRounds = gameState.numRounds,
+                currentRound = gameState.currentRound,
+                panoramaLatLng = gameState.guesses.last().panoramaLatLng
             )
         )
     }

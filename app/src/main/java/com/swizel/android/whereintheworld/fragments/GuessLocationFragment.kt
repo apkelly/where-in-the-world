@@ -1,4 +1,4 @@
-//package com.swizel.android.whereintheworld.fragments
+package com.swizel.android.whereintheworld.fragments
 //
 //import android.animation.Animator
 //import android.animation.ValueAnimator
