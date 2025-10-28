@@ -1,5 +1,6 @@
 package com.swizel.android.whereintheworld.navigation
 
+import androidx.activity.compose.LocalActivity
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.runtime.Composable
@@ -26,13 +27,16 @@ internal object GameOverScreenSpec : ScreenSpec<GameOverNavKey>() {
     ) {
         val viewModel: GameOverViewModel = koinViewModel()
         val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+        val activity = LocalActivity.current
 
         LaunchedEffect(Unit) {
-            viewModel.fetchUiState()
+            activity?.let {
+                viewModel.fetchUiState(it)
+            }
         }
 
         val launcher = rememberLauncherForActivityResult(
-            ActivityResultContracts.StartActivityForResult()
+            ActivityResultContracts.StartActivityForResult(),
         ) { _ ->
             // We don't care about the result.
         }
@@ -48,7 +52,7 @@ internal object GameOverScreenSpec : ScreenSpec<GameOverNavKey>() {
                     },
                     launchIntent = { intent ->
                         launcher.launch(intent)
-                    }
+                    },
                 )
             },
         )

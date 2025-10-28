@@ -18,11 +18,14 @@ object SettingsUtils {
 
     const val LAST_DATE_PLAYED = "lastDatePlayed"
 
-    private fun getSharedPreferences(context: Context): SharedPreferences {
-        return PreferenceManager.getDefaultSharedPreferences(context.applicationContext)
-    }
+    private fun getSharedPreferences(
+        context: Context,
+    ): SharedPreferences = PreferenceManager.getDefaultSharedPreferences(context.applicationContext)
 
-    fun removePreference(context: Context?, name: String?) {
+    fun removePreference(
+        context: Context?,
+        name: String?,
+    ) {
         if (context != null && name != null) {
             val editor = getSharedPreferences(context).edit()
             editor.remove(name)
@@ -30,63 +33,95 @@ object SettingsUtils {
         }
     }
 
-    fun getStringPreference(context: Context, name: String, defaultValue: String? = null): String? {
-        return getSharedPreferences(context).getString(name, defaultValue)
+    fun getStringPreference(
+        context: Context,
+        name: String,
+        defaultValue: String? = null,
+    ): String? = getSharedPreferences(context).getString(name, defaultValue)
+
+    fun getBooleanPreference(
+        context: Context,
+        name: String,
+        defaultValue: Boolean = false,
+    ): Boolean = getSharedPreferences(context).getBoolean(name, defaultValue)
+
+    fun getLongPreference(
+        context: Context,
+        name: String,
+        defaultValue: Long,
+    ): Long = getSharedPreferences(context).getLong(name, defaultValue)
+
+    fun getLongPreference(
+        context: Context,
+        name: String,
+        defaultValue: Int,
+    ): Long = try {
+        getSharedPreferences(context).getLong(name, defaultValue.toLong())
+    } catch (cce: ClassCastException) {
+        getIntPreference(context, name, defaultValue).toLong()
     }
 
-    fun getBooleanPreference(context: Context, name: String, defaultValue: Boolean = false): Boolean {
-        return getSharedPreferences(context).getBoolean(name, defaultValue)
-    }
+    fun getIntPreference(
+        context: Context,
+        name: String,
+        defaultValue: Int,
+    ): Int = getSharedPreferences(context).getInt(name, defaultValue)
 
-    fun getLongPreference(context: Context, name: String, defaultValue: Long): Long {
-        return getSharedPreferences(context).getLong(name, defaultValue)
-    }
+    fun getFloatPreference(
+        context: Context,
+        name: String,
+        defaultValue: Float,
+    ): Float = getSharedPreferences(context).getFloat(name, defaultValue)
 
-    fun getLongPreference(context: Context, name: String, defaultValue: Int): Long {
-        return try {
-            getSharedPreferences(context).getLong(name, defaultValue.toLong())
-        } catch (cce: ClassCastException) {
-            getIntPreference(context, name, defaultValue).toLong()
-        }
-    }
-
-    fun getIntPreference(context: Context, name: String, defaultValue: Int): Int {
-        return getSharedPreferences(context).getInt(name, defaultValue)
-    }
-
-    fun getFloatPreference(context: Context, name: String, defaultValue: Float): Float {
-        return getSharedPreferences(context).getFloat(name, defaultValue)
-    }
-
-    fun addPreference(context: Context, name: String, value: String) {
+    fun addPreference(
+        context: Context,
+        name: String,
+        value: String,
+    ) {
         getSharedPreferences(context)
             .edit()
             .putString(name, value)
             .apply()
     }
 
-    fun addPreference(context: Context, name: String, value: Boolean) {
+    fun addPreference(
+        context: Context,
+        name: String,
+        value: Boolean,
+    ) {
         getSharedPreferences(context)
             .edit()
             .putBoolean(name, value)
             .apply()
     }
 
-    fun addPreference(context: Context, name: String, value: Long) {
+    fun addPreference(
+        context: Context,
+        name: String,
+        value: Long,
+    ) {
         getSharedPreferences(context)
             .edit()
             .putLong(name, value)
             .apply()
     }
 
-    fun addPreference(context: Context, name: String, value: Int) {
+    fun addPreference(
+        context: Context,
+        name: String,
+        value: Int,
+    ) {
         getSharedPreferences(context)
             .edit()
             .putInt(name, value)
             .apply()
     }
 
-    fun addPreference(context: Context, name: String, value: Float) {
+    fun addPreference(
+        context: Context,
+        name: String,
+        value: Float,
+    ) {
         getSharedPreferences(context)
             .edit()
             .putFloat(name, value)

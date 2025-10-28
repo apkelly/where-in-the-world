@@ -14,5 +14,5 @@ data class Guess(
 enum class Hint(val multiplier: Float) {
     NONE(1f),
     COUNTRY(0.5f),
-    LANDMARK(0.33f)
+    LANDMARK(0.33f),
 }

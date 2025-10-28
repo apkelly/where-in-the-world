@@ -17,7 +17,9 @@ object ImageUtils {
         textAlign = Paint.Align.CENTER
     }
 
-    fun drawableToBitmap(drawable: Drawable): Bitmap {
+    fun drawableToBitmap(
+        drawable: Drawable,
+    ): Bitmap {
         val bitmap = if (drawable is BitmapDrawable) {
             drawable.bitmap.copy(Bitmap.Config.ARGB_8888, true)
         } else {
@@ -31,7 +33,10 @@ object ImageUtils {
         return bitmap
     }
 
-    fun drawableToBitmap(drawable: Drawable, numberOverlay: Int): Bitmap {
+    fun drawableToBitmap(
+        drawable: Drawable,
+        numberOverlay: Int,
+    ): Bitmap {
         val bitmap = if (drawable is BitmapDrawable) {
             drawable.bitmap.copy(Bitmap.Config.ARGB_8888, true)
         } else {
@@ -47,10 +52,9 @@ object ImageUtils {
             numberOverlay.toString(),
             (canvas.width / 2).toFloat(),
             (canvas.height / 2).toFloat(),
-            textPaint
+            textPaint,
         )
 
         return bitmap
     }
-
 }

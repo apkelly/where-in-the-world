@@ -6,7 +6,7 @@ import com.google.android.gms.games.PlayGames
 import com.google.android.gms.games.PlayGamesSdk
 
 class GoogleClientHelper(
-    private val context: Context
+    private val context: Context,
 ) {
 
     init {
@@ -16,7 +16,7 @@ class GoogleClientHelper(
     fun signIn(
         activity: Activity,
         onSuccess: () -> Unit,
-        onFailure: () -> Unit
+        onFailure: () -> Unit,
     ) {
         val gamesSignInClient = PlayGames.getGamesSignInClient(activity)
         gamesSignInClient.signIn()
@@ -35,5 +35,4 @@ class GoogleClientHelper(
                 onFailure()
             }
     }
-
 }

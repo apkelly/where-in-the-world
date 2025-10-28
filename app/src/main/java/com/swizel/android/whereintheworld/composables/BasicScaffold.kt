@@ -1,12 +1,9 @@
 package com.swizel.android.whereintheworld.composables
 
 import android.annotation.SuppressLint
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.navigationBarsPadding
-import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
@@ -38,13 +35,13 @@ fun <T> BasicScaffold(
             UiStateLoading()
         }
     },
+    bottomBar: (@Composable (T) -> Unit)? = null,
     errorState: @Composable (Throwable) -> Unit = { data ->
         UiStateError(
             message = data.message,
         )
     },
     successState: @Composable ColumnScope.(T) -> Unit = { },
-    bottomBar: @Composable (T) -> Unit = { },
 ) {
     Scaffold(
         topBar = { },
@@ -54,17 +51,13 @@ fun <T> BasicScaffold(
         },
         bottomBar = {
             uiState.data?.let { data ->
-                bottomBar(data)
+                bottomBar?.invoke(data)
             }
         },
-        modifier = Modifier
-            .navigationBarsPadding(),
-    ) { paddingValues ->
+    ) {
         Column(
             modifier = Modifier
-                .fillMaxSize()
-                .padding(paddingValues)
-                .background(backgroundColor),
+                .fillMaxSize(),
         ) {
             if (uiState.isLoading != LoadingType.NOT_LOADING) {
                 loadingState()

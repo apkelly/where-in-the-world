@@ -13,7 +13,7 @@ class GameState {
 
         // Greatest distance between 2 points seems to be North Pole and South Pole (not East/West).
         // This is the worst possible distance you can be away with a guessed location.
-        private var GREATEST_DISTANCE = distanceBetweenPointsInMeters(np, sp)
+        private val GREATEST_DISTANCE = distanceBetweenPointsInMeters(np, sp)
 
         private fun distanceBetweenPointsInMeters(location1: LatLng, location2: LatLng): Float {
             val results = FloatArray(3)

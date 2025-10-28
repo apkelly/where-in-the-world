@@ -3,18 +3,18 @@ package com.swizel.android.whereintheworld.viewmodels
 import androidx.lifecycle.ViewModel
 import androidx.navigation3.runtime.NavKey
 import com.google.android.gms.maps.model.LatLng
-import com.swizel.android.whereintheworld.screens.GuessLocationUiState
 import com.swizel.android.whereintheworld.composables.LoadingType
 import com.swizel.android.whereintheworld.composables.UiState
 import com.swizel.android.whereintheworld.model.GameState
 import com.swizel.android.whereintheworld.navigation.GameOverNavKey
 import com.swizel.android.whereintheworld.navigation.StreetViewNavKey
+import com.swizel.android.whereintheworld.screens.GuessLocationUiState
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 
 internal class GuessLocationViewModel(
     private val gameState: GameState,
-): ViewModel() {
+) : ViewModel() {
 
     private val _uiState = MutableStateFlow<UiState<GuessLocationUiState>>(UiState(isLoading = LoadingType.LOADING))
     val uiState = _uiState.asStateFlow()
@@ -24,8 +24,8 @@ internal class GuessLocationViewModel(
             isLoading = LoadingType.NOT_LOADING,
             data = GuessLocationUiState(
                 numRounds = gameState.numRounds,
-                currentRound = gameState.currentRound
-            )
+                currentRound = gameState.currentRound,
+            ),
         )
     }
 
@@ -48,5 +48,4 @@ internal class GuessLocationViewModel(
             }
         }
     }
-
 }

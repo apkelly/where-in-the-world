@@ -2,14 +2,11 @@ package com.swizel.android.whereintheworld.viewmodels
 
 import androidx.lifecycle.ViewModel
 import androidx.navigation3.runtime.NavKey
-import com.swizel.android.whereintheworld.screens.StreetViewUiState
 import com.swizel.android.whereintheworld.composables.LoadingType
 import com.swizel.android.whereintheworld.composables.UiState
 import com.swizel.android.whereintheworld.model.GameState
-import com.swizel.android.whereintheworld.model.GameType
 import com.swizel.android.whereintheworld.navigation.GuessLocationNavKey
-import com.swizel.android.whereintheworld.navigation.StreetViewNavKey
-import com.swizel.android.whereintheworld.screens.WelcomeUiState
+import com.swizel.android.whereintheworld.screens.StreetViewUiState
 import com.swizel.android.whereintheworld.utils.Diagnostics
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -17,7 +14,7 @@ import kotlinx.coroutines.flow.asStateFlow
 internal class StreetViewViewModel(
     private val diagnostics: Diagnostics,
     private val gameState: GameState,
-): ViewModel() {
+) : ViewModel() {
 
     private val _uiState = MutableStateFlow<UiState<StreetViewUiState>>(UiState(isLoading = LoadingType.LOADING))
     val uiState = _uiState.asStateFlow()
@@ -28,8 +25,8 @@ internal class StreetViewViewModel(
             data = StreetViewUiState(
                 numRounds = gameState.numRounds,
                 currentRound = gameState.currentRound,
-                panoramaLatLng = gameState.guesses.last().panoramaLatLng
-            )
+                panoramaLatLng = gameState.guesses.last().panoramaLatLng,
+            ),
         )
     }
 
@@ -48,6 +45,5 @@ internal class StreetViewViewModel(
                 navigateTo(GuessLocationNavKey)
             }
         }
-
     }
 }

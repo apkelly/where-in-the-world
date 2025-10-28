@@ -12,7 +12,9 @@ class MainActivity : AppCompatActivity() {
 
     private val diagnostics: Diagnostics by inject()
 
-    override fun onCreate(savedInstanceState: Bundle?) {
+    override fun onCreate(
+        savedInstanceState: Bundle?,
+    ) {
         super.onCreate(savedInstanceState)
 
         setContent {
@@ -25,5 +27,4 @@ class MainActivity : AppCompatActivity() {
             }
         }
     }
-
 }

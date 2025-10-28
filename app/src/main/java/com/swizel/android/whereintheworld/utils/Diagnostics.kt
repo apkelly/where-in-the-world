@@ -1,8 +1,6 @@
 package com.swizel.android.whereintheworld.utils
 
 import android.content.Context
-import android.os.Bundle
-import com.google.firebase.analytics.FirebaseAnalytics
 import com.swizel.android.whereintheworld.model.GameDifficulty
 import com.swizel.android.whereintheworld.model.GameType
 
@@ -33,7 +31,9 @@ interface Diagnostics {
 
     fun trackGameEnd()
 
-    fun trackScore(score: Long)
+    fun trackScore(
+        score: Long,
+    )
 
     fun <T> trackPerformance(
         name: DiagnosticTrace,

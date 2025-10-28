@@ -6,12 +6,13 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.safeContentPadding
 import androidx.compose.foundation.layout.systemBarsPadding
 import androidx.compose.material3.Button
+import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable
@@ -19,28 +20,23 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.google.android.gms.maps.StreetViewPanoramaOptions
-import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.StreetViewSource
-import com.google.maps.android.compose.CameraPositionState
-import com.google.maps.android.compose.rememberCameraPositionState
-import com.google.maps.android.compose.rememberUpdatedMarkerState
 import com.google.maps.android.compose.streetview.StreetView
-import com.google.maps.android.compose.streetview.StreetViewCameraPositionState
-import com.google.maps.android.compose.streetview.rememberStreetViewCameraPositionState
 import com.google.maps.android.ktx.MapsExperimentalFeature
+import com.swizel.android.whereintheworld.R
 import com.swizel.android.whereintheworld.composables.BasicScaffold
 import com.swizel.android.whereintheworld.composables.LoadingType
 import com.swizel.android.whereintheworld.composables.UiState
 import com.swizel.android.whereintheworld.theme.WhereInTheWorldTheme
 import com.swizel.android.whereintheworld.viewmodels.StreetViewViewModel
 import java.util.concurrent.TimeUnit
-
 
 @Immutable
 internal data class StreetViewUiState(
@@ -61,7 +57,9 @@ internal fun StreetViewScreen(
     ) { data ->
         val countdownTimer = remember {
             object : CountDownTimer(50_000, 10) {
-                override fun onTick(millis: Long) {
+                override fun onTick(
+                    millis: Long,
+                ) {
                     var millisUntilFinished = millis
 //                    countdownTimerStarted = true
 //
@@ -103,47 +101,51 @@ internal fun StreetViewScreen(
             Column(
                 modifier = Modifier
                     .fillMaxSize(),
-                verticalArrangement = Arrangement.SpaceBetween
+                verticalArrangement = Arrangement.SpaceBetween,
             ) {
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
                         .background(Color(0x66000000))
                         .padding(horizontal = 16.dp),
-                    horizontalArrangement = Arrangement.SpaceBetween
+                    horizontalArrangement = Arrangement.SpaceBetween,
                 ) {
                     Text(
                         text = "00:00.000",
                         style = WhereInTheWorldTheme.typography.headlineLarge,
                         modifier = Modifier
                             .systemBarsPadding(),
-                        color = Color.White
+                        color = Color.White,
                     )
                     Text(
                         text = "${data.currentRound + 1}/${data.numRounds}",
                         modifier = Modifier
                             .systemBarsPadding(),
                         style = WhereInTheWorldTheme.typography.headlineLarge,
-                        color = Color.White
+                        color = Color.White,
                     )
                 }
                 Button(
                     content = {
+                        Icon(
+                            painter = painterResource(id = R.drawable.ic_action_map),
+                            contentDescription = null,
+                        )
                         Text(
-                            text = "Guess Location",
+                            text = stringResource(id = R.string.btn_guess),
                             textAlign = TextAlign.Center,
-                            modifier = Modifier
-                                .fillMaxWidth()
+                            modifier = Modifier.weight(1f),
                         )
                     },
+                    modifier = Modifier
+                        .padding(16.dp)
+                        .safeContentPadding(),
                     onClick = {
                         onAction(StreetViewViewModel.Action.GuessLocation)
-                    }
+                    },
                 )
-
             }
         }
-
     }
 }
 
@@ -157,11 +159,11 @@ private fun StreetViewScreenPreview() {
                 data = StreetViewUiState(
                     numRounds = 5,
                     currentRound = 1,
-                    panoramaLatLng = LatLng(0.0, 0.0)
-                )
+                    panoramaLatLng = LatLng(0.0, 0.0),
+                ),
             ),
             isExpandedWidth = false,
-            onAction = { }
+            onAction = { },
         )
     }
 }

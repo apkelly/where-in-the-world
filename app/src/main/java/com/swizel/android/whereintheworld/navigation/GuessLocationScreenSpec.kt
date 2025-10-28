@@ -8,7 +8,6 @@ import androidx.navigation3.runtime.NavKey
 import com.swizel.android.whereintheworld.screens.GuessLocationScreen
 import com.swizel.android.whereintheworld.theme.LocalWindowSizeClass
 import com.swizel.android.whereintheworld.theme.isExpandedWidth
-import com.swizel.android.whereintheworld.viewmodels.GameOverViewModel
 import com.swizel.android.whereintheworld.viewmodels.GuessLocationViewModel
 import kotlinx.serialization.Serializable
 import org.koin.androidx.compose.koinViewModel

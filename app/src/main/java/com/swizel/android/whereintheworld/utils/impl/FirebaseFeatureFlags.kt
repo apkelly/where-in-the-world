@@ -30,5 +30,4 @@ class FirebaseFeatureFlags(
     override fun getStringFlag(
         flag: FeatureFlag,
     ): String = firebaseRemoteConfig.getString(flag.configName)
-
 }

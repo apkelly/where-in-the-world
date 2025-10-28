@@ -109,7 +109,9 @@ class FirebaseDiagnostics(
         firebaseAnalytics.logEvent(FirebaseAnalytics.Event.LEVEL_END, Bundle())
     }
 
-    override fun trackScore(score: Long) {
+    override fun trackScore(
+        score: Long,
+    ) {
         val bundle = Bundle()
         bundle.putSerializable(FirebaseAnalytics.Param.SCORE, score)
 

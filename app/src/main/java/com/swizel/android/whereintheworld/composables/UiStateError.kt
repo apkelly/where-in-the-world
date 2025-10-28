@@ -15,7 +15,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.swizel.android.whereintheworld.theme.WhereInTheWorldTheme
 
-
 @Composable
 fun UiStateError(
     message: String? = null,

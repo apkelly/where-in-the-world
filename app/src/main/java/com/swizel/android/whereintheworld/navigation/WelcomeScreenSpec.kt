@@ -36,7 +36,7 @@ internal object WelcomeScreenSpec : ScreenSpec<WelcomeNavKey>() {
         }
 
         val launcher = rememberLauncherForActivityResult(
-            ActivityResultContracts.StartActivityForResult()
+            ActivityResultContracts.StartActivityForResult(),
         ) { _ ->
             // We don't care about the result.
         }
@@ -52,7 +52,7 @@ internal object WelcomeScreenSpec : ScreenSpec<WelcomeNavKey>() {
                     },
                     launchIntent = { intent ->
                         launcher.launch(intent)
-                    }
+                    },
                 )
             },
         )

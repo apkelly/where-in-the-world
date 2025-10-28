@@ -1,7 +1,6 @@
 package com.swizel.android.whereintheworld.startup
 
 import android.content.Context
-
 import com.github.apkelly.bolt.startup.BoltInitializer
 import com.swizel.android.whereintheworld.model.GameState
 import com.swizel.android.whereintheworld.utils.ConsoleLogger
@@ -43,7 +42,7 @@ class KoinInitializer : BoltInitializer {
                         single<FeatureFlags> { FirebaseFeatureFlags() }
                         single { GoogleClientHelper(context) }
                         single { GameState() }
-                    }
+                    },
                 )
             }
         }

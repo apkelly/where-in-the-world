@@ -6,7 +6,6 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.navigation3.runtime.NavKey
 import com.google.android.gms.games.PlayGames
-import com.swizel.android.whereintheworld.screens.WelcomeUiState
 import com.swizel.android.whereintheworld.composables.LoadingType
 import com.swizel.android.whereintheworld.composables.UiState
 import com.swizel.android.whereintheworld.model.GameDifficulty
@@ -15,6 +14,7 @@ import com.swizel.android.whereintheworld.model.GameType
 import com.swizel.android.whereintheworld.navigation.GameOverNavKey
 import com.swizel.android.whereintheworld.navigation.GuessLocationNavKey
 import com.swizel.android.whereintheworld.navigation.StreetViewNavKey
+import com.swizel.android.whereintheworld.screens.WelcomeUiState
 import com.swizel.android.whereintheworld.utils.Diagnostics
 import com.swizel.android.whereintheworld.utils.GoogleClientHelper
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -42,54 +42,54 @@ internal class WelcomeViewModel(
                     _uiState.value = UiState(
                         isLoading = LoadingType.NOT_LOADING,
                         data = WelcomeUiState(
-                            signedInToGooglePlay = true
-                        )
+                            signedInToGooglePlay = true,
+                        ),
                     )
                 },
                 onFailure = {
                     _uiState.value = UiState(
                         isLoading = LoadingType.NOT_LOADING,
                         data = WelcomeUiState(
-                            signedInToGooglePlay = false
-                        )
+                            signedInToGooglePlay = false,
+                        ),
                     )
-                }
+                },
             )
         }
     }
 
     sealed class Action {
         data class SoloChallenge(
-            val gameDifficulty: GameDifficulty
+            val gameDifficulty: GameDifficulty,
         ) : Action()
 
         data class QuickChallenge(
-            val gameDifficulty: GameDifficulty
+            val gameDifficulty: GameDifficulty,
         ) : Action()
 
         data class FriendChallenge(
-            val gameDifficulty: GameDifficulty
+            val gameDifficulty: GameDifficulty,
         ) : Action()
 
         data class Leaderboards(
-            val activity: Activity
+            val activity: Activity,
         ) : Action()
 
         data class Achievements(
-            val activity: Activity
+            val activity: Activity,
         ) : Action()
     }
 
     fun onAction(
         action: Action,
         navigateTo: (NavKey) -> Unit,
-        launchIntent: (Intent) -> Unit
+        launchIntent: (Intent) -> Unit,
     ) {
         when (action) {
             is Action.SoloChallenge -> {
                 diagnostics.trackGameStart(
                     gameType = GameType.SOLO,
-                    gameDifficulty = action.gameDifficulty
+                    gameDifficulty = action.gameDifficulty,
                 )
                 gameState.newGame(action.gameDifficulty)
                 navigateTo(StreetViewNavKey)
@@ -98,7 +98,7 @@ internal class WelcomeViewModel(
             is Action.QuickChallenge -> {
                 diagnostics.trackGameStart(
                     gameType = GameType.QUICK_CHALLENGE,
-                    gameDifficulty = action.gameDifficulty
+                    gameDifficulty = action.gameDifficulty,
                 )
                 gameState.newGame(action.gameDifficulty)
                 navigateTo(GuessLocationNavKey)
@@ -107,7 +107,7 @@ internal class WelcomeViewModel(
             is Action.FriendChallenge -> {
                 diagnostics.trackGameStart(
                     gameType = GameType.FRIEND_CHALLENGE,
-                    gameDifficulty = action.gameDifficulty
+                    gameDifficulty = action.gameDifficulty,
                 )
                 gameState.newGame(action.gameDifficulty)
                 navigateTo(GameOverNavKey)
