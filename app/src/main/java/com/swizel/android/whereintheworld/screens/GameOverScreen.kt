@@ -25,6 +25,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.google.android.gms.maps.GoogleMapOptions
 import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.PinConfig
@@ -35,6 +36,7 @@ import com.google.maps.android.compose.MapType
 import com.google.maps.android.compose.MapUiSettings
 import com.google.maps.android.compose.MarkerState
 import com.google.maps.android.compose.rememberCameraPositionState
+import com.swizel.android.whereintheworld.BuildConfig
 import com.swizel.android.whereintheworld.R
 import com.swizel.android.whereintheworld.composables.BasicScaffold
 import com.swizel.android.whereintheworld.composables.LoadingType
@@ -92,6 +94,9 @@ internal fun GameOverScreen(
             cameraPositionState = cameraPositionState,
             properties = mapProperties,
             uiSettings = mapUiSettings,
+            googleMapOptionsFactory = {
+                GoogleMapOptions().mapId(BuildConfig.MAP_ID)
+            },
         ) {
             data.guesses.forEachIndexed { index, guess ->
                 // A guessed LatLng will be missing if the user didn't make a guess quick enough.

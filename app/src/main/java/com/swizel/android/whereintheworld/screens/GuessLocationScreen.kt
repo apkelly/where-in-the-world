@@ -12,6 +12,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.google.android.gms.maps.GoogleMap
+import com.google.android.gms.maps.GoogleMapOptions
 import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.LatLng
 import com.google.maps.android.compose.GoogleMap
@@ -19,6 +20,7 @@ import com.google.maps.android.compose.MapProperties
 import com.google.maps.android.compose.MapType
 import com.google.maps.android.compose.MapUiSettings
 import com.google.maps.android.compose.rememberCameraPositionState
+import com.swizel.android.whereintheworld.BuildConfig
 import com.swizel.android.whereintheworld.composables.BasicScaffold
 import com.swizel.android.whereintheworld.composables.LoadingType
 import com.swizel.android.whereintheworld.composables.UiState
@@ -75,6 +77,9 @@ internal fun GuessLocationScreen(
             cameraPositionState = cameraPositionState,
             properties = mapProperties,
             uiSettings = mapUiSettings,
+            googleMapOptionsFactory = {
+                GoogleMapOptions().mapId(BuildConfig.MAP_ID)
+            },
             contentPadding = PaddingValues(vertical = 48.dp), // Google branding & Zoom controls.
             onMapLongClick = { location ->
                 onAction(GuessLocationViewModel.Action.GuessLocation(location = location, 100L))

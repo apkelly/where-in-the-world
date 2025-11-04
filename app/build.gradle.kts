@@ -1,3 +1,5 @@
+import project.BuildProperties
+
 plugins {
     alias(libs.plugins.app.android.application)
     alias(libs.plugins.app.android.application.compose)
@@ -10,11 +12,18 @@ plugins {
     alias(libs.plugins.org.jetbrains.kotlin.plugin.serialization)
 }
 
+val buildProperties = BuildProperties(project)
+
 android {
     namespace = "com.swizel.android.whereintheworld"
 
     defaultConfig {
         applicationId = "com.swizel.android.whereintheworld"
+
+        buildConfigField("String", "MAP_ID", "\"${buildProperties.readProperty("mapId")}\"")
+
+        manifestPlaceholders["gameServicesProjectId"] = buildProperties.readProperty("gameServicesProjectId")
+        manifestPlaceholders["googleMapsApiKey"] = buildProperties.readProperty("googleMapsApiKey")
     }
 
     androidResources {
