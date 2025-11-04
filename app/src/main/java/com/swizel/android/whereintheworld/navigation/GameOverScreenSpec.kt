@@ -1,5 +1,6 @@
 package com.swizel.android.whereintheworld.navigation
 
+import androidx.activity.compose.BackHandler
 import androidx.activity.compose.LocalActivity
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
@@ -33,6 +34,11 @@ internal object GameOverScreenSpec : ScreenSpec<GameOverNavKey>() {
             activity?.let {
                 viewModel.fetchUiState(it)
             }
+        }
+
+        BackHandler {
+            // Game is finished, navigate back to start.
+            navigateTo(WelcomeNavKey)
         }
 
         val launcher = rememberLauncherForActivityResult(

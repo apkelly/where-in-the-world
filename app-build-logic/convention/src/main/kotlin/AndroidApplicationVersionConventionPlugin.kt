@@ -6,8 +6,8 @@ import org.gradle.kotlin.dsl.configure
 class AndroidApplicationVersionConventionPlugin : Plugin<Project> {
     override fun apply(target: Project) {
         with(target) {
-            val computedVersionCode = 22
-            val computedVersionName = "2.0.0"
+            val computedVersionCode = 23
+            val computedVersionName = "2.0.1"
 
             println("computeVersionCode : $computedVersionCode")
             println("computeVersionName : $computedVersionName")
