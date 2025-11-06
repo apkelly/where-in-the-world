@@ -30,6 +30,7 @@ jobs:
               uses: gradle/actions/setup-gradle@v3
 
             - name: Create google-services.json
+              # We base64 encode the google-service.json contents to fix issues with formatting/indentation etc being lost.
               run: |
                 echo ${{ secrets.DEBUG_GOOGLE_SERVICES_JSON }} | base64 -d > app/google-services.json
               shell: bash
@@ -41,6 +42,3 @@ jobs:
                 keyPassword: ${{ secrets.KEY_PASSWORD }}
                 keyAlias: ${{ secrets.KEY_ALIAS }}
                 storeFile: ${{ secrets.STORE_FILE }}
-                mapId: ${{ secrets.MAP_ID }}
-                gameServicesProjectId: ${{ secrets.GAME_SERVICES_PROJECT_ID }}
-                googleMapsApiKey: ${{ secrets.GOOGLE_MAPS_API_KEY }}

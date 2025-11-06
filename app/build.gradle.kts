@@ -20,10 +20,10 @@ android {
     defaultConfig {
         applicationId = "com.swizel.android.whereintheworld"
 
-        buildConfigField("String", "MAP_ID", "\"${buildProperties.readProperty("mapId")}\"")
+        buildConfigField("String", "MAP_ID", "\"${buildProperties.readProperty("mapId") ?: ""}\"")
 
-        manifestPlaceholders["gameServicesProjectId"] = buildProperties.readProperty("gameServicesProjectId")
-        manifestPlaceholders["googleMapsApiKey"] = buildProperties.readProperty("googleMapsApiKey")
+        manifestPlaceholders["gameServicesProjectId"] = buildProperties.readProperty("gameServicesProjectId") ?: ""
+        manifestPlaceholders["googleMapsApiKey"] = buildProperties.readProperty("googleMapsApiKey") ?: ""
     }
 
     androidResources {
