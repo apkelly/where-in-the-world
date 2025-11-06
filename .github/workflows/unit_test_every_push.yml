@@ -1,0 +1,33 @@
+name: Unit test every push
+on:
+  push:
+    branches:
+      - 'main'
+      - 'task/*'
+
+# Make sure if a new commit is pushed, we cancel any in-progress jobs.
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+    unit-tests:
+        name: Unit tests
+        runs-on: ubuntu-latest
+        timeout-minutes: 20
+        steps:
+            - uses: actions/checkout@v4
+              with:
+                fetch-depth: 0
+                lfs: true
+
+            - uses: actions/setup-java@v4
+              with:
+                  distribution: zulu
+                  java-version: 17
+
+            - name: Setup Gradle
+              uses: gradle/actions/setup-gradle@v3
+
+            - name: Unit tests
+              run: ./gradlew clean testDebugUnitTest --continue --no-daemon
