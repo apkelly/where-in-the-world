@@ -31,7 +31,7 @@ jobs:
 
             - name: Create google-services.json
               run: |
-                base64 --decode -o app/google-services.json ${{ secrets.DEBUG_GOOGLE_SERVICES_JSON }}
+                echo ${{ secrets.DEBUG_GOOGLE_SERVICES_JSON }} | base64 -d > app/google-services.json
               shell: bash
 
             - name: Unit tests
