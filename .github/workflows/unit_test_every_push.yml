@@ -29,6 +29,11 @@ jobs:
             - name: Setup Gradle
               uses: gradle/actions/setup-gradle@v3
 
+            - name: Create google-services.json
+              run: |
+                echo "${{ secrets.DEBUG_GOOGLE_SERVICES_JSON }}" > app/google-services.json
+              shell: bash
+
             - name: Unit tests
               run: ./gradlew clean testDebugUnitTest --continue --no-daemon
               env:
