@@ -41,13 +41,14 @@ import com.swizel.android.whereintheworld.R
 import com.swizel.android.whereintheworld.composables.BasicScaffold
 import com.swizel.android.whereintheworld.composables.LoadingType
 import com.swizel.android.whereintheworld.composables.UiState
+import com.swizel.android.whereintheworld.model.GameRound
 import com.swizel.android.whereintheworld.model.Guess
 import com.swizel.android.whereintheworld.theme.WhereInTheWorldTheme
 import com.swizel.android.whereintheworld.viewmodels.GameOverViewModel
 
 @Immutable
 internal data class GameOverUiState(
-    val guesses: List<Guess>,
+    val gameRounds: List<GameRound>,
     val score: Long,
     val signedInToGooglePlay: Boolean,
 )
@@ -98,9 +99,9 @@ internal fun GameOverScreen(
                 GoogleMapOptions().mapId(BuildConfig.MAP_ID)
             },
         ) {
-            data.guesses.forEachIndexed { index, guess ->
+            data.gameRounds.forEachIndexed { index, round ->
                 // A guessed LatLng will be missing if the user didn't make a guess quick enough.
-                guess.panoramaLatLng.let { panoramaLatLng ->
+                round.panoramaLatLng.let { panoramaLatLng ->
                     val pinConfig = PinConfig.builder()
                         .setBackgroundColor(android.graphics.Color.YELLOW)
                         .build()
@@ -112,13 +113,13 @@ internal fun GameOverScreen(
                     )
                 }
 
-                guess.guessedLatLng?.let { guessedLocation ->
+                round.guess?.let { guess ->
                     val pinConfig = PinConfig.builder()
                         .setBackgroundColor(android.graphics.Color.MAGENTA)
                         .build()
 
                     AdvancedMarker(
-                        state = MarkerState(position = guessedLocation),
+                        state = MarkerState(position = guess.guessedLatLng),
                         title = "Guess for round ${index + 1}",
                         pinConfig = pinConfig,
                     )
@@ -195,7 +196,7 @@ private fun GameOverScreenPreview() {
             uiState = UiState(
                 isLoading = LoadingType.NOT_LOADING,
                 data = GameOverUiState(
-                    guesses = emptyList(),
+                    gameRounds = emptyList(),
                     score = 0,
                     signedInToGooglePlay = true,
                 ),

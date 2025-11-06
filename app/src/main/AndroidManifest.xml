@@ -41,7 +41,7 @@
                     android:name="com.swizel.android.whereintheworld.startup.LoggingInitializer"
                     android:value="bolt.startup" />
             <meta-data
-                    android:name="com.swizel.android.whereintheworld.startup.FeatureFlagsInitializer"
+                    android:name="com.swizel.android.whereintheworld.startup.RemoteConfigInitializer"
                     android:value="bolt.startup" />
         </provider>
 

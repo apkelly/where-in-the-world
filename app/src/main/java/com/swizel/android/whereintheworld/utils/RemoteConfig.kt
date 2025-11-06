@@ -1,16 +1,16 @@
 package com.swizel.android.whereintheworld.utils
 
-interface FeatureFlags {
+interface RemoteConfig {
     suspend fun setup()
-    fun getBooleanFlag(
-        flag: FeatureFlag,
+    fun getBooleanConfig(
+        flag: RemoteConfigKey,
     ): Boolean
-    fun getStringFlag(
-        flag: FeatureFlag,
+    fun getStringConfig(
+        flag: RemoteConfigKey,
     ): String
 }
 
-enum class FeatureFlag(
+enum class RemoteConfigKey(
     val configName: String,
 ) {
     EASY_CONFIG("easy_config"),

@@ -15,6 +15,7 @@ import com.swizel.android.whereintheworld.navigation.GameOverNavKey
 import com.swizel.android.whereintheworld.navigation.GuessLocationNavKey
 import com.swizel.android.whereintheworld.navigation.StreetViewNavKey
 import com.swizel.android.whereintheworld.screens.WelcomeUiState
+import com.swizel.android.whereintheworld.usecases.NewGameUseCase
 import com.swizel.android.whereintheworld.utils.Diagnostics
 import com.swizel.android.whereintheworld.utils.GoogleClientHelper
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -24,7 +25,7 @@ import kotlinx.coroutines.launch
 internal class WelcomeViewModel(
     private val googleClientHelper: GoogleClientHelper,
     private val diagnostics: Diagnostics,
-    private val gameState: GameState,
+    private val newGameUseCase: NewGameUseCase,
 ) : ViewModel() {
 
     private val _uiState =
@@ -87,30 +88,39 @@ internal class WelcomeViewModel(
     ) {
         when (action) {
             is Action.SoloChallenge -> {
-                diagnostics.trackGameStart(
-                    gameType = GameType.SOLO,
-                    gameDifficulty = action.gameDifficulty,
-                )
-                gameState.newGame(action.gameDifficulty)
-                navigateTo(StreetViewNavKey)
+                viewModelScope.launch {
+                    newGameUseCase(
+                        NewGameUseCase.Params(
+                            GameType.SOLO,
+                            action.gameDifficulty
+                        )
+                    )
+                    navigateTo(StreetViewNavKey)
+                }
             }
 
             is Action.QuickChallenge -> {
-                diagnostics.trackGameStart(
-                    gameType = GameType.QUICK_CHALLENGE,
-                    gameDifficulty = action.gameDifficulty,
-                )
-                gameState.newGame(action.gameDifficulty)
-                navigateTo(GuessLocationNavKey)
+                viewModelScope.launch {
+                    newGameUseCase(
+                        NewGameUseCase.Params(
+                            GameType.QUICK_CHALLENGE,
+                            action.gameDifficulty
+                        )
+                    )
+                    navigateTo(StreetViewNavKey)
+                }
             }
 
             is Action.FriendChallenge -> {
-                diagnostics.trackGameStart(
-                    gameType = GameType.FRIEND_CHALLENGE,
-                    gameDifficulty = action.gameDifficulty,
-                )
-                gameState.newGame(action.gameDifficulty)
-                navigateTo(GameOverNavKey)
+                viewModelScope.launch {
+                    newGameUseCase(
+                        NewGameUseCase.Params(
+                            GameType.FRIEND_CHALLENGE,
+                            action.gameDifficulty
+                        )
+                    )
+                    navigateTo(StreetViewNavKey)
+                }
             }
 
             is Action.Leaderboards -> {

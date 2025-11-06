@@ -25,7 +25,7 @@ internal class StreetViewViewModel(
             data = StreetViewUiState(
                 numRounds = gameState.numRounds,
                 currentRound = gameState.currentRound,
-                panoramaLatLng = gameState.guesses.last().panoramaLatLng,
+                panoramaLatLng = gameState.gameRounds[gameState.currentRound].panoramaLatLng,
             ),
         )
     }

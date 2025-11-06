@@ -37,7 +37,7 @@ internal class GameOverViewModel(
                     _uiState.value = UiState(
                         isLoading = LoadingType.NOT_LOADING,
                         data = GameOverUiState(
-                            guesses = gameState.guesses,
+                            gameRounds = gameState.gameRounds,
                             score = gameState.calculateScore(),
                             signedInToGooglePlay = true,
                         ),
@@ -47,7 +47,7 @@ internal class GameOverViewModel(
                     _uiState.value = UiState(
                         isLoading = LoadingType.NOT_LOADING,
                         data = GameOverUiState(
-                            guesses = gameState.guesses,
+                            gameRounds = gameState.gameRounds,
                             score = gameState.calculateScore(),
                             signedInToGooglePlay = false,
                         ),

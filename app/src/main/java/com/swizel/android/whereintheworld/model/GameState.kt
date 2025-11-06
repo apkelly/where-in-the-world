@@ -2,6 +2,9 @@ package com.swizel.android.whereintheworld.model
 
 import android.location.Location
 import com.google.android.gms.maps.model.LatLng
+import org.json.JSONObject
+import kotlin.random.Random
+import kotlin.uuid.Uuid.Companion.random
 
 class GameState {
 
@@ -29,8 +32,8 @@ class GameState {
         }
     }
 
-    private var _guesses = mutableListOf<Guess>()
-    val guesses: List<Guess> = _guesses
+    private var _gameRounds = mutableListOf<GameRound>()
+    val gameRounds: List<GameRound> = _gameRounds
     var numRounds: Int = 0
         private set
     var currentRound: Int = 0
@@ -40,42 +43,44 @@ class GameState {
     var difficulty: GameDifficulty? = null
         private set
 
-    fun newGame(gameDifficulty: GameDifficulty) {
-        _guesses.clear()
+    fun newGame(
+        gameDifficulty: GameDifficulty,
+        config: JSONObject,
+    ) {
+        _gameRounds.clear()
         currentRound = -1 // we'll increment this to 0 soon.
         difficulty = gameDifficulty
-        numRounds = 3
+        numRounds = config.getInt("num_rounds")
+        val allLocations =config.getJSONArray("locations")
+
+        for (i in 0 until numRounds) {
+            val location = allLocations.getJSONObject(Random.nextInt((allLocations.length())))
+            _gameRounds += GameRound("", LatLng(location.getDouble("lat"), location.getDouble("lon")))
+        }
 
         // Get ready for the first round.
         prepareNextRound()
     }
 
     fun setGuessForCurrentRound(location: LatLng?, timeTaken: Long, hint: Hint = Hint.NONE) {
-        _guesses[currentRound].guessedLatLng = location
-        _guesses[currentRound].guessTime = timeTaken
-        _guesses[currentRound].hint = hint
+        location?.let {
+            _gameRounds[currentRound].guess = Guess(location, timeTaken, hint)
+        }
     }
 
     fun prepareNextRound(): Boolean {
         currentRound++
         remainingStreetViewTimer = 0L
-        return if (currentRound < numRounds) {
-            _guesses += Guess("", LatLng(1.35, 103.87)) // Singapore
-            // There are more rounds to play.
-            true
-        } else {
-            // There are no more rounds
-            false
-        }
+        return currentRound < numRounds
     }
 
     fun calculateScore(): Long {
         var totalScore = 0f
 
-        _guesses.forEach { guess ->
-            guess.guessedLatLng?.let { guessedLatLng ->
+        _gameRounds.forEach { round ->
+            round.guess?.let { guess ->
                 val roundScore =
-                    GREATEST_DISTANCE - distanceBetweenPointsInMeters(guess.panoramaLatLng, guessedLatLng)
+                    GREATEST_DISTANCE - distanceBetweenPointsInMeters(round.panoramaLatLng, guess.guessedLatLng)
                 // If the player had any hints, then we reduce the score accordingly for that round.
                 totalScore += (roundScore * guess.hint.multiplier)
             }
