@@ -36,3 +36,6 @@ jobs:
                 keyPassword: ${{ secrets.KEY_PASSWORD }}
                 keyAlias: ${{ secrets.KEY_ALIAS }}
                 storeFile: ${{ secrets.STORE_FILE }}
+                mapId: ${{ secrets.MAP_ID }}
+                gameServicesProjectId: ${{ secrets.GAME_SERVICES_PROJECT_ID }}
+                googleMapsApiKey: ${{ secrets.GOOGLE_MAPS_API_KEY }}
