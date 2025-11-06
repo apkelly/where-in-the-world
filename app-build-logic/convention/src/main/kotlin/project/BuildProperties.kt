@@ -22,7 +22,7 @@ class BuildProperties(
 
     // Read a property from local.properties or a GitHub Secret.
     fun readProperty(name: String): String {
-        return System.getenv(name.uppercase()) ?: localProperties[name] as? String
+        return System.getenv(name) ?: localProperties[name] as? String
         ?: throw RuntimeException("Missing environment variable or gradle property for \"$name\"")
     }
 }
