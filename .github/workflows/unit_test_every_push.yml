@@ -31,3 +31,8 @@ jobs:
 
             - name: Unit tests
               run: ./gradlew clean testDebugUnitTest --continue --no-daemon
+              env:
+                storePassword: ${{ secrets.STORE_PASSWORD }}
+                keyPassword: ${{ secrets.KEY_PASSWORD }}
+                keyAlias: ${{ secrets.KEY_ALIAS }}
+                storeFile: ${{ secrets.STORE_FILE }}
