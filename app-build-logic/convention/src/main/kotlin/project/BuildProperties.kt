@@ -21,12 +21,19 @@ class BuildProperties(
     }
 
     // Read a property from local.properties or a GitHub Secret.
-    fun readProperty(name: String): String? {
+    fun readProperty(
+        name: String,
+        logMissingProperty: Boolean = true
+    ): String? {
         val property = System.getenv(name) ?: localProperties[name] as? String
-        if (property == null) {
+        if (property == null && logMissingProperty) {
             println("Missing environment variable or local.properties entry for \"$name\"")
         }
         return property
+    }
+
+    fun isKeystorePresent(): Boolean {
+        return !readProperty(name = "storeFile", logMissingProperty = false).isNullOrBlank()
     }
 }
 

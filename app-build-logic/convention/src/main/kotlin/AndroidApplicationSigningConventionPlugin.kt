@@ -19,11 +19,13 @@ class AndroidApplicationSigningConventionPlugin : Plugin<Project> {
 //                      keyAlias = readProperty("debugAlias")
 //                      keyPassword = readProperty("debugPassword")
 //                    }
-                    create("release") {
-                        storeFile = file(buildProperties.readProperty("storeFile"))
-                        storePassword = buildProperties.readProperty("storePassword")
-                        keyAlias = buildProperties.readProperty("keyAlias")
-                        keyPassword = buildProperties.readProperty("keyPassword")
+                    if (buildProperties.isKeystorePresent()) {
+                        create("release") {
+                            storeFile = file(buildProperties.readProperty("storeFile") ?: "")
+                            storePassword = buildProperties.readProperty("storePassword")
+                            keyAlias = buildProperties.readProperty("keyAlias")
+                            keyPassword = buildProperties.readProperty("keyPassword")
+                        }
                     }
                 }
 
@@ -36,7 +38,9 @@ class AndroidApplicationSigningConventionPlugin : Plugin<Project> {
 
                     release {
                         isMinifyEnabled = false
-                        signingConfig = signingConfigs.getByName("release")
+                        if (buildProperties.isKeystorePresent()) {
+                            signingConfig = signingConfigs.getByName("release")
+                        }
                         proguardFiles(
                             getDefaultProguardFile("proguard-android-optimize.txt"),
                             "proguard-rules.pro"
