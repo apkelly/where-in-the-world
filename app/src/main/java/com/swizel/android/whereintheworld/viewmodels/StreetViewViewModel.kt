@@ -22,22 +22,25 @@ internal class StreetViewViewModel(
     val uiState = _uiState.asStateFlow()
 
     fun fetchUiState() {
+        val currentRound = gameState.gameRounds[gameState.currentRound]
         _uiState.value = UiState(
             isLoading = LoadingType.NOT_LOADING,
             data = StreetViewUiState(
                 numRounds = gameState.numRounds,
                 currentRound = gameState.currentRound,
                 timeAllowed = 50_000, // This should be based on GameDifficulty or read from Remote Config.
-                panoramaLatLng = gameState.gameRounds[gameState.currentRound].panoramaLatLng,
-                landmark = gameState.gameRounds[gameState.currentRound].landmark,
+                panoramaLatLng = currentRound.panoramaLatLng,
+                landmark = currentRound.landmark,
+                country = currentRound.country,
                 gameDifficulty = gameState.difficulty,
+                currentHint = gameState.currentHint,
             ),
         )
     }
 
     sealed class Action {
         data class GuessLocation(val timeTaken: Long) : Action()
-        data object HintRequested : Action()
+        data class HintRequested(val hint: Hint) : Action()
     }
 
     fun onAction(
@@ -59,8 +62,16 @@ internal class StreetViewViewModel(
             }
             is Action.HintRequested -> {
                 val currentRound = gameState.gameRounds[gameState.currentRound]
-                ConsoleLogger.d("Hint Requested : ${currentRound.landmark}")
-                gameState.setHintForCurrentRound(hint = Hint.LANDMARK)
+                val scoringHint = if (action.hint.multiplier < gameState.currentHint.multiplier) {
+                    action.hint
+                } else {
+                    gameState.currentHint
+                }
+                ConsoleLogger.d("Hint Requested : ${action.hint} for ${currentRound.landmark}")
+                gameState.setHintForCurrentRound(hint = scoringHint)
+                _uiState.value = _uiState.value.copy(
+                    data = _uiState.value.data?.copy(currentHint = scoringHint),
+                )
             }
         }
     }
