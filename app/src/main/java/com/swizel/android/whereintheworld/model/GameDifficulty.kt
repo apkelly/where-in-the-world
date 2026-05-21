@@ -2,7 +2,7 @@ package com.swizel.android.whereintheworld.model
 
 enum class GameDifficulty(
     val value: Int,
-    val description: String
+    val description: String,
 ) {
     EASY(1, "Easy"),
     MEDIUM(1, "Medium"),

@@ -46,10 +46,10 @@ import com.swizel.android.whereintheworld.model.GameDifficulty
 import com.swizel.android.whereintheworld.model.Hint
 import com.swizel.android.whereintheworld.theme.WhereInTheWorldTheme
 import com.swizel.android.whereintheworld.viewmodels.StreetViewViewModel
-import kotlinx.coroutines.delay
 import java.util.Locale
 import java.util.concurrent.TimeUnit
 import kotlin.time.Duration.Companion.milliseconds
+import kotlinx.coroutines.delay
 
 @Immutable
 internal data class StreetViewUiState(
@@ -204,7 +204,7 @@ internal fun StreetViewScreen(
                                     .padding(horizontal = 16.dp, vertical = 8.dp),
                             )
                         }
-                    }
+                }
                 Row(
                     horizontalArrangement = Arrangement.spacedBy(8.dp),
                     modifier = Modifier.padding(16.dp),

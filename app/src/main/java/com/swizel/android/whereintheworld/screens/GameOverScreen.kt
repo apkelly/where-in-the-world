@@ -1,12 +1,13 @@
 package com.swizel.android.whereintheworld.screens
 
-import android.content.Context
 import androidx.activity.compose.LocalActivity
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeContentPadding
@@ -31,7 +32,6 @@ import com.google.android.gms.maps.GoogleMapOptions
 import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.PinConfig
-import com.google.android.gms.maps.model.PolylineOptions
 import com.google.maps.android.compose.AdvancedMarker
 import com.google.maps.android.compose.GoogleMap
 import com.google.maps.android.compose.MapProperties
@@ -92,107 +92,113 @@ internal fun GameOverScreen(
             )
         }
 
-        GoogleMap(
-            modifier = Modifier
-                .fillMaxHeight(0.5f),
-            cameraPositionState = cameraPositionState,
-            properties = mapProperties,
-            uiSettings = mapUiSettings,
-            googleMapOptionsFactory = {
-                GoogleMapOptions().mapId(BuildConfig.MAP_ID)
-            },
-        ) {
-            data.gameRounds.forEachIndexed { index, round ->
-                // A guessed LatLng will be missing if the user didn't make a guess quick enough.
-                round.panoramaLatLng.let { panoramaLatLng ->
-                    val pinConfig = PinConfig.builder()
+        BoxWithConstraints(modifier = Modifier.fillMaxSize()) {
+            val overlayHeight = maxHeight * 0.33f
+
+            GoogleMap(
+                modifier = Modifier.fillMaxSize(),
+                cameraPositionState = cameraPositionState,
+                properties = mapProperties,
+                uiSettings = mapUiSettings,
+                googleMapOptionsFactory = {
+                    GoogleMapOptions().mapId(BuildConfig.MAP_ID)
+                },
+                contentPadding = PaddingValues(bottom = overlayHeight),
+            ) {
+                data.gameRounds.forEachIndexed { index, round ->
+                    // Always show the actual location pin.
+                    val locationPinConfig = PinConfig.builder()
                         .setBackgroundColor(android.graphics.Color.YELLOW)
                         .build()
-
                     AdvancedMarker(
-                        state = MarkerState(position = panoramaLatLng),
+                        state = MarkerState(position = round.panoramaLatLng),
                         title = "Location for round ${index + 1}",
-                        pinConfig = pinConfig,
-                    )
-                }
-
-                round.guess?.let { guess ->
-                    val pinConfig = PinConfig.builder()
-                        .setBackgroundColor(android.graphics.Color.MAGENTA)
-                        .build()
-
-                    AdvancedMarker(
-                        state = MarkerState(position = guess.guessedLatLng),
-                        title = "Guess for round ${index + 1}",
-                        pinConfig = pinConfig,
+                        pinConfig = locationPinConfig,
                     )
 
-                    // Join the guess and the original location together.
-                    val resources = LocalResources.current
-                    Polyline(
-                        points = listOf(round.panoramaLatLng, guess.guessedLatLng),
-                        width = resources.getDimensionPixelSize(R.dimen.game_over_line_width).toFloat(),
-                    )
+                    round.guess?.let { guess ->
+                        val guessPinConfig = PinConfig.builder()
+                            .setBackgroundColor(android.graphics.Color.MAGENTA)
+                            .build()
+
+                        AdvancedMarker(
+                            state = MarkerState(position = guess.guessedLatLng),
+                            title = "Guess for round ${index + 1}",
+                            pinConfig = guessPinConfig,
+                        )
+
+                        // Join the guess and the original location together.
+                        val resources = LocalResources.current
+                        Polyline(
+                            points = listOf(round.panoramaLatLng, guess.guessedLatLng),
+                            width = resources.getDimensionPixelSize(R.dimen.game_over_line_width).toFloat(),
+                        )
+                    }
                 }
             }
-        }
 
-        Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .weight(1f)
-                .background(Color.Black),
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.SpaceBetween,
-        ) {
-            Text(
-                text = "Score : ${data.score}",
-                style = WhereInTheWorldTheme.typography.headlineLarge,
-                color = Color.White,
-            )
-
-            Button(
-                onClick = {
-                    onAction(GameOverViewModel.Action.PlayAgain)
-                },
-                colors = ButtonDefaults.buttonColors().copy(disabledContentColor = Color.White, disabledContainerColor = Color.DarkGray),
-                content = {
-                    Text(text = stringResource(id = R.string.play_again))
-                },
-            )
-
-            Row(
+            // Semi-transparent overlay anchored to the bottom third of the screen.
+            Column(
                 modifier = Modifier
+                    .fillMaxWidth()
+                    .fillMaxSize(0.33f)
+                    .align(Alignment.BottomCenter)
+                    .background(Color(0xCC000000))
                     .padding(16.dp)
                     .safeContentPadding(),
-                horizontalArrangement = Arrangement.spacedBy(16.dp),
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.SpaceEvenly,
             ) {
-                val activity = LocalActivity.current
-                Button(
-                    onClick = {
-                        activity?.let {
-                            onAction(GameOverViewModel.Action.Leaderboards(activity = it))
-                        }
-                    },
-                    colors = ButtonDefaults.buttonColors().copy(disabledContentColor = Color.White, disabledContainerColor = Color.DarkGray),
-                    enabled = data.signedInToGooglePlay,
-                    content = {
-                        Text(text = stringResource(id = R.string.leaderboards))
-                    },
+                Text(
+                    text = "Score : ${data.score}",
+                    style = WhereInTheWorldTheme.typography.headlineLarge,
+                    color = Color.White,
                 )
 
                 Button(
                     onClick = {
-                        activity?.let {
-                            onAction(GameOverViewModel.Action.Achievements(activity = it))
-                        }
+                        onAction(GameOverViewModel.Action.PlayAgain)
                     },
+                    modifier = Modifier.fillMaxWidth(),
                     colors = ButtonDefaults.buttonColors().copy(disabledContentColor = Color.White, disabledContainerColor = Color.DarkGray),
-                    enabled = data.signedInToGooglePlay,
                     content = {
-                        Text(text = stringResource(id = R.string.achievements))
+                        Text(text = stringResource(id = R.string.play_again))
                     },
                 )
+
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(16.dp),
+                ) {
+                    val activity = LocalActivity.current
+                    Button(
+                        onClick = {
+                            activity?.let {
+                                onAction(GameOverViewModel.Action.Leaderboards(activity = it))
+                            }
+                        },
+                        modifier = Modifier.weight(1f),
+                        colors = ButtonDefaults.buttonColors().copy(disabledContentColor = Color.White, disabledContainerColor = Color.DarkGray),
+                        enabled = data.signedInToGooglePlay,
+                        content = {
+                            Text(text = stringResource(id = R.string.leaderboards))
+                        },
+                    )
+
+                    Button(
+                        onClick = {
+                            activity?.let {
+                                onAction(GameOverViewModel.Action.Achievements(activity = it))
+                            }
+                        },
+                        modifier = Modifier.weight(1f),
+                        colors = ButtonDefaults.buttonColors().copy(disabledContentColor = Color.White, disabledContainerColor = Color.DarkGray),
+                        enabled = data.signedInToGooglePlay,
+                        content = {
+                            Text(text = stringResource(id = R.string.achievements))
+                        },
+                    )
+                }
             }
         }
     }

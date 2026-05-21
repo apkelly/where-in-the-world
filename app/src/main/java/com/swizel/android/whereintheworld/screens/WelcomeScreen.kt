@@ -44,8 +44,8 @@ import com.swizel.android.whereintheworld.composables.UiState
 import com.swizel.android.whereintheworld.model.GameDifficulty
 import com.swizel.android.whereintheworld.theme.WhereInTheWorldTheme
 import com.swizel.android.whereintheworld.viewmodels.WelcomeViewModel
-import kotlinx.coroutines.delay
 import kotlin.time.Duration.Companion.seconds
+import kotlinx.coroutines.delay
 
 @Immutable
 internal data class WelcomeUiState(
