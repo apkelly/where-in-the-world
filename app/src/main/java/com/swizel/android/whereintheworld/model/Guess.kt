@@ -7,10 +7,7 @@ data class GameRound(
     val panoramaLatLng: LatLng,
     val landmark: String,
     val country: String,
-) {
-    // Guess can be null if the player runs out of time.
-    var guess: Guess? = null
-}
+)
 
 data class Guess(
     val guessedLatLng: LatLng,

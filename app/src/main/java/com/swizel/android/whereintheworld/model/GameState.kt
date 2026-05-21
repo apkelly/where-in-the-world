@@ -11,8 +11,6 @@ class GameState {
     companion object {
         private val np = LatLng(90.0, 0.0)
         private val sp = LatLng(-90.0, 0.0)
-        private val east = LatLng(0.0, -90.0)
-        private val west = LatLng(0.0, 90.0)
 
         // Greatest distance between 2 points seems to be North Pole and South Pole (not East/West).
         // This is the worst possible distance you can be away with a guessed location.
@@ -35,8 +33,18 @@ class GameState {
         }
     }
 
-    private var _gameRounds = mutableListOf<GameRound>()
-    val gameRounds: List<GameRound> = _gameRounds
+    private val _gameRounds = mutableListOf<GameRound>()
+
+    /** Guesses keyed by round index. Null entry means the player ran out of time for that round. */
+    private val _guesses = mutableMapOf<Int, Guess>()
+
+    val gameRounds: List<GameRound>
+        get() = _gameRounds.toList()
+
+    /** Each GameRound paired with its Guess (null if the player ran out of time). */
+    val gameRoundsWithGuesses: List<Pair<GameRound, Guess?>>
+        get() = _gameRounds.mapIndexed { index, round -> round to _guesses[index] }
+
     var numRounds: Int = 0
         private set
     var currentRound: Int = 0
@@ -53,6 +61,7 @@ class GameState {
         config: JSONObject,
     ) {
         _gameRounds.clear()
+        _guesses.clear()
         currentRound = -1 // we'll increment this to 0 soon.
         difficulty = gameDifficulty
         numRounds = config.getInt("num_rounds")
@@ -60,7 +69,6 @@ class GameState {
 
         while (_gameRounds.size < numRounds) {
             val location = allLocations.getJSONObject(Random.nextInt((allLocations.length())))
-//            ConsoleLogger.d("location : $location")
             val currentLandmarks = gameRounds.map { it.landmark }
             val landmark = location.getString("landmark")
             val country = location.getString("country")
@@ -100,7 +108,7 @@ class GameState {
         location: LatLng?,
     ) {
         location?.let {
-            _gameRounds[currentRound].guess = Guess(location, currentTimeTaken, currentHint)
+            _guesses[currentRound] = Guess(location, currentTimeTaken, currentHint)
         }
     }
 
@@ -114,8 +122,8 @@ class GameState {
     fun calculateScore(): Long {
         var totalScore = 0f
 
-        _gameRounds.forEach { round ->
-            round.guess?.let { guess ->
+        _gameRounds.forEachIndexed { index, round ->
+            _guesses[index]?.let { guess ->
                 val roundScore =
                     GREATEST_DISTANCE - distanceBetweenPointsInMeters(round.panoramaLatLng, guess.guessedLatLng)
                 // If the player had any hints, then we reduce the score accordingly for that round.

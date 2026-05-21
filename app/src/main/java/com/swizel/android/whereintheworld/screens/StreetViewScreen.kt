@@ -14,7 +14,6 @@ import androidx.compose.foundation.layout.systemBarsPadding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.QuestionMark
 import androidx.compose.material3.AlertDialog
-import androidx.compose.material3.Button
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -39,6 +38,7 @@ import com.google.maps.android.compose.streetview.StreetView
 import com.google.maps.android.compose.streetview.rememberStreetViewCameraPositionState
 import com.google.maps.android.ktx.MapsExperimentalFeature
 import com.swizel.android.whereintheworld.R
+import com.swizel.android.whereintheworld.composables.AppButton
 import com.swizel.android.whereintheworld.composables.BasicScaffold
 import com.swizel.android.whereintheworld.composables.LoadingType
 import com.swizel.android.whereintheworld.composables.UiState
@@ -209,7 +209,7 @@ internal fun StreetViewScreen(
                     horizontalArrangement = Arrangement.spacedBy(8.dp),
                     modifier = Modifier.padding(16.dp),
                 ) {
-                    Button(
+                    AppButton(
                         content = {
                             Icon(
                                 painter = painterResource(id = R.drawable.ic_action_map),
@@ -230,7 +230,7 @@ internal fun StreetViewScreen(
                         },
                     )
 
-                    Button(
+                    AppButton(
                         content = {
                             Icon(
                                 imageVector = Icons.Filled.QuestionMark,
@@ -282,7 +282,7 @@ private fun HintSelectionDialog(
             Column {
                 Text(text = stringResource(id = R.string.hint_dialog_message))
 
-                listOf(Hint.COUNTRY, Hint.LANDMARK).forEach { hint ->
+                Hint.entries.filter { it != Hint.NONE }.forEach { hint ->
                     TextButton(
                         onClick = {
                             onHintSelected(hint)

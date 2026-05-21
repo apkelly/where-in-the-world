@@ -14,8 +14,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeContentPadding
 import androidx.compose.material3.AlertDialog
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -38,6 +36,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.swizel.android.whereintheworld.R
+import com.swizel.android.whereintheworld.composables.AppButton
 import com.swizel.android.whereintheworld.composables.BasicScaffold
 import com.swizel.android.whereintheworld.composables.LoadingType
 import com.swizel.android.whereintheworld.composables.UiState
@@ -118,11 +117,10 @@ internal fun WelcomeScreen(
                         modifier = Modifier.padding(bottom = 16.dp),
                     )
 
-                    Button(
+                    AppButton(
                         onClick = {
                             selectedGameMode = WelcomeGameMode.SOLO
                         },
-                        colors = ButtonDefaults.buttonColors().copy(disabledContentColor = Color.White, disabledContainerColor = Color.DarkGray),
                         content = {
                             Icon(
                                 painter = painterResource(id = R.drawable.ic_action_user),
@@ -136,11 +134,10 @@ internal fun WelcomeScreen(
                         },
                     )
 
-                    Button(
+                    AppButton(
                         onClick = {
                             selectedGameMode = WelcomeGameMode.QUICK_CHALLENGE
                         },
-                        colors = ButtonDefaults.buttonColors().copy(disabledContentColor = Color.White, disabledContainerColor = Color.DarkGray),
                         enabled = data.signedInToGooglePlay,
                         content = {
                             Icon(
@@ -155,11 +152,10 @@ internal fun WelcomeScreen(
                         },
                     )
 
-                    Button(
+                    AppButton(
                         onClick = {
                             selectedGameMode = WelcomeGameMode.FRIEND_CHALLENGE
                         },
-                        colors = ButtonDefaults.buttonColors().copy(disabledContentColor = Color.White, disabledContainerColor = Color.DarkGray),
                         enabled = data.signedInToGooglePlay,
                         content = {
                             Icon(
@@ -184,26 +180,24 @@ internal fun WelcomeScreen(
                 horizontalArrangement = Arrangement.spacedBy(16.dp),
             ) {
                 val activity = LocalActivity.current
-                Button(
+                AppButton(
                     onClick = {
                         activity?.let {
                             onAction(WelcomeViewModel.Action.Leaderboards(activity = it))
                         }
                     },
-                    colors = ButtonDefaults.buttonColors().copy(disabledContentColor = Color.White, disabledContainerColor = Color.DarkGray),
                     enabled = data.signedInToGooglePlay,
                     content = {
                         Text(text = stringResource(id = R.string.leaderboards))
                     },
                 )
 
-                Button(
+                AppButton(
                     onClick = {
                         activity?.let {
                             onAction(WelcomeViewModel.Action.Achievements(activity = it))
                         }
                     },
-                    colors = ButtonDefaults.buttonColors().copy(disabledContentColor = Color.White, disabledContainerColor = Color.DarkGray),
                     enabled = data.signedInToGooglePlay,
                     content = {
                         Text(text = stringResource(id = R.string.achievements))

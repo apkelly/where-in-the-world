@@ -33,7 +33,7 @@ internal class GameOverViewModel(
         activity: Activity,
     ) {
         viewModelScope.launch {
-            ConsoleLogger.d("Game rounds : ${gameState.gameRounds.mapNotNull { it.guess }}")
+            ConsoleLogger.d("Game rounds : ${gameState.gameRoundsWithGuesses.mapNotNull { it.second }}")
 
             googleClientHelper.signIn(
                 activity = activity,
@@ -41,7 +41,7 @@ internal class GameOverViewModel(
                     _uiState.value = UiState(
                         isLoading = LoadingType.NOT_LOADING,
                         data = GameOverUiState(
-                            gameRounds = gameState.gameRounds,
+                            gameRoundsWithGuesses = gameState.gameRoundsWithGuesses,
                             score = gameState.calculateScore(),
                             signedInToGooglePlay = true,
                         ),
@@ -51,7 +51,7 @@ internal class GameOverViewModel(
                     _uiState.value = UiState(
                         isLoading = LoadingType.NOT_LOADING,
                         data = GameOverUiState(
-                            gameRounds = gameState.gameRounds,
+                            gameRoundsWithGuesses = gameState.gameRoundsWithGuesses,
                             score = gameState.calculateScore(),
                             signedInToGooglePlay = false,
                         ),

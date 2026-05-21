@@ -11,9 +11,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeContentPadding
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable
@@ -42,20 +39,23 @@ import com.google.maps.android.compose.Polyline
 import com.google.maps.android.compose.rememberCameraPositionState
 import com.swizel.android.whereintheworld.BuildConfig
 import com.swizel.android.whereintheworld.R
+import com.swizel.android.whereintheworld.composables.AppButton
 import com.swizel.android.whereintheworld.composables.BasicScaffold
 import com.swizel.android.whereintheworld.composables.LoadingType
 import com.swizel.android.whereintheworld.composables.UiState
 import com.swizel.android.whereintheworld.model.GameRound
+import com.swizel.android.whereintheworld.model.Guess
 import com.swizel.android.whereintheworld.theme.WhereInTheWorldTheme
 import com.swizel.android.whereintheworld.viewmodels.GameOverViewModel
 
 @Immutable
 internal data class GameOverUiState(
-    val gameRounds: List<GameRound>,
+    val gameRoundsWithGuesses: List<Pair<GameRound, Guess?>>,
     val score: Long,
     val signedInToGooglePlay: Boolean,
 )
 
+private const val SCORE_CARD_SIZE_PERCENT = 0.3f
 @Composable
 internal fun GameOverScreen(
     uiState: UiState<GameOverUiState>,
@@ -93,7 +93,7 @@ internal fun GameOverScreen(
         }
 
         BoxWithConstraints(modifier = Modifier.fillMaxSize()) {
-            val overlayHeight = maxHeight * 0.25f
+            val overlayHeight = maxHeight * SCORE_CARD_SIZE_PERCENT
 
             GoogleMap(
                 modifier = Modifier.fillMaxSize(),
@@ -105,7 +105,7 @@ internal fun GameOverScreen(
                 },
                 contentPadding = PaddingValues(bottom = overlayHeight),
             ) {
-                data.gameRounds.forEachIndexed { index, round ->
+                data.gameRoundsWithGuesses.forEachIndexed { index, (round, guess) ->
                     // Always show the actual location pin.
                     val locationPinConfig = PinConfig.builder()
                         .setBackgroundColor(android.graphics.Color.YELLOW)
@@ -116,7 +116,7 @@ internal fun GameOverScreen(
                         pinConfig = locationPinConfig,
                     )
 
-                    round.guess?.let { guess ->
+                    guess?.let {
                         val guessPinConfig = PinConfig.builder()
                             .setBackgroundColor(android.graphics.Color.MAGENTA)
                             .build()
@@ -141,7 +141,7 @@ internal fun GameOverScreen(
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .fillMaxSize(0.25f)
+                    .fillMaxSize(SCORE_CARD_SIZE_PERCENT)
                     .align(Alignment.BottomCenter)
                     .background(Color(0xCC000000))
                     .padding(16.dp)
@@ -155,12 +155,9 @@ internal fun GameOverScreen(
                     color = Color.White,
                 )
 
-                Button(
-                    onClick = {
-                        onAction(GameOverViewModel.Action.PlayAgain)
-                    },
+                AppButton(
+                    onClick = { onAction(GameOverViewModel.Action.PlayAgain) },
                     modifier = Modifier.fillMaxWidth(),
-                    colors = ButtonDefaults.buttonColors().copy(disabledContentColor = Color.White, disabledContainerColor = Color.DarkGray),
                     content = {
                         Text(text = stringResource(id = R.string.play_again))
                     },
@@ -171,28 +168,26 @@ internal fun GameOverScreen(
                     horizontalArrangement = Arrangement.spacedBy(16.dp),
                 ) {
                     val activity = LocalActivity.current
-                    Button(
+                    AppButton(
                         onClick = {
                             activity?.let {
                                 onAction(GameOverViewModel.Action.Leaderboards(activity = it))
                             }
                         },
                         modifier = Modifier.weight(1f),
-                        colors = ButtonDefaults.buttonColors().copy(disabledContentColor = Color.White, disabledContainerColor = Color.DarkGray),
                         enabled = data.signedInToGooglePlay,
                         content = {
                             Text(text = stringResource(id = R.string.leaderboards))
                         },
                     )
 
-                    Button(
+                    AppButton(
                         onClick = {
                             activity?.let {
                                 onAction(GameOverViewModel.Action.Achievements(activity = it))
                             }
                         },
                         modifier = Modifier.weight(1f),
-                        colors = ButtonDefaults.buttonColors().copy(disabledContentColor = Color.White, disabledContainerColor = Color.DarkGray),
                         enabled = data.signedInToGooglePlay,
                         content = {
                             Text(text = stringResource(id = R.string.achievements))
@@ -212,7 +207,7 @@ private fun GameOverScreenPreview() {
             uiState = UiState(
                 isLoading = LoadingType.NOT_LOADING,
                 data = GameOverUiState(
-                    gameRounds = emptyList(),
+                    gameRoundsWithGuesses = emptyList(),
                     score = 0,
                     signedInToGooglePlay = true,
                 ),
