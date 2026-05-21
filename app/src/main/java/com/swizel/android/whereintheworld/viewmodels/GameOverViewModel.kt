@@ -6,6 +6,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.navigation3.runtime.NavKey
 import com.google.android.gms.games.PlayGames
+import com.swizel.android.whereintheworld.Config
 import com.swizel.android.whereintheworld.composables.LoadingType
 import com.swizel.android.whereintheworld.composables.UiState
 import com.swizel.android.whereintheworld.model.GameState
@@ -84,9 +85,9 @@ internal class GameOverViewModel(
 
             is Action.Leaderboards -> {
                 PlayGames.getLeaderboardsClient(action.activity)
-                    .allLeaderboardsIntent
+                    .getLeaderboardIntent(Config.getLeaderboardId(gameState.difficulty))
                     .addOnSuccessListener { intent ->
-                        diagnostics.trackNavigation("All Leaderboards")
+                        diagnostics.trackNavigation("${gameState.difficulty.description} Leaderboard")
                         launchIntent(intent)
                     }
             }

@@ -41,6 +41,7 @@ import com.swizel.android.whereintheworld.R
 import com.swizel.android.whereintheworld.composables.BasicScaffold
 import com.swizel.android.whereintheworld.composables.LoadingType
 import com.swizel.android.whereintheworld.composables.UiState
+import com.swizel.android.whereintheworld.model.GameDifficulty
 import com.swizel.android.whereintheworld.theme.WhereInTheWorldTheme
 import com.swizel.android.whereintheworld.utils.ConsoleLogger
 import com.swizel.android.whereintheworld.viewmodels.StreetViewViewModel
@@ -53,6 +54,7 @@ internal data class StreetViewUiState(
     val timeAllowed: Long,
     val panoramaLatLng: LatLng,
     val landmark: String,
+    val gameDifficulty: GameDifficulty,
 )
 
 @OptIn(MapsExperimentalFeature::class)
@@ -217,6 +219,7 @@ internal fun StreetViewScreen(
                                 textAlign = TextAlign.Center,
                             )
                         },
+                        enabled = data.gameDifficulty != GameDifficulty.EXTREME,
                         modifier = Modifier
                             .safeContentPadding(),
                         onClick = {
@@ -242,6 +245,7 @@ private fun StreetViewScreenPreview() {
                     timeAllowed = 50_000,
                     panoramaLatLng = LatLng(0.0, 0.0),
                     landmark = "Ocean",
+                    gameDifficulty = GameDifficulty.EASY,
                 ),
             ),
             isExpandedWidth = false,

@@ -12,6 +12,7 @@
     <string name="achievements">Achievements</string>
     <string name="leaderboards">Leaderboards</string>
     <string name="leaderboard">Leaderboard</string>
+    <string name="cancel">Cancel</string>
     <string name="btn_guess">Guess the location</string>
     <string name="btn_hint">Hint</string>
     <string name="score">Score: %1$d</string>

@@ -43,7 +43,7 @@ class GameState {
         private set
     var currentTimeTaken: Long = 0
         private set
-    var difficulty: GameDifficulty? = null
+    var difficulty: GameDifficulty = GameDifficulty.EASY
         private set
     var currentHint: Hint = Hint.NONE
         private set

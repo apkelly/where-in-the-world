@@ -30,6 +30,7 @@ internal class StreetViewViewModel(
                 timeAllowed = 50_000, // This should be based on GameDifficulty or read from Remote Config.
                 panoramaLatLng = gameState.gameRounds[gameState.currentRound].panoramaLatLng,
                 landmark = gameState.gameRounds[gameState.currentRound].landmark,
+                gameDifficulty = gameState.difficulty,
             ),
         )
     }

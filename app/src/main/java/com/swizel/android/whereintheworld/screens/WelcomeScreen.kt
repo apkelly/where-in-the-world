@@ -13,15 +13,18 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeContentPadding
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -42,11 +45,18 @@ import com.swizel.android.whereintheworld.model.GameDifficulty
 import com.swizel.android.whereintheworld.theme.WhereInTheWorldTheme
 import com.swizel.android.whereintheworld.viewmodels.WelcomeViewModel
 import kotlinx.coroutines.delay
+import kotlin.time.Duration.Companion.seconds
 
 @Immutable
 internal data class WelcomeUiState(
     val signedInToGooglePlay: Boolean,
 )
+
+private enum class WelcomeGameMode {
+    SOLO,
+    QUICK_CHALLENGE,
+    FRIEND_CHALLENGE,
+}
 
 @Composable
 internal fun WelcomeScreen(
@@ -69,9 +79,10 @@ internal fun WelcomeScreen(
     }
 
     var currentImageIndex by remember { mutableIntStateOf(0) }
+    var selectedGameMode by remember { mutableStateOf<WelcomeGameMode?>(null) }
     LaunchedEffect(Unit) {
         while (true) {
-            delay(4000)
+            delay(4.seconds)
             currentImageIndex = (currentImageIndex + 1) % backgroundDrawables.size
         }
     }
@@ -109,7 +120,7 @@ internal fun WelcomeScreen(
 
                     Button(
                         onClick = {
-                            onAction(WelcomeViewModel.Action.SoloChallenge(gameDifficulty = GameDifficulty.EASY))
+                            selectedGameMode = WelcomeGameMode.SOLO
                         },
                         colors = ButtonDefaults.buttonColors().copy(disabledContentColor = Color.White, disabledContainerColor = Color.DarkGray),
                         content = {
@@ -127,7 +138,7 @@ internal fun WelcomeScreen(
 
                     Button(
                         onClick = {
-                            onAction(WelcomeViewModel.Action.QuickChallenge(gameDifficulty = GameDifficulty.EASY))
+                            selectedGameMode = WelcomeGameMode.QUICK_CHALLENGE
                         },
                         colors = ButtonDefaults.buttonColors().copy(disabledContentColor = Color.White, disabledContainerColor = Color.DarkGray),
                         enabled = data.signedInToGooglePlay,
@@ -146,7 +157,7 @@ internal fun WelcomeScreen(
 
                     Button(
                         onClick = {
-                            onAction(WelcomeViewModel.Action.FriendChallenge(gameDifficulty = GameDifficulty.EASY))
+                            selectedGameMode = WelcomeGameMode.FRIEND_CHALLENGE
                         },
                         colors = ButtonDefaults.buttonColors().copy(disabledContentColor = Color.White, disabledContainerColor = Color.DarkGray),
                         enabled = data.signedInToGooglePlay,
@@ -199,8 +210,73 @@ internal fun WelcomeScreen(
                     },
                 )
             }
+
+            selectedGameMode?.let { gameMode ->
+                GameDifficultyDialog(
+                    onDismissRequest = {
+                        selectedGameMode = null
+                    },
+                    onDifficultySelected = { gameDifficulty ->
+                        selectedGameMode = null
+                        onAction(
+                            when (gameMode) {
+                                WelcomeGameMode.SOLO -> {
+                                    WelcomeViewModel.Action.SoloChallenge(gameDifficulty = gameDifficulty)
+                                }
+                                WelcomeGameMode.QUICK_CHALLENGE -> {
+                                    WelcomeViewModel.Action.QuickChallenge(gameDifficulty = gameDifficulty)
+                                }
+                                WelcomeGameMode.FRIEND_CHALLENGE -> {
+                                    WelcomeViewModel.Action.FriendChallenge(gameDifficulty = gameDifficulty)
+                                }
+                            },
+                        )
+                    },
+                )
+            }
         }
     }
+}
+
+@Composable
+private fun GameDifficultyDialog(
+    onDismissRequest: () -> Unit,
+    onDifficultySelected: (GameDifficulty) -> Unit,
+) {
+    AlertDialog(
+        onDismissRequest = onDismissRequest,
+        title = {
+            Text(text = stringResource(id = R.string.difficulty_dialog_title))
+        },
+        text = {
+            Column {
+                GameDifficulty.entries.forEach { gameDifficulty ->
+                    TextButton(
+                        onClick = {
+                            onDifficultySelected(gameDifficulty)
+                        },
+                        modifier = Modifier.fillMaxWidth(),
+                    ) {
+                        Text(text = gameDifficulty.label())
+                    }
+                }
+            }
+        },
+        confirmButton = {},
+        dismissButton = {
+            TextButton(onClick = onDismissRequest) {
+                Text(text = stringResource(id = R.string.cancel))
+            }
+        },
+    )
+}
+
+@Composable
+private fun GameDifficulty.label(): String = when (this) {
+    GameDifficulty.EASY -> stringResource(id = R.string.difficulty_easy)
+    GameDifficulty.MEDIUM -> stringResource(id = R.string.difficulty_medium)
+    GameDifficulty.HARD -> stringResource(id = R.string.difficulty_hard)
+    GameDifficulty.EXTREME -> stringResource(id = R.string.difficulty_extreme)
 }
 
 @Preview

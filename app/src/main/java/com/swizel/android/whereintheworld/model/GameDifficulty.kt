@@ -1,8 +1,11 @@
 package com.swizel.android.whereintheworld.model
 
-enum class GameDifficulty(val value: Int) {
-    EASY(1),
-    MEDIUM(1),
-    HARD(3),
-    EXTREME(4),
+enum class GameDifficulty(
+    val value: Int,
+    val description: String
+) {
+    EASY(1, "Easy"),
+    MEDIUM(1, "Medium"),
+    HARD(3, "Hard"),
+    EXTREME(4, "Extreme"),
 }
