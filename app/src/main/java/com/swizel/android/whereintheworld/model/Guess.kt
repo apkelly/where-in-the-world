@@ -5,6 +5,8 @@ import com.google.android.gms.maps.model.LatLng
 data class GameRound(
     val panoramaId: String,
     val panoramaLatLng: LatLng,
+    val landmark: String,
+    val country: String,
 ) {
     // Guess can be null if the player runs out of time.
     var guess: Guess? = null

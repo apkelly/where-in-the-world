@@ -46,6 +46,9 @@ fun NavigationHost(
                     GameOverScreenSpec.Content(
                         arguments = key,
                         navigateTo = { route ->
+                            if (route == WelcomeNavKey) {
+                                backStack.clear()
+                            }
                             backStack.add(route)
                         },
                     )

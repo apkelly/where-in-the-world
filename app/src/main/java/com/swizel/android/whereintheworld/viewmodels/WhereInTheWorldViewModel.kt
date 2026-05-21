@@ -1,18 +1,10 @@
 package com.swizel.android.whereintheworld.viewmodels
 
-import android.location.Location
 import androidx.lifecycle.ViewModel
-import com.google.android.gms.maps.model.LatLng
 import com.google.firebase.remoteconfig.FirebaseRemoteConfig
 import com.google.firebase.remoteconfig.FirebaseRemoteConfigSettings
 import com.swizel.android.whereintheworld.BuildConfig
 import com.swizel.android.whereintheworld.R
-import com.swizel.android.whereintheworld.model.GameDifficulty
-import com.swizel.android.whereintheworld.model.GameType
-import com.swizel.android.whereintheworld.model.Guess
-import com.swizel.android.whereintheworld.model.Hint
-import org.json.JSONObject
-import org.json.JSONTokener
 import java.util.*
 import java.util.concurrent.TimeUnit
 
@@ -23,7 +15,7 @@ class WhereInTheWorldViewModel : ViewModel() {
             setConfigSettingsAsync(
                 FirebaseRemoteConfigSettings.Builder()
                     .setMinimumFetchIntervalInSeconds(TimeUnit.MINUTES.toSeconds(10))
-                    .build()
+                    .build(),
             )
         }
         setDefaultsAsync(R.xml.remote_config_defaults)
@@ -61,7 +53,4 @@ class WhereInTheWorldViewModel : ViewModel() {
 //
 //        throw IllegalStateException("Didn't get a location")
 //    }
-
-
-
 }

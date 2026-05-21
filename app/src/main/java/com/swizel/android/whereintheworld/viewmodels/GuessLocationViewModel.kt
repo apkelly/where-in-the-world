@@ -16,7 +16,8 @@ internal class GuessLocationViewModel(
     private val gameState: GameState,
 ) : ViewModel() {
 
-    private val _uiState = MutableStateFlow<UiState<GuessLocationUiState>>(UiState(isLoading = LoadingType.LOADING))
+    private val _uiState =
+        MutableStateFlow<UiState<GuessLocationUiState>>(UiState(isLoading = LoadingType.LOADING))
     val uiState = _uiState.asStateFlow()
 
     fun fetchUiState() {
@@ -30,7 +31,9 @@ internal class GuessLocationViewModel(
     }
 
     sealed class Action {
-        data class GuessLocation(val location: LatLng?, val timeTaken: Long) : Action()
+        data class GuessLocation(
+            val location: LatLng?,
+        ) : Action()
     }
 
     fun onAction(
@@ -39,7 +42,7 @@ internal class GuessLocationViewModel(
     ) {
         when (action) {
             is Action.GuessLocation -> {
-                gameState.setGuessForCurrentRound(action.location, action.timeTaken)
+                gameState.setGuessForCurrentRound(action.location)
                 if (gameState.prepareNextRound()) {
                     navigateTo(StreetViewNavKey)
                 } else {

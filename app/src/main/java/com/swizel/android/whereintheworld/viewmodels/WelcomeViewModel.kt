@@ -9,10 +9,7 @@ import com.google.android.gms.games.PlayGames
 import com.swizel.android.whereintheworld.composables.LoadingType
 import com.swizel.android.whereintheworld.composables.UiState
 import com.swizel.android.whereintheworld.model.GameDifficulty
-import com.swizel.android.whereintheworld.model.GameState
 import com.swizel.android.whereintheworld.model.GameType
-import com.swizel.android.whereintheworld.navigation.GameOverNavKey
-import com.swizel.android.whereintheworld.navigation.GuessLocationNavKey
 import com.swizel.android.whereintheworld.navigation.StreetViewNavKey
 import com.swizel.android.whereintheworld.screens.WelcomeUiState
 import com.swizel.android.whereintheworld.usecases.NewGameUseCase
@@ -92,8 +89,8 @@ internal class WelcomeViewModel(
                     newGameUseCase(
                         NewGameUseCase.Params(
                             GameType.SOLO,
-                            action.gameDifficulty
-                        )
+                            action.gameDifficulty,
+                        ),
                     )
                     navigateTo(StreetViewNavKey)
                 }
@@ -104,8 +101,8 @@ internal class WelcomeViewModel(
                     newGameUseCase(
                         NewGameUseCase.Params(
                             GameType.QUICK_CHALLENGE,
-                            action.gameDifficulty
-                        )
+                            action.gameDifficulty,
+                        ),
                     )
                     navigateTo(StreetViewNavKey)
                 }
@@ -116,8 +113,8 @@ internal class WelcomeViewModel(
                     newGameUseCase(
                         NewGameUseCase.Params(
                             GameType.FRIEND_CHALLENGE,
-                            action.gameDifficulty
-                        )
+                            action.gameDifficulty,
+                        ),
                     )
                     navigateTo(StreetViewNavKey)
                 }

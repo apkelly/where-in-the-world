@@ -27,7 +27,7 @@ internal object GuessLocationScreenSpec : ScreenSpec<GuessLocationNavKey>() {
         val viewModel: GuessLocationViewModel = koinViewModel()
         val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
-        LaunchedEffect(Unit) {
+        LaunchedEffect(arguments) {
             viewModel.fetchUiState()
         }
 

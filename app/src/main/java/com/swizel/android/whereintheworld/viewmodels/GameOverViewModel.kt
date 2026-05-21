@@ -11,6 +11,7 @@ import com.swizel.android.whereintheworld.composables.UiState
 import com.swizel.android.whereintheworld.model.GameState
 import com.swizel.android.whereintheworld.navigation.WelcomeNavKey
 import com.swizel.android.whereintheworld.screens.GameOverUiState
+import com.swizel.android.whereintheworld.utils.ConsoleLogger
 import com.swizel.android.whereintheworld.utils.Diagnostics
 import com.swizel.android.whereintheworld.utils.GoogleClientHelper
 import com.swizel.android.whereintheworld.viewmodels.WelcomeViewModel.Action
@@ -31,6 +32,8 @@ internal class GameOverViewModel(
         activity: Activity,
     ) {
         viewModelScope.launch {
+            ConsoleLogger.d("Game rounds : ${gameState.gameRounds.mapNotNull { it.guess }}")
+
             googleClientHelper.signIn(
                 activity = activity,
                 onSuccess = {

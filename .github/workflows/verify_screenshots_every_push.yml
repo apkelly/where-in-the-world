@@ -1,0 +1,84 @@
+name: Verify screenshots every push
+on:
+  push:
+    branches:
+      - 'task/*'
+  workflow_dispatch:
+
+# Make sure if a new commit is pushed, we cancel any in-progress jobs.
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  screenshot-tests:
+    name: Paparazzi Screenshot Images
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    permissions: write-all
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          lfs: true
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: zulu
+          java-version: 17
+
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v3
+
+      - name: Run screenshot tests
+        id: run-screenshot-tests
+        run: ./gradlew verifyPaparazziDebug --continue -Duser.country=AU -Duser.language=en --no-daemon
+        env:
+          storePassword: ${{ secrets.STORE_PASSWORD }}
+          keyPassword: ${{ secrets.KEY_PASSWORD }}
+          keyAlias: ${{ secrets.KEY_ALIAS }}
+          storeFile: ${{ secrets.STORE_FILE }}
+
+      - name: Upload test reports
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: paparazzi-test-report
+          path: |
+            **/**/ui/build/reports/tests
+            **/**/ui/build/paparazzi/failures
+
+      - name: Record updated screenshot tests
+        if: failure()
+        id: failed-screenshots
+        run: |
+          ./gradlew recordPaparazziDebug --continue -Duser.country=AU -Duser.language=en --no-daemon
+        env:
+          storePassword: ${{ secrets.STORE_PASSWORD }}
+          keyPassword: ${{ secrets.KEY_PASSWORD }}
+          keyAlias: ${{ secrets.KEY_ALIAS }}
+          storeFile: ${{ secrets.STORE_FILE }}
+
+      - name: Create names for updated screenshot branch
+        if: failure()
+        run: |
+          echo "PR_BRANCH=${{ github.head_ref || github.ref_name }}" >> $GITHUB_ENV
+          echo "${{ github.head_ref || github.ref_name }}"|awk '{ print "PR_NEW_BRANCH=paparazzi/updated-screenshots-for-"substr($0, 6); }' >> $GITHUB_ENV
+
+      - name: Create branch and commit new screenshots
+        if: failure()
+        id: auto-commit-action
+        uses: stefanzweifel/git-auto-commit-action@v5
+        with:
+          commit_message: "Auto update screenshots PR"
+          branch: ${{env.PR_NEW_BRANCH}}
+          push_options: '--force'
+          create_branch: true
+
+      - name: Comment PR if screenshot tests failed
+        uses: mshick/add-pr-comment@v2
+        if: always() && steps.auto-commit-action.outputs.changes_detected == 'true'
+        with:
+          allow-repeats: true
+          message: "Screenshot tests failed. \n \n [See differences](https://github.com/stubz-tickets/android-app/compare/${{env.PR_BRANCH}}...${{env.PR_NEW_BRANCH}}) \n \n Merge the branch if it's an intentional change."

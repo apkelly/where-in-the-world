@@ -42,7 +42,6 @@ import com.swizel.android.whereintheworld.composables.BasicScaffold
 import com.swizel.android.whereintheworld.composables.LoadingType
 import com.swizel.android.whereintheworld.composables.UiState
 import com.swizel.android.whereintheworld.model.GameRound
-import com.swizel.android.whereintheworld.model.Guess
 import com.swizel.android.whereintheworld.theme.WhereInTheWorldTheme
 import com.swizel.android.whereintheworld.viewmodels.GameOverViewModel
 

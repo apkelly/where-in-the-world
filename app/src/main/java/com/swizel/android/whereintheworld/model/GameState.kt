@@ -2,9 +2,9 @@ package com.swizel.android.whereintheworld.model
 
 import android.location.Location
 import com.google.android.gms.maps.model.LatLng
-import org.json.JSONObject
+import com.swizel.android.whereintheworld.utils.ConsoleLogger
 import kotlin.random.Random
-import kotlin.uuid.Uuid.Companion.random
+import org.json.JSONObject
 
 class GameState {
 
@@ -18,14 +18,17 @@ class GameState {
         // This is the worst possible distance you can be away with a guessed location.
         private val GREATEST_DISTANCE = distanceBetweenPointsInMeters(np, sp)
 
-        private fun distanceBetweenPointsInMeters(location1: LatLng, location2: LatLng): Float {
+        private fun distanceBetweenPointsInMeters(
+            location1: LatLng,
+            location2: LatLng,
+        ): Float {
             val results = FloatArray(3)
             Location.distanceBetween(
                 location1.latitude,
                 location1.longitude,
                 location2.latitude,
                 location2.longitude,
-                results
+                results,
             )
 
             return results[0]
@@ -38,9 +41,11 @@ class GameState {
         private set
     var currentRound: Int = 0
         private set
-    var remainingStreetViewTimer: Long = 0L
+    var currentTimeTaken: Long = 0
         private set
     var difficulty: GameDifficulty? = null
+        private set
+    var currentHint: Hint = Hint.NONE
         private set
 
     fun newGame(
@@ -51,26 +56,58 @@ class GameState {
         currentRound = -1 // we'll increment this to 0 soon.
         difficulty = gameDifficulty
         numRounds = config.getInt("num_rounds")
-        val allLocations =config.getJSONArray("locations")
+        val allLocations = config.getJSONArray("locations")
 
-        for (i in 0 until numRounds) {
+        while (_gameRounds.size < numRounds) {
             val location = allLocations.getJSONObject(Random.nextInt((allLocations.length())))
-            _gameRounds += GameRound("", LatLng(location.getDouble("lat"), location.getDouble("lon")))
+//            ConsoleLogger.d("location : $location")
+            val currentLandmarks = gameRounds.map { it.landmark }
+            val landmark = location.getString("landmark")
+            val country = location.getString("country")
+            val latLng = LatLng(location.getDouble("lat"), location.getDouble("lon"))
+
+            // Make sure we don't add duplicate locations to game rounds.
+            // TODO: make sure unique number of locations is < numRounds otherwise this loop will never finish.
+            if (!currentLandmarks.contains(landmark)) {
+                _gameRounds += GameRound(
+                    panoramaId = "",
+                    panoramaLatLng = latLng,
+                    landmark = landmark,
+                    country = country,
+                )
+            }
         }
+
+        ConsoleLogger.d("Game Rounds : ${gameRounds.joinToString(",")}")
 
         // Get ready for the first round.
         prepareNextRound()
     }
 
-    fun setGuessForCurrentRound(location: LatLng?, timeTaken: Long, hint: Hint = Hint.NONE) {
+    fun setHintForCurrentRound(
+        hint: Hint,
+    ) {
+        currentHint = hint
+    }
+
+    fun setTimeTakenForCurrentRound(
+        timeTaken: Long,
+    ) {
+        currentTimeTaken = timeTaken
+    }
+
+    fun setGuessForCurrentRound(
+        location: LatLng?,
+    ) {
         location?.let {
-            _gameRounds[currentRound].guess = Guess(location, timeTaken, hint)
+            _gameRounds[currentRound].guess = Guess(location, currentTimeTaken, currentHint)
         }
     }
 
     fun prepareNextRound(): Boolean {
         currentRound++
-        remainingStreetViewTimer = 0L
+        currentHint = Hint.NONE
+        currentTimeTaken = 0
         return currentRound < numRounds
     }
 

@@ -82,7 +82,7 @@ internal fun GuessLocationScreen(
             },
             contentPadding = PaddingValues(vertical = 48.dp), // Google branding & Zoom controls.
             onMapLongClick = { location ->
-                onAction(GuessLocationViewModel.Action.GuessLocation(location = location, 100L))
+                onAction(GuessLocationViewModel.Action.GuessLocation(location = location))
             },
         )
     }

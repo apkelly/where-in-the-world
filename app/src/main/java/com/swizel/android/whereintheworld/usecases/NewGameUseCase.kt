@@ -12,15 +12,17 @@ class NewGameUseCase(
     private val gameState: GameState,
     private val diagnostics: Diagnostics,
     private val remoteConfig: RemoteConfig,
-): SuspendUseCase<NewGameUseCase.Params, Unit>() {
+) : SuspendUseCase<NewGameUseCase.Params, Unit>() {
 
-    override suspend fun run(params: Params) {
+    override suspend fun run(
+        params: Params,
+    ) {
         diagnostics.trackGameStart(
             gameType = params.gameType,
             gameDifficulty = params.gameDifficulty,
         )
 
-        val config = when(params.gameDifficulty) {
+        val config = when (params.gameDifficulty) {
             GameDifficulty.EASY -> {
                 remoteConfig.getStringConfig(RemoteConfigKey.EASY_CONFIG)
             }
@@ -37,7 +39,7 @@ class NewGameUseCase(
 
         gameState.newGame(
             gameDifficulty = params.gameDifficulty,
-            config = JSONObject(config)
+            config = JSONObject(config),
         )
     }
 

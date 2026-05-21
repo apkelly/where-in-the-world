@@ -27,7 +27,7 @@ internal object StreetViewScreenSpec : ScreenSpec<StreetViewNavKey>() {
         val viewModel: StreetViewViewModel = koinViewModel()
         val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
-        LaunchedEffect(Unit) {
+        LaunchedEffect(arguments) {
             viewModel.fetchUiState()
         }
 
