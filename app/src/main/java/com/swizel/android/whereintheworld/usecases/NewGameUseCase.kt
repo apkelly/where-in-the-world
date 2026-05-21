@@ -5,7 +5,6 @@ import com.swizel.android.whereintheworld.model.GameState
 import com.swizel.android.whereintheworld.model.GameType
 import com.swizel.android.whereintheworld.utils.Diagnostics
 import com.swizel.android.whereintheworld.utils.RemoteConfig
-import com.swizel.android.whereintheworld.utils.RemoteConfigKey
 import org.json.JSONObject
 
 class NewGameUseCase(
@@ -22,20 +21,7 @@ class NewGameUseCase(
             gameDifficulty = params.gameDifficulty,
         )
 
-        val config = when (params.gameDifficulty) {
-            GameDifficulty.EASY -> {
-                remoteConfig.getStringConfig(RemoteConfigKey.EASY_CONFIG)
-            }
-            GameDifficulty.MEDIUM -> {
-                remoteConfig.getStringConfig(RemoteConfigKey.MEDIUM_CONFIG)
-            }
-            GameDifficulty.HARD -> {
-                remoteConfig.getStringConfig(RemoteConfigKey.HARD_CONFIG)
-            }
-            GameDifficulty.EXTREME -> {
-                remoteConfig.getStringConfig(RemoteConfigKey.EXTREME_CONFIG)
-            }
-        }
+        val config = remoteConfig.getStringConfig(params.gameDifficulty.remoteConfigKey)
 
         gameState.newGame(
             gameDifficulty = params.gameDifficulty,

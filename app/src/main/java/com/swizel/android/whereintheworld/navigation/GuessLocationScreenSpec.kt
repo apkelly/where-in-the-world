@@ -1,15 +1,22 @@
 package com.swizel.android.whereintheworld.navigation
 
 import androidx.activity.compose.BackHandler
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.res.stringResource
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation3.runtime.NavKey
+import com.swizel.android.whereintheworld.R
 import com.swizel.android.whereintheworld.screens.GuessLocationScreen
 import com.swizel.android.whereintheworld.theme.LocalWindowSizeClass
 import com.swizel.android.whereintheworld.theme.isExpandedWidth
-import com.swizel.android.whereintheworld.utils.ConsoleLogger
 import com.swizel.android.whereintheworld.viewmodels.GuessLocationViewModel
 import kotlinx.serialization.Serializable
 import org.koin.androidx.compose.koinViewModel
@@ -17,7 +24,7 @@ import org.koin.androidx.compose.koinViewModel
 @Serializable
 internal data object GuessLocationNavKey : NavKey
 
-internal object GuessLocationScreenSpec : ScreenSpec<GuessLocationNavKey>() {
+internal object GuessLocationScreenSpec : ScreenSpec<GuessLocationNavKey> {
 
     @Composable
     override fun Content(
@@ -26,14 +33,37 @@ internal object GuessLocationScreenSpec : ScreenSpec<GuessLocationNavKey>() {
     ) {
         val viewModel: GuessLocationViewModel = koinViewModel()
         val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+        var showQuitDialog by remember { mutableStateOf(false) }
 
         LaunchedEffect(arguments) {
             viewModel.fetchUiState()
         }
 
         BackHandler {
-            // TODO: Prompt to exit current game.
-            ConsoleLogger.d("Are you sure you want to quit?")
+            showQuitDialog = true
+        }
+
+        if (showQuitDialog) {
+            AlertDialog(
+                onDismissRequest = { showQuitDialog = false },
+                title = { Text(text = stringResource(R.string.quit_game_title)) },
+                text = { Text(text = stringResource(R.string.quit_game_message)) },
+                confirmButton = {
+                    TextButton(
+                        onClick = {
+                            showQuitDialog = false
+                            navigateTo(WelcomeNavKey)
+                        },
+                    ) {
+                        Text(text = stringResource(R.string.quit_game_confirm))
+                    }
+                },
+                dismissButton = {
+                    TextButton(onClick = { showQuitDialog = false }) {
+                        Text(text = stringResource(R.string.cancel))
+                    }
+                },
+            )
         }
 
         GuessLocationScreen(

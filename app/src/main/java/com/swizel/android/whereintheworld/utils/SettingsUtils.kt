@@ -2,7 +2,6 @@ package com.swizel.android.whereintheworld.utils
 
 import android.content.Context
 import android.content.SharedPreferences
-import android.preference.PreferenceManager
 
 object SettingsUtils {
 
@@ -20,7 +19,13 @@ object SettingsUtils {
 
     private fun getSharedPreferences(
         context: Context,
-    ): SharedPreferences = PreferenceManager.getDefaultSharedPreferences(context.applicationContext)
+    ): SharedPreferences =
+        // Match the default file name used by the (deprecated) PreferenceManager.getDefaultSharedPreferences()
+        // so existing stored preferences are not lost.
+        context.applicationContext.getSharedPreferences(
+            "${context.applicationContext.packageName}_preferences",
+            Context.MODE_PRIVATE,
+        )
 
     fun removePreference(
         context: Context?,

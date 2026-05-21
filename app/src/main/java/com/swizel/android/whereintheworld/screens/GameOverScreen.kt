@@ -93,7 +93,7 @@ internal fun GameOverScreen(
         }
 
         BoxWithConstraints(modifier = Modifier.fillMaxSize()) {
-            val overlayHeight = maxHeight * 0.33f
+            val overlayHeight = maxHeight * 0.25f
 
             GoogleMap(
                 modifier = Modifier.fillMaxSize(),
@@ -141,7 +141,7 @@ internal fun GameOverScreen(
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .fillMaxSize(0.33f)
+                    .fillMaxSize(0.25f)
                     .align(Alignment.BottomCenter)
                     .background(Color(0xCC000000))
                     .padding(16.dp)
@@ -207,7 +207,7 @@ internal fun GameOverScreen(
 @Preview
 @Composable
 private fun GameOverScreenPreview() {
-    MaterialTheme {
+    WhereInTheWorldTheme {
         GameOverScreen(
             uiState = UiState(
                 isLoading = LoadingType.NOT_LOADING,

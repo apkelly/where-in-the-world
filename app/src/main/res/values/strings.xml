@@ -25,6 +25,9 @@
     <string name="difficulty_extreme">Extreme</string>
 
     <string name="hint_dialog_title">Choose a Hint</string>
+    <string name="quit_game_title">Quit game?</string>
+    <string name="quit_game_message">Your current progress will be lost.</string>
+    <string name="quit_game_confirm">Quit</string>
     <string name="hint_dialog_message">Hints reduce the score multiplier for this round. Choose one, or cancel to keep your full score.</string>
     <string name="hint_option">%1$s (%2$s score)</string>
     <string name="hint_revealed">%1$s: %2$s</string>

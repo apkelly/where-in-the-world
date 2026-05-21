@@ -178,7 +178,7 @@ internal fun WelcomeScreen(
 
             Row(
                 modifier = Modifier
-                    .align(Alignment.BottomStart)
+                    .align(Alignment.BottomCenter)
                     .padding(16.dp)
                     .safeContentPadding(),
                 horizontalArrangement = Arrangement.spacedBy(16.dp),

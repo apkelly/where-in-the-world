@@ -18,7 +18,7 @@ import org.koin.androidx.compose.koinViewModel
 @Serializable
 internal data object WelcomeNavKey : NavKey
 
-internal object WelcomeScreenSpec : ScreenSpec<WelcomeNavKey>() {
+internal object WelcomeScreenSpec : ScreenSpec<WelcomeNavKey> {
 
     @Composable
     override fun Content(

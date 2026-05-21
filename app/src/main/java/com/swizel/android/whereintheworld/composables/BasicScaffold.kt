@@ -18,8 +18,13 @@ import androidx.compose.ui.graphics.Color
 import com.swizel.android.whereintheworld.theme.WhereInTheWorldTheme
 import kotlinx.coroutines.delay
 
-@Composable
+// The Scaffold inner padding is intentionally not applied at this level.
+// Each screen composable is responsible for handling its own window-inset padding (systemBarsPadding,
+// safeContentPadding, navigationBarsPadding, etc.) on the individual components that need it.
+// Consuming or applying the inner padding here would either double-apply insets or strip them from
+// child composables entirely — both of which break edge-to-edge layouts on full-screen map screens.
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
+@Composable
 fun <T> BasicScaffold(
     uiState: UiState<T>,
     snackbarHostState: SnackbarHostState = remember { SnackbarHostState() },
@@ -41,7 +46,7 @@ fun <T> BasicScaffold(
             message = data.message,
         )
     },
-    successState: @Composable ColumnScope.(T) -> Unit = { },
+    successState: @Composable ColumnScope.(T) -> Unit,
 ) {
     Scaffold(
         topBar = { },
@@ -54,7 +59,7 @@ fun <T> BasicScaffold(
                 bottomBar?.invoke(data)
             }
         },
-    ) {
+    ) { _ ->
         Column(
             modifier = Modifier
                 .fillMaxSize(),

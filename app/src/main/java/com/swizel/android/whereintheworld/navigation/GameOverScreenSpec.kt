@@ -19,7 +19,7 @@ import org.koin.androidx.compose.koinViewModel
 @Serializable
 internal data object GameOverNavKey : NavKey
 
-internal object GameOverScreenSpec : ScreenSpec<GameOverNavKey>() {
+internal object GameOverScreenSpec : ScreenSpec<GameOverNavKey> {
 
     @Composable
     override fun Content(

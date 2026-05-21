@@ -2,6 +2,7 @@ package com.swizel.android.whereintheworld
 
 import android.os.Bundle
 import androidx.activity.compose.setContent
+import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import com.swizel.android.whereintheworld.navigation.NavigationHost
 import com.swizel.android.whereintheworld.theme.WhereInTheWorldTheme
@@ -16,7 +17,7 @@ class MainActivity : AppCompatActivity() {
         savedInstanceState: Bundle?,
     ) {
         super.onCreate(savedInstanceState)
-
+        enableEdgeToEdge()
         setContent {
             WhereInTheWorldTheme {
                 NavigationHost(
