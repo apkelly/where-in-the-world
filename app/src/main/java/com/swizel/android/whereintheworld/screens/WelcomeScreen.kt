@@ -96,7 +96,7 @@ internal fun WelcomeScreen(
             ) { index ->
                 Image(
                     painter = painterResource(id = backgroundDrawables[index]),
-                    contentDescription = stringResource(id = R.string.cd_welcome_background),
+                    contentDescription = null,
                     modifier = Modifier.fillMaxSize(),
                     contentScale = ContentScale.Crop,
                 )

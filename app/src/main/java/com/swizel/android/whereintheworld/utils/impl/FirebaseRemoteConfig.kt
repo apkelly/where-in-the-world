@@ -6,6 +6,7 @@ import com.google.firebase.remoteconfig.FirebaseRemoteConfigSettings
 import com.google.firebase.remoteconfig.remoteConfig
 import com.swizel.android.whereintheworld.BuildConfig
 import com.swizel.android.whereintheworld.R
+import com.swizel.android.whereintheworld.utils.ConsoleLogger
 import com.swizel.android.whereintheworld.utils.RemoteConfig
 import com.swizel.android.whereintheworld.utils.RemoteConfigKey
 import java.util.concurrent.TimeUnit
@@ -31,18 +32,18 @@ class FirebaseRemoteConfig(
                 setDefaultsAsync(R.xml.remote_config_defaults)
                     .addOnCompleteListener { task ->
                         if (task.isSuccessful) {
-                            println("Defaults Succeeded : ${getString("easy_config")}")
+                            ConsoleLogger.d("Defaults Succeeded : ${getString("easy_config")}")
                         } else {
-                            println("Defaults failed")
+                            ConsoleLogger.d("Defaults failed")
                         }
                     }
             }
             firebaseRemoteConfig.fetchAndActivate()
                 .addOnCompleteListener { task ->
                     if (task.isSuccessful) {
-                        println("Fetch Succeeded : ${firebaseRemoteConfig.getString("easy_config")}")
+                        ConsoleLogger.d("Fetch Succeeded : ${firebaseRemoteConfig.getString("easy_config")}")
                     } else {
-                        println("Fetch failed")
+                        ConsoleLogger.d("Fetch failed")
                     }
                 }
         }

@@ -23,20 +23,20 @@ class BoltInitializationProvider : ContentProvider() {
         selection: String?,
         selectionArgs: Array<out String>?,
     ): Int {
-        TODO("Not needed")
+        return 0
     }
 
     override fun getType(
         uri: Uri,
     ): String? {
-        TODO("Not needed")
+        return null
     }
 
     override fun insert(
         uri: Uri,
         values: ContentValues?,
     ): Uri? {
-        TODO("Not needed")
+        return null
     }
 
     override fun query(
@@ -46,7 +46,7 @@ class BoltInitializationProvider : ContentProvider() {
         selectionArgs: Array<out String>?,
         sortOrder: String?,
     ): Cursor? {
-        TODO("Not needed")
+        return null
     }
 
     override fun update(
@@ -55,6 +55,6 @@ class BoltInitializationProvider : ContentProvider() {
         selection: String?,
         selectionArgs: Array<out String>?,
     ): Int {
-        TODO("Not needed")
+        return 0
     }
 }

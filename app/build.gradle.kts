@@ -40,9 +40,7 @@ dependencies {
 
     // AndroidX
     implementation(libs.androidx.appcompat)
-    implementation(libs.androidx.fragment.ktx)
     implementation(libs.androidx.core.ktx)
-    implementation(libs.androidx.constraintlayout)
     implementation(libs.androidx.navigation3.runtime)
     implementation(libs.androidx.navigation3.ui)
 

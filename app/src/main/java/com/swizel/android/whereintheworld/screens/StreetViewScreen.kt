@@ -21,6 +21,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableLongStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -80,7 +81,7 @@ internal fun StreetViewScreen(
     ) { data ->
         var countdownTextColor by remember(data.currentRound) { mutableStateOf(Color.White) }
         var countdownText by remember(data.currentRound) { mutableStateOf(formatCountdown(data.timeAllowed)) }
-        var remainingMillis by remember(data.currentRound) { mutableStateOf(data.timeAllowed) }
+        var remainingMillis by remember(data.currentRound) { mutableLongStateOf(data.timeAllowed) }
         var streetViewEnabled by remember(data.currentRound) { mutableStateOf(true) }
         var showHintDialog by remember(data.currentRound) { mutableStateOf(false) }
         var revealedHints by remember(data.currentRound) { mutableStateOf(emptySet<Hint>()) }
