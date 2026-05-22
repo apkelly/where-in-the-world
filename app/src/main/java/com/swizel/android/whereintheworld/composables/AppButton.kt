@@ -28,4 +28,3 @@ fun AppButton(
         content = content,
     )
 }
-

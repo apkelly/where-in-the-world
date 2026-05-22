@@ -28,7 +28,6 @@ fun <V> Map<String, V>.toBundle(
             is SizeF -> putSizeF(k, v)
             is Parcelable -> putParcelable(k, v)
             is Serializable -> putSerializable(k, v)
-
             else -> throw IllegalArgumentException("$v is of a type that is not currently supported")
         }
     }

@@ -1,5 +1,5 @@
-import com.android.build.gradle.internal.api.BaseVariantOutputImpl
-import com.android.build.gradle.internal.dsl.BaseAppModuleExtension
+import com.android.build.api.variant.ApplicationAndroidComponentsExtension
+import com.android.build.api.variant.impl.VariantOutputImpl
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.kotlin.dsl.configure
@@ -7,18 +7,22 @@ import org.gradle.kotlin.dsl.configure
 class AndroidApplicationFilenameConventionPlugin : Plugin<Project> {
     override fun apply(target: Project) {
         with(target) {
-            configure<BaseAppModuleExtension> {
-                applicationVariants.all {
-                    val variant = this
+            extensions.configure<ApplicationAndroidComponentsExtension> {
+                onVariants { variant ->
                     variant.outputs
-                        .map { it as BaseVariantOutputImpl }
+                        .filterIsInstance<VariantOutputImpl>()
                         .forEach { output ->
                             // Note: This code doesn't change the names of "bundles", just APK builds :-(
+                            val variantVersionName = variant.outputs.first().versionName.get()
+                            val variantVersionCode = variant.outputs.first().versionCode.get()
 
-                            val versionCode =
-                                if (variant.versionCode != 1) "${variant.versionCode}" else "dev"
-                            output.outputFileName =
-                                "where-in-the-world-${output.baseName}-${variant.versionName} ($versionCode).apk"
+                            val builtType = variantVersionName.split(" ").last()
+                            val versionName = variantVersionName.split(" ").first()
+                            val versionCode = if (variantVersionCode != 1) "$variantVersionCode" else "dev"
+
+                            output.outputFileName.set(
+                                "where-in-the-world-${builtType}-${versionName} ($versionCode).apk"
+                            )
                         }
                 }
             }

@@ -217,9 +217,11 @@ internal fun WelcomeScreen(
                                 WelcomeGameMode.SOLO -> {
                                     WelcomeViewModel.Action.SoloChallenge(gameDifficulty = gameDifficulty)
                                 }
+
                                 WelcomeGameMode.QUICK_CHALLENGE -> {
                                     WelcomeViewModel.Action.QuickChallenge(gameDifficulty = gameDifficulty)
                                 }
+
                                 WelcomeGameMode.FRIEND_CHALLENGE -> {
                                     WelcomeViewModel.Action.FriendChallenge(gameDifficulty = gameDifficulty)
                                 }

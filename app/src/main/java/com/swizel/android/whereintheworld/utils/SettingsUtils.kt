@@ -19,8 +19,7 @@ object SettingsUtils {
 
     private fun getSharedPreferences(
         context: Context,
-    ): SharedPreferences =
-        // Match the default file name used by the (deprecated) PreferenceManager.getDefaultSharedPreferences()
+    ): SharedPreferences = // Match the default file name used by the (deprecated) PreferenceManager.getDefaultSharedPreferences()
         // so existing stored preferences are not lost.
         context.applicationContext.getSharedPreferences(
             "${context.applicationContext.packageName}_preferences",

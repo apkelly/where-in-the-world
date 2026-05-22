@@ -1,7 +1,5 @@
-import com.android.build.gradle.LibraryExtension
-import project.commonLibs
+import com.android.build.api.dsl.LibraryExtension
 import project.configureKotlinAndroid
-import project.configureDependencies
 import project.configureSpotless
 import org.gradle.api.Plugin
 import org.gradle.api.Project
@@ -12,14 +10,11 @@ class AndroidLibraryConventionPlugin : Plugin<Project> {
         with(target) {
             with(pluginManager) {
                 apply("com.android.library")
-                apply("org.jetbrains.kotlin.android")
             }
 
             extensions.configure<LibraryExtension> {
                 configureKotlinAndroid(this)
-                configureDependencies(this)
                 configureSpotless(this)
-                defaultConfig.targetSdk = commonLibs.findVersion("targetSdk").get().toString().toInt()
                 defaultConfig.testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
                 testOptions.animationsDisabled = true
 

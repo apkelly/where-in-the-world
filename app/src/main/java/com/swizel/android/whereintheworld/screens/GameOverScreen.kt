@@ -56,6 +56,7 @@ internal data class GameOverUiState(
 )
 
 private const val SCORE_CARD_SIZE_PERCENT = 0.3f
+
 @Composable
 internal fun GameOverScreen(
     uiState: UiState<GameOverUiState>,

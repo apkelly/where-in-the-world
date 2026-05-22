@@ -1,6 +1,4 @@
-
-
-import com.android.build.gradle.internal.dsl.BaseAppModuleExtension
+import com.android.build.api.dsl.ApplicationExtension
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.kotlin.dsl.configure
@@ -11,7 +9,7 @@ class AndroidApplicationSigningConventionPlugin : Plugin<Project> {
         with(target) {
             val buildProperties = BuildProperties(target)
 
-            configure<BaseAppModuleExtension> {
+            configure<ApplicationExtension> {
                 signingConfigs {
 //                    getByName("debug") {
 //                      storeFile = file("keystore/google_play_upload.keystore")

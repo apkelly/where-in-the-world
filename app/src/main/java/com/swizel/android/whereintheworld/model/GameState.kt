@@ -36,14 +36,14 @@ class GameState {
     private val _gameRounds = mutableListOf<GameRound>()
 
     /** Guesses keyed by round index. Null entry means the player ran out of time for that round. */
-    private val _guesses = mutableMapOf<Int, Guess>()
+    private val guesses = mutableMapOf<Int, Guess>()
 
     val gameRounds: List<GameRound>
         get() = _gameRounds.toList()
 
     /** Each GameRound paired with its Guess (null if the player ran out of time). */
     val gameRoundsWithGuesses: List<Pair<GameRound, Guess?>>
-        get() = _gameRounds.mapIndexed { index, round -> round to _guesses[index] }
+        get() = _gameRounds.mapIndexed { index, round -> round to guesses[index] }
 
     var numRounds: Int = 0
         private set
@@ -61,7 +61,7 @@ class GameState {
         config: JSONObject,
     ) {
         _gameRounds.clear()
-        _guesses.clear()
+        guesses.clear()
         currentRound = -1 // we'll increment this to 0 soon.
         difficulty = gameDifficulty
         numRounds = config.getInt("num_rounds")
@@ -108,7 +108,7 @@ class GameState {
         location: LatLng?,
     ) {
         location?.let {
-            _guesses[currentRound] = Guess(location, currentTimeTaken, currentHint)
+            guesses[currentRound] = Guess(location, currentTimeTaken, currentHint)
         }
     }
 
@@ -123,7 +123,7 @@ class GameState {
         var totalScore = 0f
 
         _gameRounds.forEachIndexed { index, round ->
-            _guesses[index]?.let { guess ->
+            guesses[index]?.let { guess ->
                 val roundScore =
                     GREATEST_DISTANCE - distanceBetweenPointsInMeters(round.panoramaLatLng, guess.guessedLatLng)
                 // If the player had any hints, then we reduce the score accordingly for that round.

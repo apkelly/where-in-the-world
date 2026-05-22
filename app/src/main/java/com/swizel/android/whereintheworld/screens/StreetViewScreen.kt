@@ -106,12 +106,15 @@ internal fun StreetViewScreen(
                 remainingMillis <= 0L -> {
                     Color.Red
                 }
+
                 remainingMillis < quarterTime -> {
                     Color.Red
                 }
+
                 remainingMillis < halfTime -> {
                     Color.Yellow
                 }
+
                 else -> {
                     Color.White
                 }

@@ -5,14 +5,14 @@ import org.gradle.api.Project
 import org.gradle.kotlin.dsl.configure
 
 internal fun Project.configureSpotless(
-    commonExtension: CommonExtension<*, *, *, *, *, *>,
+    commonExtension: CommonExtension,
 ) {
     with(pluginManager) {
         apply(commonLibs.findPlugin("spotless").get().get().pluginId)
     }
 
     commonExtension.apply {
-        lint {
+        lint.apply {
             abortOnError = false
         }
     }

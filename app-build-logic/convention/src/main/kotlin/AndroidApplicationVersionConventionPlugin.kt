@@ -1,4 +1,4 @@
-import com.android.build.gradle.internal.dsl.BaseAppModuleExtension
+import com.android.build.api.dsl.ApplicationExtension
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.kotlin.dsl.configure
@@ -12,7 +12,7 @@ class AndroidApplicationVersionConventionPlugin : Plugin<Project> {
             println("computeVersionCode : $computedVersionCode")
             println("computeVersionName : $computedVersionName")
 
-            configure<BaseAppModuleExtension> {
+            extensions.configure<ApplicationExtension> {
                 defaultConfig {
                     versionCode = computedVersionCode
                     versionName = computedVersionName
@@ -20,7 +20,7 @@ class AndroidApplicationVersionConventionPlugin : Plugin<Project> {
             }
 
             subprojects.forEach {
-                it.configure<BaseAppModuleExtension> {
+                extensions.configure<ApplicationExtension> {
                     defaultConfig {
                         buildConfigField("String", "VERSION_NAME", "\"$computedVersionName\"")
                         buildConfigField("int", "VERSION_CODE", "$computedVersionCode}")

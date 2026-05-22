@@ -60,14 +60,13 @@ internal class StreetViewViewModel(
 
                 navigateTo(GuessLocationNavKey)
             }
+
             is Action.HintRequested -> {
-                val currentRound = gameState.gameRounds[gameState.currentRound]
                 val scoringHint = if (action.hint.multiplier < gameState.currentHint.multiplier) {
                     action.hint
                 } else {
                     gameState.currentHint
                 }
-                ConsoleLogger.d("Hint Requested : ${action.hint} for ${currentRound.landmark}")
                 gameState.setHintForCurrentRound(hint = scoringHint)
                 _uiState.value = _uiState.value.copy(
                     data = _uiState.value.data?.copy(currentHint = scoringHint),

@@ -3,21 +3,21 @@
 # Placed at: gradle/libs.versions.toml
 
 [versions]
-compileSdk = "36"
+compileSdk = "37"
 minSdk = "24"
 targetSdk = "36"
 
 # Build plugins
-android_gradle_version = "8.13.1"
-kotlin_version = "2.2.10"
-ksp_version = "2.2.10-2.0.2"
+android_gradle_version = "9.2.1"
+kotlin_version = "2.3.21"
+ksp_version = "2.3.2"
 googleServices = "4.4.4"
 desugar_jdk_libs_version = "2.1.5"
 
 # AndroidX
 activity_compose_version = "1.13.0"
 appcompat_version = "1.7.1"
-androidx_compose_bom_version = "2025.10.01"
+androidx_compose_bom_version = "2026.05.01"
 fragmentKtx = "1.8.9"
 coreKtx = "1.18.0"
 constraintlayout = "2.2.1"
@@ -42,7 +42,10 @@ firebase_performance_plugin = "2.0.2"
 #firebaseCore = "21.1.1"
 #crashlytics = "2.10.1"
 #firebaseConfig = "23.0.1"
-spotless_plugin_version = "7.2.1"
+spotless_plugin_version = "8.5.1"
+junit_version = "4.13.2"
+mockk_version = "1.14.9"
+coroutines_test_version = "1.11.0"
 
 [libraries]
 build-gradle = { module = "com.android.tools.build:gradle", version.ref = "android_gradle_version" }
@@ -95,6 +98,10 @@ core-library-desugaring = { module = "com.android.tools:desugar_jdk_libs", versi
 # LibraryNavigationConvention
 androidx-navigation3-runtime = { module = "androidx.navigation3:navigation3-runtime", version.ref = "navigation3" }
 androidx-navigation3-ui = { module = "androidx.navigation3:navigation3-ui", version.ref = "navigation3" }
+
+junit4 = { module = "junit:junit", version.ref = "junit_version" }
+mockk = { module = "io.mockk:mockk", version.ref = "mockk_version" }
+kotlinx-coroutines-test = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-test", version.ref = "coroutines_test_version" }
 
 [plugins]
 com-android-application = { id = "com.android.application", version.ref = "android_gradle_version" }
