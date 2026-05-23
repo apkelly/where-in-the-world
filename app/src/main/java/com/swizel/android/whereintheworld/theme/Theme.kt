@@ -9,12 +9,23 @@ import androidx.compose.material3.darkColorScheme
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.ReadOnlyComposable
 import androidx.compose.runtime.compositionLocalOf
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalContext
 import androidx.window.core.layout.WindowSizeClass
 import androidx.window.core.layout.WindowWidthSizeClass
+
+@Immutable
+data class AppColorScheme(
+    val mapOverlayContainer: Color,
+    val mapOverlayStrongContainer: Color,
+    val onMapOverlay: Color,
+    val timerWarning: Color,
+    val timerUrgent: Color,
+    val actualLocationPin: Color,
+    val guessLocationPin: Color,
+)
 
 @Composable
 fun WhereInTheWorldTheme(
@@ -26,20 +37,18 @@ fun WhereInTheWorldTheme(
     } else {
         LightColorScheme
     }
-
-    val context = LocalContext.current
-//    val previewHandler = AsyncImagePreviewHandler {
-//        ContextCompat.getDrawable(context, R.drawable.preview_image)!!.asImage()
-//    }
+    val appColors = if (darkTheme) {
+        DarkAppColorScheme
+    } else {
+        LightAppColorScheme
+    }
 
     CompositionLocalProvider(
-//        LocalAsyncImagePreviewHandler provides previewHandler,
+        LocalAppColorScheme provides appColors,
         LocalWindowSizeClass provides currentWindowAdaptiveInfo().windowSizeClass,
-//        LocalSizes provides StubzSizes(),
     ) {
         MaterialTheme(
             colorScheme = colorScheme,
-//            typography = stubzTypography,
             content = content,
         )
     }
@@ -55,10 +64,19 @@ object WhereInTheWorldTheme {
         @Composable
         @ReadOnlyComposable
         get() = MaterialTheme.typography
+
+    val appColors: AppColorScheme
+        @Composable
+        @ReadOnlyComposable
+        get() = LocalAppColorScheme.current
 }
 
 val LocalWindowSizeClass = compositionLocalOf<WindowSizeClass> {
     error("No LocalWindowSizeClass specified.")
+}
+
+private val LocalAppColorScheme = compositionLocalOf<AppColorScheme> {
+    error("No LocalAppColorScheme specified.")
 }
 
 fun WindowSizeClass.isExpandedWidth(): Boolean = windowWidthSizeClass == WindowWidthSizeClass.EXPANDED
@@ -75,4 +93,24 @@ private val LightColorScheme = lightColorScheme(
     secondary = Color(0xffD6733A),
     tertiary = Color(0xff3ad6c1),
     background = Color.White,
+)
+
+private val DarkAppColorScheme = AppColorScheme(
+    mapOverlayContainer = Color.Black.copy(alpha = 0.72f),
+    mapOverlayStrongContainer = Color.Black.copy(alpha = 0.85f),
+    onMapOverlay = Color.White,
+    timerWarning = Color(0xFFFFD54F),
+    timerUrgent = Color(0xFFFF5252),
+    actualLocationPin = Color(0xFFFFD54F),
+    guessLocationPin = Color(0xFFE040FB),
+)
+
+private val LightAppColorScheme = AppColorScheme(
+    mapOverlayContainer = Color.Black.copy(alpha = 0.72f),
+    mapOverlayStrongContainer = Color.Black.copy(alpha = 0.85f),
+    onMapOverlay = Color.White,
+    timerWarning = Color(0xFFFFC107),
+    timerUrgent = Color(0xFFD32F2F),
+    actualLocationPin = Color(0xFFFFC107),
+    guessLocationPin = Color(0xFF9C27B0),
 )

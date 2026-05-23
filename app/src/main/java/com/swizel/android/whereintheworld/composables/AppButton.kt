@@ -3,12 +3,12 @@ package com.swizel.android.whereintheworld.composables
 import androidx.compose.foundation.layout.RowScope
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 
 /**
- * App-wide standard button that enforces consistent disabled-state colours across all screens.
+ * App-wide standard button that enforces consistent theme-aware disabled-state colours across all screens.
  */
 @Composable
 fun AppButton(
@@ -17,13 +17,14 @@ fun AppButton(
     enabled: Boolean = true,
     content: @Composable RowScope.() -> Unit,
 ) {
+    val colorScheme = MaterialTheme.colorScheme
     Button(
         onClick = onClick,
         modifier = modifier,
         enabled = enabled,
         colors = ButtonDefaults.buttonColors().copy(
-            disabledContentColor = Color.White,
-            disabledContainerColor = Color.DarkGray,
+            disabledContentColor = colorScheme.onSurface.copy(alpha = 0.38f),
+            disabledContainerColor = colorScheme.onSurface.copy(alpha = 0.12f),
         ),
         content = content,
     )

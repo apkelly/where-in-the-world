@@ -31,10 +31,13 @@ fun <T> BasicScaffold(
     backgroundColor: Color = WhereInTheWorldTheme.colorScheme.background,
     loadingState: @Composable ColumnScope.() -> Unit = {
         var showLoading by remember { mutableStateOf(false) }
-        LaunchedEffect(uiState) {
-            // Don't display spinner for short loading durations.
-            delay(500)
-            showLoading = true
+        LaunchedEffect(uiState.isLoading) {
+            showLoading = false
+            if (uiState.isLoading != LoadingType.NOT_LOADING) {
+                // Don't display spinner for short loading durations.
+                delay(500)
+                showLoading = true
+            }
         }
         if (showLoading) {
             UiStateLoading()

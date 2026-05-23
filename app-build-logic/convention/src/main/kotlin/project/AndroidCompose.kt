@@ -22,7 +22,6 @@ internal fun Project.configureAndroidCompose(
             add("debugImplementation", commonLibs.findLibrary("androidx-compose-ui-tooling").get())
 
             add("implementation", commonLibs.findLibrary("androidx.activity.compose").get())
-            add("implementation", commonLibs.findLibrary("androidx.appcompat").get())
             add("implementation", commonLibs.findLibrary("androidx.compose.material3").get())
             add("implementation", commonLibs.findLibrary("androidx.compose.material.iconsExtended").get())
             add("implementation", commonLibs.findLibrary("androidx.compose.ui").get())

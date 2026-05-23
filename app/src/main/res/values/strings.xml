@@ -16,6 +16,8 @@
     <string name="btn_guess">Guess the location</string>
     <string name="btn_hint">Hint</string>
     <string name="score">Score: %1$d</string>
+    <string name="actual_location_marker_title">Location for round %1$d</string>
+    <string name="guess_location_marker_title">Guess for round %1$d</string>
     <string name="difficulty_dialog_title">Select Game Difficulty</string>
     <string name="signin_other_error">There was an issue with sign in. Please try again later.</string>
 
@@ -29,7 +31,7 @@
     <string name="quit_game_message">Your current progress will be lost.</string>
     <string name="quit_game_confirm">Quit</string>
     <string name="hint_dialog_message">Hints reduce the score multiplier for this round. Choose one, or cancel to keep your full score.</string>
-    <string name="hint_option">%1$s (%2$s score)</string>
+    <string name="hint_score_multiplier">%1$s score multiplier</string>
     <string name="hint_revealed">%1$s: %2$s</string>
     <string name="hint_none">No hint</string>
     <string name="hint_country">Country</string>
