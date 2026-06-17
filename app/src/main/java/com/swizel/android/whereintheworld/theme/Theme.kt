@@ -14,7 +14,7 @@ import androidx.compose.runtime.ReadOnlyComposable
 import androidx.compose.runtime.compositionLocalOf
 import androidx.compose.ui.graphics.Color
 import androidx.window.core.layout.WindowSizeClass
-import androidx.window.core.layout.WindowWidthSizeClass
+import androidx.window.core.layout.WindowSizeClass.Companion.WIDTH_DP_EXPANDED_LOWER_BOUND
 
 @Immutable
 data class AppColorScheme(
@@ -79,7 +79,7 @@ private val LocalAppColorScheme = compositionLocalOf<AppColorScheme> {
     error("No LocalAppColorScheme specified.")
 }
 
-fun WindowSizeClass.isExpandedWidth(): Boolean = windowWidthSizeClass == WindowWidthSizeClass.EXPANDED
+fun WindowSizeClass.isExpandedWidth(): Boolean = isWidthAtLeastBreakpoint(WIDTH_DP_EXPANDED_LOWER_BOUND)
 
 private val DarkColorScheme = darkColorScheme(
     primary = Color(0xff3A9DD6),

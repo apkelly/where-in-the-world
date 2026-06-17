@@ -45,6 +45,8 @@ spotless_plugin_version = "8.7.0"
 junit_version = "4.13.2"
 mockk_version = "1.14.11"
 coroutines_test_version = "1.11.0"
+paparazzi_version = "2.0.0-alpha05"
+test_parameter_injection_version = "1.22"
 
 [libraries]
 build-gradle = { module = "com.android.tools.build:gradle", version.ref = "android_gradle_version" }
@@ -52,6 +54,8 @@ jetbrains-kotlin-android = { module = "org.jetbrains.kotlin:kotlin-gradle-plugin
 ksp-gradle-plugin = { module = "com.google.devtools.ksp:com.google.devtools.ksp.gradle.plugin", version.ref = "ksp_version" }
 spotless = { module = "com.diffplug.spotless:spotless-plugin-gradle", version.ref = "spotless_plugin_version" }
 jakewharton-timber = { module = "com.jakewharton.timber:timber", version.ref = "timber_version" }
+paparazzi = { module = "app.cash.paparazzi:paparazzi", version.ref = "paparazzi_version" }
+google-test-parameter-injector = { module = "com.google.testparameterinjector:test-parameter-injector", version.ref = "test_parameter_injection_version" }
 
 # AndroidX core stack
 androidx-fragment-ktx = { module = "androidx.fragment:fragment-ktx", version.ref = "fragmentKtx" }
@@ -111,6 +115,7 @@ google-services = { id = "com.google.gms.google-services", version.ref = "google
 firebase-crashlytics = { id = "com.google.firebase.crashlytics", version.ref = "firebase_crashlytics_plugin" }
 firebase-performance = { id = "com.google.firebase.firebase-perf", version.ref = "firebase_performance_plugin" }
 spotless = { id = "com.diffplug.spotless", version.ref = "spotless_plugin_version" }
+app-cash-paparazzi = { id = "app.cash.paparazzi", version.ref = "paparazzi_version" }
 
 app-android-application = { id = "com.swizel.android.plugins.android.application" }
 app-android-application-compose = { id = "com.swizel.android.plugins.android.application.compose" }

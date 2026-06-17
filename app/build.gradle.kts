@@ -10,6 +10,7 @@ plugins {
     alias(libs.plugins.firebase.crashlytics)
     alias(libs.plugins.firebase.performance)
     alias(libs.plugins.org.jetbrains.kotlin.plugin.serialization)
+    alias(libs.plugins.app.cash.paparazzi)
 }
 
 val buildProperties = BuildProperties(project)
@@ -58,4 +59,8 @@ dependencies {
     implementation(libs.google.firebase.crashlytics)
     implementation(libs.google.firebase.performance)
     implementation(libs.google.firebase.remoteconfig)
+
+    // Testing
+    testImplementation(libs.google.test.parameter.injector)
+
 }
