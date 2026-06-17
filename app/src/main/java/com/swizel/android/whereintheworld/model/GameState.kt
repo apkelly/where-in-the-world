@@ -2,6 +2,8 @@ package com.swizel.android.whereintheworld.model
 
 import android.location.Location
 import com.google.android.gms.maps.model.LatLng
+import kotlin.math.exp
+import kotlin.math.roundToLong
 import com.swizel.android.whereintheworld.utils.ConsoleLogger
 import kotlin.random.Random
 import kotlin.time.Duration
@@ -10,12 +12,8 @@ import org.json.JSONObject
 class GameState {
 
     companion object {
-        private val np = LatLng(90.0, 0.0)
-        private val sp = LatLng(-90.0, 0.0)
-
-        // Greatest distance between 2 points seems to be North Pole and South Pole (not East/West).
-        // This is the worst possible distance you can be away with a guessed location.
-        private val GREATEST_DISTANCE = distanceBetweenPointsInMeters(np, sp)
+        private const val MAX_ROUND_POINTS = 5000.0
+        private const val DISTANCE_DECAY_KILOMETERS = 1500.0
 
         private fun distanceBetweenPointsInMeters(
             location1: LatLng,
@@ -31,6 +29,15 @@ class GameState {
             )
 
             return results[0]
+        }
+
+        internal fun calculateRoundScore(
+            distanceMeters: Double,
+            hint: Hint,
+        ): Long {
+            val distanceKilometers = distanceMeters / 1000.0
+            val baseScore = MAX_ROUND_POINTS * exp(-distanceKilometers / DISTANCE_DECAY_KILOMETERS)
+            return (baseScore * hint.multiplier).roundToLong()
         }
     }
 
@@ -120,18 +127,17 @@ class GameState {
     }
 
     fun calculateScore(): Long {
-        var totalScore = 0f
+        var totalScore = 0L
 
         _gameRounds.forEachIndexed { index, round ->
             guesses[index]?.let { guess ->
-                val roundScore =
-                    GREATEST_DISTANCE - distanceBetweenPointsInMeters(round.panoramaLatLng, guess.guessedLatLng)
-                // If the player had any hints, then we reduce the score accordingly for that round.
-                totalScore += (roundScore * guess.hint.multiplier)
+                totalScore += calculateRoundScore(
+                    distanceMeters = distanceBetweenPointsInMeters(round.panoramaLatLng, guess.guessedLatLng).toDouble(),
+                    hint = guess.hint,
+                )
             }
         }
 
-        // Convert score from meters to kilometers.
-        return totalScore.toLong() / 1000
+        return totalScore
     }
 }
