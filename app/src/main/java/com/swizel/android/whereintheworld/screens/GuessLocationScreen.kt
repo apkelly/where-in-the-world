@@ -8,9 +8,6 @@ import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.LaunchedEffect
@@ -37,7 +34,7 @@ import com.google.maps.android.compose.GoogleMap
 import com.google.maps.android.compose.MapProperties
 import com.google.maps.android.compose.MapType
 import com.google.maps.android.compose.MapUiSettings
-import com.google.maps.android.compose.MarkerInfoWindowContent
+import com.google.maps.android.compose.Marker
 import com.google.maps.android.compose.rememberCameraPositionState
 import com.google.maps.android.compose.rememberUpdatedMarkerState
 import com.swizel.android.whereintheworld.BuildConfig
@@ -165,11 +162,13 @@ internal fun GuessLocationScreen(
                     markerState.showInfoWindow()
                 }
 
-                MarkerInfoWindowContent(
+                Marker(
                     state = markerState,
                     anchor = Offset(Config.MAP_GUESS_H_ANCHOR, markerAnchorY.value),
                     icon = markerIcon,
                     infoWindowAnchor = Offset(Config.MAP_INFO_H_ANCHOR, Config.MAP_INFO_V_ANCHOR),
+                    title = if (pin.isTutorial) null else snippet,
+                    snippet = if (pin.isTutorial) snippet else null,
                     onClick = { marker ->
                         marker.showInfoWindow()
                         true
@@ -179,13 +178,7 @@ internal fun GuessLocationScreen(
                             onAction(GuessLocationViewModel.Action.GuessLocation(location = pin.position))
                         }
                     },
-                ) {
-                    Text(
-                        text = snippet,
-                        color = MaterialTheme.colorScheme.onSurface,
-                        modifier = Modifier.padding(8.dp),
-                    )
-                }
+                )
             }
         }
     }
