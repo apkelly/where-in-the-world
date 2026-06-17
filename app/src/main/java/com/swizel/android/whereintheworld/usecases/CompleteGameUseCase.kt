@@ -16,7 +16,9 @@ class CompleteGameUseCase(
         val score = gameSessionRepository.calculateScore()
         val roundResults = gameSessionRepository.gameRoundResults
         val missedRounds = roundResults.count { it.guess == null }
-        val hintsUsed = roundResults.count { result -> result.guess?.hint?.multiplier != 1f }
+        val hintsUsed = roundResults.count { result ->
+            result.guess?.hint?.multiplier?.let { it != 1f } == true
+        }
 
         diagnostics.trackGameEnd()
         diagnostics.trackScore(score = score)
