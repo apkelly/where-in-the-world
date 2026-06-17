@@ -4,7 +4,6 @@ import android.content.Context
 import android.graphics.Canvas
 import android.view.animation.BounceInterpolator
 import androidx.annotation.DrawableRes
-import androidx.appcompat.content.res.AppCompatResources
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.layout.PaddingValues
@@ -26,6 +25,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.core.content.ContextCompat
 import androidx.core.graphics.createBitmap
 import com.google.android.gms.maps.GoogleMapOptions
 import com.google.android.gms.maps.MapsInitializer
@@ -97,27 +97,23 @@ internal fun GuessLocationScreen(
         val markerIcon = remember(context) {
             bitmapDescriptorFromVectorDrawable(context, R.drawable.ic_action_pin)
         }
-        var mapProperties by remember {
-            mutableStateOf(
-                MapProperties(
-                    maxZoomPreference = 15f,
-                    minZoomPreference = 2f,
-                    mapType = MapType.SATELLITE,
-                ),
+        val mapProperties = remember {
+            MapProperties(
+                maxZoomPreference = 15f,
+                minZoomPreference = 2f,
+                mapType = MapType.SATELLITE,
             )
         }
 
-        var mapUiSettings by remember {
-            mutableStateOf(
-                MapUiSettings(
-                    mapToolbarEnabled = false,
-                    tiltGesturesEnabled = false,
-                    rotationGesturesEnabled = false,
-                    compassEnabled = false,
-                    zoomControlsEnabled = true,
-                    zoomGesturesEnabled = true,
-                    myLocationButtonEnabled = false,
-                ),
+        val mapUiSettings = remember {
+            MapUiSettings(
+                mapToolbarEnabled = false,
+                tiltGesturesEnabled = false,
+                rotationGesturesEnabled = false,
+                compassEnabled = false,
+                zoomControlsEnabled = true,
+                zoomGesturesEnabled = true,
+                myLocationButtonEnabled = false,
             )
         }
 
@@ -199,7 +195,7 @@ private fun bitmapDescriptorFromVectorDrawable(
     context: Context,
     @DrawableRes drawableId: Int,
 ): BitmapDescriptor? {
-    val drawable = AppCompatResources.getDrawable(context, drawableId) ?: return null
+    val drawable = ContextCompat.getDrawable(context, drawableId) ?: return null
     val bitmap = createBitmap(drawable.intrinsicWidth, drawable.intrinsicHeight)
     val canvas = Canvas(bitmap)
     drawable.setBounds(0, 0, canvas.width, canvas.height)

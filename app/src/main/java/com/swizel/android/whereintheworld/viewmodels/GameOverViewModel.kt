@@ -9,31 +9,32 @@ import com.google.android.gms.games.PlayGames
 import com.swizel.android.whereintheworld.Config
 import com.swizel.android.whereintheworld.composables.LoadingType
 import com.swizel.android.whereintheworld.composables.UiState
-import com.swizel.android.whereintheworld.model.GameState
 import com.swizel.android.whereintheworld.navigation.WelcomeNavKey
 import com.swizel.android.whereintheworld.screens.GameOverUiState
-import com.swizel.android.whereintheworld.utils.ConsoleLogger
+import com.swizel.android.whereintheworld.usecases.CompleteGameUseCase
+import com.swizel.android.whereintheworld.usecases.GetCurrentGameDifficultyUseCase
 import com.swizel.android.whereintheworld.utils.Diagnostics
 import com.swizel.android.whereintheworld.utils.GoogleClientHelper
-import com.swizel.android.whereintheworld.viewmodels.WelcomeViewModel.Action
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 
 internal class GameOverViewModel(
     private val diagnostics: Diagnostics,
-    private val gameState: GameState,
+    private val completeGameUseCase: CompleteGameUseCase,
+    private val getCurrentGameDifficultyUseCase: GetCurrentGameDifficultyUseCase,
     private val googleClientHelper: GoogleClientHelper,
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow<UiState<GameOverUiState>>(UiState(isLoading = LoadingType.LOADING))
     val uiState = _uiState.asStateFlow()
+    private var completionResult: CompleteGameUseCase.Result? = null
 
     fun fetchUiState(
         activity: Activity,
     ) {
         viewModelScope.launch {
-            ConsoleLogger.d("Game rounds : ${gameState.gameRoundsWithGuesses.mapNotNull { it.second }}")
+            val completedGame = completionResult ?: completeGameUseCase(Unit).also { completionResult = it }
 
             googleClientHelper.signIn(
                 activity = activity,
@@ -41,8 +42,8 @@ internal class GameOverViewModel(
                     _uiState.value = UiState(
                         isLoading = LoadingType.NOT_LOADING,
                         data = GameOverUiState(
-                            gameRoundsWithGuesses = gameState.gameRoundsWithGuesses,
-                            score = gameState.calculateScore(),
+                            roundResults = completedGame.roundResults,
+                            score = completedGame.score,
                             signedInToGooglePlay = true,
                         ),
                     )
@@ -51,8 +52,8 @@ internal class GameOverViewModel(
                     _uiState.value = UiState(
                         isLoading = LoadingType.NOT_LOADING,
                         data = GameOverUiState(
-                            gameRoundsWithGuesses = gameState.gameRoundsWithGuesses,
-                            score = gameState.calculateScore(),
+                            roundResults = completedGame.roundResults,
+                            score = completedGame.score,
                             signedInToGooglePlay = false,
                         ),
                     )
@@ -84,12 +85,15 @@ internal class GameOverViewModel(
             }
 
             is Action.Leaderboards -> {
-                PlayGames.getLeaderboardsClient(action.activity)
-                    .getLeaderboardIntent(Config.getLeaderboardId(gameState.difficulty))
-                    .addOnSuccessListener { intent ->
-                        diagnostics.trackNavigation("${gameState.difficulty.description} Leaderboard")
-                        launchIntent(intent)
-                    }
+                viewModelScope.launch {
+                    val difficulty = getCurrentGameDifficultyUseCase(Unit)
+                    PlayGames.getLeaderboardsClient(action.activity)
+                        .getLeaderboardIntent(Config.getLeaderboardId(difficulty))
+                        .addOnSuccessListener { intent ->
+                            diagnostics.trackNavigation("${difficulty.description} Leaderboard")
+                            launchIntent(intent)
+                        }
+                }
             }
 
             is Action.Achievements -> {

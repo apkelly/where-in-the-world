@@ -1,6 +1,7 @@
 package com.swizel.android.whereintheworld.model
 
 import com.google.android.gms.maps.model.LatLng
+import kotlin.time.Duration
 
 data class GameRound(
     val panoramaId: String,
@@ -11,8 +12,13 @@ data class GameRound(
 
 data class Guess(
     val guessedLatLng: LatLng,
-    val guessTime: Long,
+    val guessTime: Duration,
     val hint: Hint = Hint.NONE,
+)
+
+data class GameRoundResult(
+    val round: GameRound,
+    val guess: Guess?,
 )
 
 enum class Hint(val multiplier: Float) {

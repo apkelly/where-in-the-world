@@ -4,6 +4,7 @@ import android.location.Location
 import com.google.android.gms.maps.model.LatLng
 import com.swizel.android.whereintheworld.utils.ConsoleLogger
 import kotlin.random.Random
+import kotlin.time.Duration
 import org.json.JSONObject
 
 class GameState {
@@ -42,14 +43,14 @@ class GameState {
         get() = _gameRounds.toList()
 
     /** Each GameRound paired with its Guess (null if the player ran out of time). */
-    val gameRoundsWithGuesses: List<Pair<GameRound, Guess?>>
-        get() = _gameRounds.mapIndexed { index, round -> round to guesses[index] }
+    val gameRoundResults: List<GameRoundResult>
+        get() = _gameRounds.mapIndexed { index, round -> GameRoundResult(round = round, guess = guesses[index]) }
 
     var numRounds: Int = 0
         private set
     var currentRound: Int = 0
         private set
-    var currentTimeTaken: Long = 0
+    var currentTimeTaken: Duration = Duration.ZERO
         private set
     var difficulty: GameDifficulty = GameDifficulty.EASY
         private set
@@ -65,26 +66,25 @@ class GameState {
         currentRound = -1 // we'll increment this to 0 soon.
         difficulty = gameDifficulty
         numRounds = config.getInt("num_rounds")
-        val allLocations = config.getJSONArray("locations")
-
-        while (_gameRounds.size < numRounds) {
-            val location = allLocations.getJSONObject(Random.nextInt((allLocations.length())))
-            val currentLandmarks = gameRounds.map { it.landmark }
-            val landmark = location.getString("landmark")
-            val country = location.getString("country")
-            val latLng = LatLng(location.getDouble("lat"), location.getDouble("lon"))
-
-            // Make sure we don't add duplicate locations to game rounds.
-            // TODO: make sure unique number of locations is < numRounds otherwise this loop will never finish.
-            if (!currentLandmarks.contains(landmark)) {
-                _gameRounds += GameRound(
+        val uniqueLocations = config.getJSONArray("locations")
+            .let { locations ->
+                List(locations.length()) { index -> locations.getJSONObject(index) }
+            }
+            .map { location ->
+                GameRound(
                     panoramaId = "",
-                    panoramaLatLng = latLng,
-                    landmark = landmark,
-                    country = country,
+                    panoramaLatLng = LatLng(location.getDouble("lat"), location.getDouble("lon")),
+                    landmark = location.getString("landmark"),
+                    country = location.getString("country"),
                 )
             }
+            .distinctBy { it.landmark }
+
+        require(uniqueLocations.size >= numRounds) {
+            "Game config has ${uniqueLocations.size} unique landmarks but requires $numRounds rounds."
         }
+
+        _gameRounds += uniqueLocations.shuffled(Random).take(numRounds)
 
         ConsoleLogger.d("Game Rounds : ${gameRounds.joinToString(",")}")
 
@@ -99,7 +99,7 @@ class GameState {
     }
 
     fun setTimeTakenForCurrentRound(
-        timeTaken: Long,
+        timeTaken: Duration,
     ) {
         currentTimeTaken = timeTaken
     }
@@ -115,7 +115,7 @@ class GameState {
     fun prepareNextRound(): Boolean {
         currentRound++
         currentHint = Hint.NONE
-        currentTimeTaken = 0
+        currentTimeTaken = Duration.ZERO
         return currentRound < numRounds
     }
 

@@ -11,10 +11,13 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeContentPadding
 import androidx.compose.foundation.layout.systemBarsPadding
+import androidx.compose.foundation.selection.selectable
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.QuestionMark
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Icon
+import androidx.compose.material3.ListItem
+import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
@@ -26,9 +29,9 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -49,6 +52,7 @@ import com.swizel.android.whereintheworld.theme.WhereInTheWorldTheme
 import com.swizel.android.whereintheworld.viewmodels.StreetViewViewModel
 import java.util.Locale
 import java.util.concurrent.TimeUnit
+import kotlin.time.Duration
 import kotlin.time.Duration.Companion.milliseconds
 import kotlinx.coroutines.delay
 
@@ -56,7 +60,7 @@ import kotlinx.coroutines.delay
 internal data class StreetViewUiState(
     val numRounds: Int,
     val currentRound: Int,
-    val timeAllowed: Long,
+    val timeAllowed: Duration,
     val panoramaLatLng: LatLng,
     val landmark: String,
     val country: String,
@@ -79,9 +83,11 @@ internal fun StreetViewScreen(
     BasicScaffold(
         uiState = uiState,
     ) { data ->
-        var countdownTextColor by remember(data.currentRound) { mutableStateOf(Color.White) }
-        var countdownText by remember(data.currentRound) { mutableStateOf(formatCountdown(data.timeAllowed)) }
-        var remainingMillis by remember(data.currentRound) { mutableLongStateOf(data.timeAllowed) }
+        val appColors = WhereInTheWorldTheme.appColors
+        val timeAllowedMillis = data.timeAllowed.inWholeMilliseconds
+        var countdownTextColor by remember(data.currentRound, appColors) { mutableStateOf(appColors.onMapOverlay) }
+        var countdownText by remember(data.currentRound) { mutableStateOf(formatCountdown(timeAllowedMillis)) }
+        var remainingMillis by remember(data.currentRound) { mutableLongStateOf(timeAllowedMillis) }
         var streetViewEnabled by remember(data.currentRound) { mutableStateOf(true) }
         var showHintDialog by remember(data.currentRound) { mutableStateOf(false) }
         var revealedHints by remember(data.currentRound) { mutableStateOf(emptySet<Hint>()) }
@@ -98,25 +104,25 @@ internal fun StreetViewScreen(
             }
         }
 
-        LaunchedEffect(remainingMillis, data.timeAllowed) {
-            val halfTime = data.timeAllowed / 2
-            val quarterTime = data.timeAllowed / 4
+        LaunchedEffect(remainingMillis, timeAllowedMillis) {
+            val halfTime = timeAllowedMillis / 2
+            val quarterTime = timeAllowedMillis / 4
 
             countdownTextColor = when {
                 remainingMillis <= 0L -> {
-                    Color.Red
+                    appColors.timerUrgent
                 }
 
                 remainingMillis < quarterTime -> {
-                    Color.Red
+                    appColors.timerUrgent
                 }
 
                 remainingMillis < halfTime -> {
-                    Color.Yellow
+                    appColors.timerWarning
                 }
 
                 else -> {
-                    Color.White
+                    appColors.onMapOverlay
                 }
             }
 
@@ -171,7 +177,7 @@ internal fun StreetViewScreen(
                     Row(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .background(Color(0x66000000))
+                            .background(appColors.mapOverlayContainer)
                             .padding(horizontal = 16.dp),
                         horizontalArrangement = Arrangement.SpaceBetween,
                     ) {
@@ -187,7 +193,7 @@ internal fun StreetViewScreen(
                             modifier = Modifier
                                 .systemBarsPadding(),
                             style = WhereInTheWorldTheme.typography.headlineLarge,
-                            color = Color.White,
+                            color = appColors.onMapOverlay,
                         )
                     }
 
@@ -201,10 +207,10 @@ internal fun StreetViewScreen(
                                     hint.value,
                                 ),
                                 style = WhereInTheWorldTheme.typography.bodyLarge,
-                                color = Color.White,
+                                color = appColors.onMapOverlay,
                                 modifier = Modifier
                                     .fillMaxWidth()
-                                    .background(Color(0x99000000))
+                                    .background(appColors.mapOverlayStrongContainer)
                                     .padding(horizontal = 16.dp, vertical = 8.dp),
                             )
                         }
@@ -217,7 +223,6 @@ internal fun StreetViewScreen(
                         content = {
                             Icon(
                                 painter = painterResource(id = R.drawable.ic_action_map),
-                                tint = Color.White,
                                 contentDescription = null,
                             )
                             Text(
@@ -230,7 +235,7 @@ internal fun StreetViewScreen(
                             .weight(1f)
                             .safeContentPadding(),
                         onClick = {
-                            onAction(StreetViewViewModel.Action.GuessLocation(data.timeAllowed - remainingMillis))
+                            onAction(StreetViewViewModel.Action.GuessLocation((timeAllowedMillis - remainingMillis).milliseconds))
                         },
                     )
 
@@ -238,7 +243,6 @@ internal fun StreetViewScreen(
                         content = {
                             Icon(
                                 imageVector = Icons.Filled.QuestionMark,
-                                tint = Color.White,
                                 contentDescription = null,
                             )
                             Text(
@@ -287,20 +291,32 @@ private fun HintSelectionDialog(
                 Text(text = stringResource(id = R.string.hint_dialog_message))
 
                 Hint.entries.filter { it != Hint.NONE }.forEach { hint ->
-                    TextButton(
-                        onClick = {
-                            onHintSelected(hint)
+                    ListItem(
+                        headlineContent = {
+                            Text(text = hint.label())
                         },
-                        modifier = Modifier.fillMaxWidth(),
-                    ) {
-                        Text(
-                            text = stringResource(
-                                id = R.string.hint_option,
-                                hint.label(),
-                                hint.multiplierText(),
+                        supportingContent = {
+                            Text(
+                                text = stringResource(
+                                    id = R.string.hint_score_multiplier,
+                                    hint.multiplierText(),
+                                ),
+                            )
+                        },
+                        leadingContent = {
+                            RadioButton(
+                                selected = false,
+                                onClick = null,
+                            )
+                        },
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .selectable(
+                                selected = false,
+                                onClick = { onHintSelected(hint) },
+                                role = Role.RadioButton,
                             ),
-                        )
-                    }
+                    )
                 }
             }
         },
@@ -351,7 +367,7 @@ private fun StreetViewScreenPreview() {
                 data = StreetViewUiState(
                     numRounds = 5,
                     currentRound = 1,
-                    timeAllowed = 50_000,
+                    timeAllowed = 50_000.milliseconds,
                     panoramaLatLng = LatLng(0.0, 0.0),
                     landmark = "Ocean",
                     country = "Atlantis",

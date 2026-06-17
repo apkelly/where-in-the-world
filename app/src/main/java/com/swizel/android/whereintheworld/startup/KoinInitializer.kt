@@ -3,7 +3,15 @@ package com.swizel.android.whereintheworld.startup
 import android.content.Context
 import com.github.apkelly.bolt.startup.BoltInitializer
 import com.swizel.android.whereintheworld.model.GameState
+import com.swizel.android.whereintheworld.repositories.GameSessionRepository
+import com.swizel.android.whereintheworld.usecases.CompleteGameUseCase
+import com.swizel.android.whereintheworld.usecases.GetCurrentGameDifficultyUseCase
+import com.swizel.android.whereintheworld.usecases.GetCurrentRoundProgressUseCase
+import com.swizel.android.whereintheworld.usecases.GetCurrentRoundUseCase
 import com.swizel.android.whereintheworld.usecases.NewGameUseCase
+import com.swizel.android.whereintheworld.usecases.RecordStreetViewTimeUseCase
+import com.swizel.android.whereintheworld.usecases.RequestHintUseCase
+import com.swizel.android.whereintheworld.usecases.SubmitGuessUseCase
 import com.swizel.android.whereintheworld.utils.ConsoleLogger
 import com.swizel.android.whereintheworld.utils.Diagnostics
 import com.swizel.android.whereintheworld.utils.GoogleClientHelper
@@ -44,7 +52,15 @@ class KoinInitializer : BoltInitializer {
                         single<RemoteConfig> { FirebaseRemoteConfig() }
                         single { GoogleClientHelper(context) }
                         single { GameState() }
+                        single { GameSessionRepository(get()) }
+                        factoryOf(::CompleteGameUseCase)
+                        factoryOf(::GetCurrentGameDifficultyUseCase)
+                        factoryOf(::GetCurrentRoundProgressUseCase)
+                        factoryOf(::GetCurrentRoundUseCase)
                         factoryOf(::NewGameUseCase)
+                        factoryOf(::RecordStreetViewTimeUseCase)
+                        factoryOf(::RequestHintUseCase)
+                        factoryOf(::SubmitGuessUseCase)
                     },
                 )
             }
