@@ -28,6 +28,7 @@ import androidx.compose.runtime.mutableLongStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -39,7 +40,7 @@ import com.google.android.gms.maps.StreetViewPanoramaOptions
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.StreetViewSource
 import com.google.maps.android.compose.streetview.StreetView
-import com.google.maps.android.compose.streetview.rememberStreetViewCameraPositionState
+import com.google.maps.android.compose.streetview.StreetViewCameraPositionState
 import com.google.maps.android.ktx.MapsExperimentalFeature
 import com.swizel.android.whereintheworld.R
 import com.swizel.android.whereintheworld.composables.AppButton
@@ -55,6 +56,8 @@ import java.util.concurrent.TimeUnit
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.milliseconds
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.filter
+import kotlinx.coroutines.flow.first
 
 @Immutable
 internal data class StreetViewUiState(
@@ -88,11 +91,15 @@ internal fun StreetViewScreen(
         var countdownTextColor by remember(data.currentRound, appColors) { mutableStateOf(appColors.onMapOverlay) }
         var countdownText by remember(data.currentRound) { mutableStateOf(formatCountdown(timeAllowedMillis)) }
         var remainingMillis by remember(data.currentRound) { mutableLongStateOf(timeAllowedMillis) }
-        var streetViewEnabled by remember(data.currentRound) { mutableStateOf(true) }
+        var streetViewEnabled by remember(data.currentRound) { mutableStateOf(false) }
         var showHintDialog by remember(data.currentRound) { mutableStateOf(false) }
         var revealedHints by remember(data.currentRound) { mutableStateOf(emptySet<Hint>()) }
+        var panoramaLoaded by remember(data.currentRound, data.panoramaLatLng) { mutableStateOf(false) }
 
-        LaunchedEffect(data.currentRound, data.timeAllowed, showHintDialog) {
+        LaunchedEffect(data.currentRound, data.timeAllowed, panoramaLoaded, showHintDialog) {
+            if (!panoramaLoaded) {
+                return@LaunchedEffect
+            }
             var lastTickMillis = SystemClock.elapsedRealtime()
             while (remainingMillis > 0L) {
                 delay(10.milliseconds)
@@ -127,7 +134,7 @@ internal fun StreetViewScreen(
             }
 
             countdownText = formatCountdown(remainingMillis)
-            streetViewEnabled = remainingMillis > 0L
+            streetViewEnabled = panoramaLoaded && remainingMillis > 0L
         }
 
         LaunchedEffect(data.currentHint) {
@@ -139,7 +146,9 @@ internal fun StreetViewScreen(
         Box(
             modifier = Modifier.fillMaxSize(),
         ) {
-            val cameraPositionState = rememberStreetViewCameraPositionState()
+            val cameraPositionState = remember(data.currentRound, data.panoramaLatLng) {
+                StreetViewCameraPositionState()
+            }
             // OUTDOOR + tiny radius can yield no panorama on some coordinates, this causes app crashes.
             val streetViewRadiusMeters = 200
             val streetViewSource = StreetViewSource.OUTDOOR
@@ -150,6 +159,13 @@ internal fun StreetViewScreen(
                     streetViewRadiusMeters,
                     streetViewSource,
                 )
+            }
+
+            LaunchedEffect(cameraPositionState) {
+                snapshotFlow { cameraPositionState.location.panoId }
+                    .filter { it.isNotEmpty() }
+                    .first()
+                panoramaLoaded = true
             }
 
             StreetView(
