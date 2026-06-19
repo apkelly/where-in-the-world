@@ -52,6 +52,10 @@
                 android:value="${gameServicesProjectId}" />
 
         <meta-data
+                android:name="com.google.android.gms.games.SUPPRESS_GAME_PROFILE_CREATION"
+                android:value="true" />
+
+        <meta-data
                 android:name="com.google.android.geo.API_KEY"
                 android:value="${googleMapsApiKey}" />
 
