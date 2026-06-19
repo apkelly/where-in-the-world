@@ -37,8 +37,6 @@ android {
     }
 }
 dependencies {
-    implementation(fileTree(mapOf("dir" to "libs", "include" to listOf("*.jar"))))
-
     // AndroidX
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.navigation3.runtime)

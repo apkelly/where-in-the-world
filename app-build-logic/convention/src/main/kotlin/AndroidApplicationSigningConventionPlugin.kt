@@ -35,7 +35,7 @@ class AndroidApplicationSigningConventionPlugin : Plugin<Project> {
                     }
 
                     release {
-                        isMinifyEnabled = false
+                        isMinifyEnabled = true
                         if (buildProperties.isKeystorePresent()) {
                             signingConfig = signingConfigs.getByName("release")
                         }
