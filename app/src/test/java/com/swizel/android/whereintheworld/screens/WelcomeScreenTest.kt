@@ -28,6 +28,20 @@ class WelcomeScreenTest(
     }
 
     @Test
+    fun welcomeScreenSignedOutSnapshot() {
+        paparazziSnapshot {
+            WelcomeScreen(
+                uiState = UiState(
+                    isLoading = LoadingType.NOT_LOADING,
+                    data = WelcomeUiState(signedInToGooglePlay = false),
+                ),
+                isExpandedWidth = false,
+                onAction = { },
+            )
+        }
+    }
+
+    @Test
     fun welcomeScreenLoadingSnapshot() {
         paparazziSnapshot {
             WelcomeScreen(
@@ -41,4 +55,3 @@ class WelcomeScreenTest(
     }
 
 }
-

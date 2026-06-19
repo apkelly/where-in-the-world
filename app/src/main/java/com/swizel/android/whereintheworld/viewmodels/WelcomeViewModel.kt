@@ -34,7 +34,7 @@ internal class WelcomeViewModel(
     ) {
         _uiState.value = _uiState.value.copy(isLoading = LoadingType.LOADING)
         viewModelScope.launch {
-            googleClientHelper.signIn(
+            googleClientHelper.checkAuthentication(
                 activity = activity,
                 onSuccess = {
                     _uiState.value = UiState(
@@ -74,6 +74,10 @@ internal class WelcomeViewModel(
         ) : Action()
 
         data class Achievements(
+            val activity: Activity,
+        ) : Action()
+
+        data class SignIn(
             val activity: Activity,
         ) : Action()
     }
@@ -137,6 +141,37 @@ internal class WelcomeViewModel(
                         launchIntent(intent)
                     }
             }
+
+            is Action.SignIn -> {
+                _uiState.value = _uiState.value.copy(isLoading = LoadingType.LOADING)
+                signIn(action.activity)
+            }
+        }
+    }
+
+    private fun signIn(
+        activity: Activity,
+    ) {
+        viewModelScope.launch {
+            googleClientHelper.signIn(
+                activity = activity,
+                onSuccess = {
+                    _uiState.value = UiState(
+                        isLoading = LoadingType.NOT_LOADING,
+                        data = WelcomeUiState(
+                            signedInToGooglePlay = true,
+                        ),
+                    )
+                },
+                onFailure = {
+                    _uiState.value = UiState(
+                        isLoading = LoadingType.NOT_LOADING,
+                        data = WelcomeUiState(
+                            signedInToGooglePlay = false,
+                        ),
+                    )
+                },
+            )
         }
     }
 }

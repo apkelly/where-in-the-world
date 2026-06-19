@@ -23,7 +23,10 @@ android {
 
         buildConfigField("String", "MAP_ID", "\"${buildProperties.readProperty("mapId") ?: ""}\"")
 
-        manifestPlaceholders["gameServicesProjectId"] = buildProperties.readProperty("gameServicesProjectId") ?: ""
+        // Android's Asset Packaging Tool (AAPT) has a known quirk where it tries to parse large numeric strings
+        // as floats or integers. Google Play Games requires the APP_ID in the AndroidManifest.xml to be prefixed
+        // with \u0030 to force it to be compiled as a literal string.
+        manifestPlaceholders["gameServicesProjectId"] = "\u0030${buildProperties.readProperty("gameServicesProjectId") ?: ""}"
         manifestPlaceholders["googleMapsApiKey"] = buildProperties.readProperty("googleMapsApiKey") ?: ""
     }
 

@@ -36,27 +36,13 @@ internal class GameOverViewModel(
         viewModelScope.launch {
             val completedGame = completionResult ?: completeGameUseCase(Unit).also { completionResult = it }
 
-            googleClientHelper.signIn(
+            googleClientHelper.checkAuthentication(
                 activity = activity,
                 onSuccess = {
-                    _uiState.value = UiState(
-                        isLoading = LoadingType.NOT_LOADING,
-                        data = GameOverUiState(
-                            roundResults = completedGame.roundResults,
-                            score = completedGame.score,
-                            signedInToGooglePlay = true,
-                        ),
-                    )
+                    updateUiState(completedGame = completedGame, signedInToGooglePlay = true)
                 },
                 onFailure = {
-                    _uiState.value = UiState(
-                        isLoading = LoadingType.NOT_LOADING,
-                        data = GameOverUiState(
-                            roundResults = completedGame.roundResults,
-                            score = completedGame.score,
-                            signedInToGooglePlay = false,
-                        ),
-                    )
+                    updateUiState(completedGame = completedGame, signedInToGooglePlay = false)
                 },
             )
         }
@@ -69,6 +55,10 @@ internal class GameOverViewModel(
         ) : Action()
 
         data class Achievements(
+            val activity: Activity,
+        ) : Action()
+
+        data class SignIn(
             val activity: Activity,
         ) : Action()
     }
@@ -104,6 +94,42 @@ internal class GameOverViewModel(
                         launchIntent(intent)
                     }
             }
+
+            is Action.SignIn -> {
+                _uiState.value = _uiState.value.copy(isLoading = LoadingType.LOADING)
+                signIn(action.activity)
+            }
         }
+    }
+
+    private fun signIn(
+        activity: Activity,
+    ) {
+        val completedGame = completionResult ?: return
+        viewModelScope.launch {
+            googleClientHelper.signIn(
+                activity = activity,
+                onSuccess = {
+                    updateUiState(completedGame = completedGame, signedInToGooglePlay = true)
+                },
+                onFailure = {
+                    updateUiState(completedGame = completedGame, signedInToGooglePlay = false)
+                },
+            )
+        }
+    }
+
+    private fun updateUiState(
+        completedGame: CompleteGameUseCase.Result,
+        signedInToGooglePlay: Boolean,
+    ) {
+        _uiState.value = UiState(
+            isLoading = LoadingType.NOT_LOADING,
+            data = GameOverUiState(
+                roundResults = completedGame.roundResults,
+                score = completedGame.score,
+                signedInToGooglePlay = signedInToGooglePlay,
+            ),
+        )
     }
 }

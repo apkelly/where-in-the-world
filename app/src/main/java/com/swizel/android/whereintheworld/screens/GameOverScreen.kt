@@ -165,34 +165,46 @@ internal fun GameOverScreen(
                         },
                     )
 
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.spacedBy(16.dp),
-                    ) {
-                        val activity = LocalActivity.current
-                        AppButton(
-                            onClick = {
-                                activity?.let {
-                                    onAction(GameOverViewModel.Action.Leaderboards(activity = it))
-                                }
-                            },
-                            modifier = Modifier.weight(1f),
-                            enabled = data.signedInToGooglePlay,
-                            content = {
-                                Text(text = stringResource(id = R.string.leaderboards))
-                            },
-                        )
+                    val activity = LocalActivity.current
+                    if (data.signedInToGooglePlay) {
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.spacedBy(16.dp),
+                        ) {
+                            AppButton(
+                                onClick = {
+                                    activity?.let {
+                                        onAction(GameOverViewModel.Action.Leaderboards(activity = it))
+                                    }
+                                },
+                                modifier = Modifier.weight(1f),
+                                content = {
+                                    Text(text = stringResource(id = R.string.leaderboards))
+                                },
+                            )
 
+                            AppButton(
+                                onClick = {
+                                    activity?.let {
+                                        onAction(GameOverViewModel.Action.Achievements(activity = it))
+                                    }
+                                },
+                                modifier = Modifier.weight(1f),
+                                content = {
+                                    Text(text = stringResource(id = R.string.achievements))
+                                },
+                            )
+                        }
+                    } else {
                         AppButton(
                             onClick = {
                                 activity?.let {
-                                    onAction(GameOverViewModel.Action.Achievements(activity = it))
+                                    onAction(GameOverViewModel.Action.SignIn(activity = it))
                                 }
                             },
-                            modifier = Modifier.weight(1f),
-                            enabled = data.signedInToGooglePlay,
+                            modifier = Modifier.fillMaxWidth(),
                             content = {
-                                Text(text = stringResource(id = R.string.achievements))
+                                Text(text = stringResource(id = R.string.sign_in_to_google_play))
                             },
                         )
                     }

@@ -33,6 +33,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalInspectionMode
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
@@ -84,10 +85,15 @@ internal fun WelcomeScreen(
 
     var currentImageIndex by remember { mutableIntStateOf(0) }
     var selectedGameMode by remember { mutableStateOf<WelcomeGameMode?>(null) }
-    LaunchedEffect(Unit) {
-        while (true) {
-            delay(4.seconds)
-            currentImageIndex = (currentImageIndex + 1) % backgroundDrawables.size
+
+    // Make sure images don't scroll when we're capturing screenshots in tests.
+    val isInspectionMode = LocalInspectionMode.current
+    if (!isInspectionMode) {
+        LaunchedEffect(backgroundDrawables.size) {
+            while (true) {
+                delay(4.seconds)
+                currentImageIndex = (currentImageIndex + 1) % backgroundDrawables.size
+            }
         }
     }
 
@@ -188,29 +194,40 @@ internal fun WelcomeScreen(
                 horizontalArrangement = Arrangement.spacedBy(16.dp),
             ) {
                 val activity = LocalActivity.current
-                AppButton(
-                    onClick = {
-                        activity?.let {
-                            onAction(WelcomeViewModel.Action.Leaderboards(activity = it))
-                        }
-                    },
-                    enabled = data.signedInToGooglePlay,
-                    content = {
-                        Text(text = stringResource(id = R.string.leaderboards))
-                    },
-                )
+                if (data.signedInToGooglePlay) {
+                    AppButton(
+                        onClick = {
+                            activity?.let {
+                                onAction(WelcomeViewModel.Action.Leaderboards(activity = it))
+                            }
+                        },
+                        content = {
+                            Text(text = stringResource(id = R.string.leaderboards))
+                        },
+                    )
 
-                AppButton(
-                    onClick = {
-                        activity?.let {
-                            onAction(WelcomeViewModel.Action.Achievements(activity = it))
-                        }
-                    },
-                    enabled = data.signedInToGooglePlay,
-                    content = {
-                        Text(text = stringResource(id = R.string.achievements))
-                    },
-                )
+                    AppButton(
+                        onClick = {
+                            activity?.let {
+                                onAction(WelcomeViewModel.Action.Achievements(activity = it))
+                            }
+                        },
+                        content = {
+                            Text(text = stringResource(id = R.string.achievements))
+                        },
+                    )
+                } else {
+                    AppButton(
+                        onClick = {
+                            activity?.let {
+                                onAction(WelcomeViewModel.Action.SignIn(activity = it))
+                            }
+                        },
+                        content = {
+                            Text(text = stringResource(id = R.string.sign_in_to_google_play))
+                        },
+                    )
+                }
             }
 
             selectedGameMode?.let { gameMode ->
