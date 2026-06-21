@@ -2,6 +2,7 @@ package com.swizel.android.whereintheworld.startup
 
 import android.content.Context
 import com.github.apkelly.bolt.startup.BoltInitializer
+import com.swizel.android.whereintheworld.BuildConfig
 import com.swizel.android.whereintheworld.model.GameState
 import com.swizel.android.whereintheworld.repositories.GameSessionRepository
 import com.swizel.android.whereintheworld.usecases.CompleteGameUseCase
@@ -49,10 +50,9 @@ class KoinInitializer : BoltInitializer {
                         viewModelOf(::StreetViewViewModel)
                         viewModelOf(::WelcomeViewModel)
                         single<Diagnostics> { FirebaseDiagnostics() }
-                        single<RemoteConfig> { FirebaseRemoteConfig() }
+                        single<RemoteConfig> { FirebaseRemoteConfig(BuildConfig.DEBUG) }
                         single { GoogleClientHelper(context) }
-                        single { GameState() }
-                        single { GameSessionRepository(get()) }
+                        single { GameSessionRepository(GameState()) }
                         factoryOf(::CompleteGameUseCase)
                         factoryOf(::GetCurrentGameDifficultyUseCase)
                         factoryOf(::GetCurrentRoundProgressUseCase)

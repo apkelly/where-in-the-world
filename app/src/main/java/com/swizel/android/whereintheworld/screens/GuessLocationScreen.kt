@@ -6,8 +6,13 @@ import android.view.animation.BounceInterpolator
 import androidx.annotation.DrawableRes
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.tween
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.safeContentPadding
+import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.LaunchedEffect
@@ -16,6 +21,7 @@ import androidx.compose.runtime.mutableLongStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.platform.LocalContext
@@ -74,23 +80,18 @@ internal fun GuessLocationScreen(
         uiState = uiState,
     ) { _ ->
         val context = LocalContext.current
+        val appColors = WhereInTheWorldTheme.appColors
+        val shouldShowTutorialInitially = remember {
+            SettingsUtils.getBooleanPreference(context, SettingsUtils.FIRST_EVER_GUESS, true)
+        }
         val cameraPositionState = rememberCameraPositionState {
             position = CameraPosition.fromLatLngZoom(MAP_CENTER, 2f)
         }
+        var isMapLoaded by remember { mutableStateOf(false) }
         var nextPinAnimationKey by remember { mutableLongStateOf(0L) }
-        var droppedPin by remember {
-            mutableStateOf(
-                if (SettingsUtils.getBooleanPreference(context, SettingsUtils.FIRST_EVER_GUESS, true)) {
-                    GuessPin(
-                        position = TUTORIAL_PIN,
-                        isTutorial = true,
-                        animationKey = nextPinAnimationKey,
-                    )
-                } else {
-                    null
-                },
-            )
-        }
+        var hasSeededTutorialPin by remember { mutableStateOf(!shouldShowTutorialInitially) }
+        var showTutorialOverlay by remember { mutableStateOf(shouldShowTutorialInitially) }
+        var droppedPin by remember { mutableStateOf<GuessPin?>(null) }
         val markerIcon = remember(context) {
             bitmapDescriptorFromVectorDrawable(context, R.drawable.ic_action_pin)
         }
@@ -114,71 +115,108 @@ internal fun GuessLocationScreen(
             )
         }
 
-        GoogleMap(
-            modifier = Modifier.fillMaxSize(),
-            cameraPositionState = cameraPositionState,
-            properties = mapProperties,
-            uiSettings = mapUiSettings,
-            googleMapOptionsFactory = {
-                GoogleMapOptions().mapId(BuildConfig.MAP_ID)
-            },
-            contentPadding = PaddingValues(vertical = 48.dp), // Google branding & Zoom controls.
-            onMapLongClick = { location ->
-                SettingsUtils.addPreference(context, SettingsUtils.FIRST_EVER_GUESS, false)
-                nextPinAnimationKey += 1
-                droppedPin = GuessPin(
-                    position = location,
-                    isTutorial = false,
-                    animationKey = nextPinAnimationKey,
-                )
-            },
-        ) {
-            droppedPin?.let { pin ->
-                val markerState = rememberUpdatedMarkerState(position = pin.position)
-                val markerAnchorY = remember { Animatable(Config.MAP_GUESS_V_ANCHOR) }
-                val snippet = stringResource(
-                    id = if (pin.isTutorial) {
-                        R.string.tutorial_snippet
-                    } else {
-                        R.string.confirm_guess
-                    },
-                )
+        LaunchedEffect(isMapLoaded, hasSeededTutorialPin, shouldShowTutorialInitially) {
+            if (!isMapLoaded || hasSeededTutorialPin || !shouldShowTutorialInitially) {
+                return@LaunchedEffect
+            }
+            nextPinAnimationKey += 1
+            droppedPin = GuessPin(
+                position = TUTORIAL_PIN,
+                isTutorial = true,
+                animationKey = nextPinAnimationKey,
+            )
+            hasSeededTutorialPin = true
+        }
 
-                LaunchedEffect(pin.animationKey) {
-                    if (pin.isTutorial) {
-                        markerAnchorY.snapTo(Config.MAP_GUESS_V_ANCHOR)
-                    } else {
+        Box(modifier = Modifier.fillMaxSize()) {
+            GoogleMap(
+                modifier = Modifier.fillMaxSize(),
+                cameraPositionState = cameraPositionState,
+                properties = mapProperties,
+                uiSettings = mapUiSettings,
+                googleMapOptionsFactory = {
+                    GoogleMapOptions().mapId(BuildConfig.MAP_ID)
+                },
+                contentPadding = PaddingValues(vertical = 48.dp), // Google branding & Zoom controls.
+                onMapLoaded = {
+                    isMapLoaded = true
+                },
+                onMapLongClick = { location ->
+                    SettingsUtils.addPreference(context, SettingsUtils.FIRST_EVER_GUESS, false)
+                    showTutorialOverlay = false
+                    nextPinAnimationKey += 1
+                    droppedPin = GuessPin(
+                        position = location,
+                        isTutorial = false,
+                        animationKey = nextPinAnimationKey,
+                    )
+                },
+            ) {
+                droppedPin?.let { pin ->
+                    val markerState = rememberUpdatedMarkerState(position = pin.position)
+                    val markerAnchorY = remember { Animatable(Config.MAP_GUESS_V_ANCHOR) }
+                    val infoWindowText = stringResource(
+                        id = if (pin.isTutorial) {
+                            R.string.tutorial_snippet
+                        } else {
+                            R.string.confirm_guess
+                        },
+                    )
+
+                    LaunchedEffect(pin.animationKey, isMapLoaded) {
+                        if (!isMapLoaded) {
+                            return@LaunchedEffect
+                        }
                         markerAnchorY.snapTo(Config.MAP_GUESS_V_ANCHOR * 5)
                         markerAnchorY.animateTo(
                             targetValue = Config.MAP_GUESS_V_ANCHOR,
                             animationSpec = tween(
                                 durationMillis = Config.MAPPING_DROPPED_PIN_ANIMATION_SPEED_MS.toInt(),
                                 easing = { fraction -> BounceInterpolator().getInterpolation(fraction) },
-                            ),
+                            )
                         )
-                        delay(250.milliseconds)
+                        if (!pin.isTutorial) {
+                            delay(250.milliseconds)
+                            markerState.showInfoWindow()
+                        }
                     }
 
-                    markerState.showInfoWindow()
+                    Marker(
+                        state = markerState,
+                        anchor = Offset(Config.MAP_GUESS_H_ANCHOR, markerAnchorY.value),
+                        icon = markerIcon,
+                        infoWindowAnchor = Offset(Config.MAP_INFO_H_ANCHOR, Config.MAP_INFO_V_ANCHOR),
+                        title = if (pin.isTutorial) null else infoWindowText,
+                        onClick = { marker ->
+                            if (!pin.isTutorial) {
+                                marker.showInfoWindow()
+                            }
+                            true
+                        },
+                        onInfoWindowClick = {
+                            if (!pin.isTutorial) {
+                                onAction(GuessLocationViewModel.Action.GuessLocation(location = pin.position))
+                            }
+                        },
+                    )
                 }
+            }
 
-                Marker(
-                    state = markerState,
-                    anchor = Offset(Config.MAP_GUESS_H_ANCHOR, markerAnchorY.value),
-                    icon = markerIcon,
-                    infoWindowAnchor = Offset(Config.MAP_INFO_H_ANCHOR, Config.MAP_INFO_V_ANCHOR),
-                    title = if (pin.isTutorial) null else snippet,
-                    snippet = if (pin.isTutorial) snippet else null,
-                    onClick = { marker ->
-                        marker.showInfoWindow()
-                        true
-                    },
-                    onInfoWindowClick = {
-                        if (!pin.isTutorial) {
-                            onAction(GuessLocationViewModel.Action.GuessLocation(location = pin.position))
-                        }
-                    },
-                )
+            if (showTutorialOverlay) {
+                Surface(
+                    modifier = Modifier
+                        .align(Alignment.TopCenter)
+                        .padding(16.dp)
+                        .safeContentPadding(),
+                    color = appColors.mapOverlayStrongContainer,
+                    contentColor = appColors.onMapOverlay,
+                ) {
+                    Text(
+                        text = stringResource(id = R.string.tutorial_snippet),
+                        style = WhereInTheWorldTheme.typography.bodyLarge,
+                        modifier = Modifier.padding(horizontal = 16.dp, vertical = 12.dp),
+                    )
+                }
             }
         }
     }

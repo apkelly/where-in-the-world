@@ -15,6 +15,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
 class FirebaseRemoteConfig(
+    private val logConfigOnFetch: Boolean,
     private val workDispatcher: CoroutineDispatcher = Dispatchers.IO,
 ) : RemoteConfig {
     private lateinit var firebaseRemoteConfig: FirebaseRemoteConfig
@@ -32,7 +33,11 @@ class FirebaseRemoteConfig(
                 setDefaultsAsync(R.xml.remote_config_defaults)
                     .addOnCompleteListener { task ->
                         if (task.isSuccessful) {
-                            ConsoleLogger.d("Defaults Succeeded : ${getString("easy_config")}")
+                            if (logConfigOnFetch) {
+                                ConsoleLogger.d("Defaults Succeeded : ${getString("easy_config")}")
+                            } else {
+                                ConsoleLogger.d("Defaults Succeeded")
+                            }
                         } else {
                             ConsoleLogger.d("Defaults failed")
                         }
@@ -41,7 +46,11 @@ class FirebaseRemoteConfig(
             firebaseRemoteConfig.fetchAndActivate()
                 .addOnCompleteListener { task ->
                     if (task.isSuccessful) {
-                        ConsoleLogger.d("Fetch Succeeded : ${firebaseRemoteConfig.getString("easy_config")}")
+                        if (logConfigOnFetch) {
+                            ConsoleLogger.d("Fetch Succeeded : ${firebaseRemoteConfig.getString("easy_config")}")
+                        } else {
+                            ConsoleLogger.d("Fetch Succeeded")
+                        }
                     } else {
                         ConsoleLogger.d("Fetch failed")
                     }
