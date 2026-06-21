@@ -39,6 +39,7 @@ internal class StreetViewViewModel(
                     country = currentRound.country,
                     gameDifficulty = currentRound.gameDifficulty,
                     currentHint = currentRound.currentHint,
+                    revealedHints = currentRound.revealedHints,
                 ),
             )
         }
@@ -68,7 +69,16 @@ internal class StreetViewViewModel(
                 viewModelScope.launch {
                     val scoringHint = requestHintUseCase(RequestHintUseCase.Params(hint = action.hint))
                     _uiState.value = _uiState.value.copy(
-                        data = _uiState.value.data?.copy(currentHint = scoringHint),
+                        data = _uiState.value.data?.let { data ->
+                            data.copy(
+                                currentHint = scoringHint,
+                                revealedHints = if (action.hint in data.revealedHints) {
+                                    data.revealedHints
+                                } else {
+                                    data.revealedHints + action.hint
+                                },
+                            )
+                        },
                     )
                 }
             }

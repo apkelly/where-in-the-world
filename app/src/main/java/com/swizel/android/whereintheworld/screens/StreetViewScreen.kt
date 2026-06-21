@@ -11,15 +11,10 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeContentPadding
 import androidx.compose.foundation.layout.systemBarsPadding
-import androidx.compose.foundation.selection.selectable
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.QuestionMark
-import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Icon
-import androidx.compose.material3.ListItem
-import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.LaunchedEffect
@@ -32,7 +27,6 @@ import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -45,8 +39,11 @@ import com.google.maps.android.ktx.MapsExperimentalFeature
 import com.swizel.android.whereintheworld.R
 import com.swizel.android.whereintheworld.composables.AppButton
 import com.swizel.android.whereintheworld.composables.BasicScaffold
+import com.swizel.android.whereintheworld.composables.HintSelectionDialog
 import com.swizel.android.whereintheworld.composables.LoadingType
 import com.swizel.android.whereintheworld.composables.UiState
+import com.swizel.android.whereintheworld.composables.label
+import com.swizel.android.whereintheworld.composables.toSelectedHint
 import com.swizel.android.whereintheworld.model.GameDifficulty
 import com.swizel.android.whereintheworld.model.Hint
 import com.swizel.android.whereintheworld.theme.WhereInTheWorldTheme
@@ -69,11 +66,7 @@ internal data class StreetViewUiState(
     val country: String,
     val gameDifficulty: GameDifficulty,
     val currentHint: Hint,
-)
-
-private data class SelectedHint(
-    val hint: Hint,
-    val value: String,
+    val revealedHints: List<Hint>,
 )
 
 @OptIn(MapsExperimentalFeature::class)
@@ -93,7 +86,6 @@ internal fun StreetViewScreen(
         var remainingMillis by remember(data.currentRound) { mutableLongStateOf(timeAllowedMillis) }
         var streetViewEnabled by remember(data.currentRound) { mutableStateOf(false) }
         var showHintDialog by remember(data.currentRound) { mutableStateOf(false) }
-        var revealedHints by remember(data.currentRound) { mutableStateOf(emptySet<Hint>()) }
         var panoramaLoaded by remember(data.currentRound, data.panoramaLatLng) { mutableStateOf(false) }
 
         LaunchedEffect(data.currentRound, data.timeAllowed, panoramaLoaded, showHintDialog) {
@@ -135,12 +127,6 @@ internal fun StreetViewScreen(
 
             countdownText = formatCountdown(remainingMillis)
             streetViewEnabled = panoramaLoaded && remainingMillis > 0L
-        }
-
-        LaunchedEffect(data.currentHint) {
-            if (data.currentHint != Hint.NONE) {
-                revealedHints = revealedHints + data.currentHint
-            }
         }
 
         Box(
@@ -213,8 +199,13 @@ internal fun StreetViewScreen(
                         )
                     }
 
-                    revealedHints
-                        .mapNotNull { hint -> hint.toSelectedHint(data) }
+                    data.revealedHints
+                        .mapNotNull { hint ->
+                            hint.toSelectedHint(
+                                country = data.country,
+                                landmark = data.landmark,
+                            )
+                        }
                         .forEach { hint ->
                             Text(
                                 text = stringResource(
@@ -283,7 +274,6 @@ internal fun StreetViewScreen(
                     },
                     onHintSelected = { hint ->
                         showHintDialog = false
-                        revealedHints = revealedHints + hint
                         onAction(StreetViewViewModel.Action.HintRequested(hint = hint))
                     },
                 )
@@ -291,76 +281,6 @@ internal fun StreetViewScreen(
         }
     }
 }
-
-@Composable
-private fun HintSelectionDialog(
-    onDismissRequest: () -> Unit,
-    onHintSelected: (Hint) -> Unit,
-) {
-    AlertDialog(
-        onDismissRequest = onDismissRequest,
-        title = {
-            Text(text = stringResource(id = R.string.hint_dialog_title))
-        },
-        text = {
-            Column {
-                Text(text = stringResource(id = R.string.hint_dialog_message))
-
-                Hint.entries.filter { it != Hint.NONE }.forEach { hint ->
-                    ListItem(
-                        headlineContent = {
-                            Text(text = hint.label())
-                        },
-                        supportingContent = {
-                            Text(
-                                text = stringResource(
-                                    id = R.string.hint_score_multiplier,
-                                    hint.multiplierText(),
-                                ),
-                            )
-                        },
-                        leadingContent = {
-                            RadioButton(
-                                selected = false,
-                                onClick = null,
-                            )
-                        },
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .selectable(
-                                selected = false,
-                                onClick = { onHintSelected(hint) },
-                                role = Role.RadioButton,
-                            ),
-                    )
-                }
-            }
-        },
-        confirmButton = {},
-        dismissButton = {
-            TextButton(onClick = onDismissRequest) {
-                Text(text = stringResource(id = R.string.cancel))
-            }
-        },
-    )
-}
-
-private fun Hint.toSelectedHint(
-    data: StreetViewUiState,
-): SelectedHint? = when (this) {
-    Hint.NONE -> null
-    Hint.COUNTRY -> SelectedHint(hint = this, value = data.country)
-    Hint.LANDMARK -> SelectedHint(hint = this, value = data.landmark)
-}
-
-@Composable
-private fun Hint.label(): String = when (this) {
-    Hint.NONE -> stringResource(id = R.string.hint_none)
-    Hint.COUNTRY -> stringResource(id = R.string.hint_country)
-    Hint.LANDMARK -> stringResource(id = R.string.hint_landmark)
-}
-
-private fun Hint.multiplierText(): String = String.format(Locale.US, "x%.2f", multiplier)
 
 private fun formatCountdown(
     remainingMillis: Long,
@@ -389,6 +309,7 @@ private fun StreetViewScreenPreview() {
                     country = "Atlantis",
                     gameDifficulty = GameDifficulty.EASY,
                     currentHint = Hint.NONE,
+                    revealedHints = emptyList(),
                 ),
             ),
             isExpandedWidth = false,

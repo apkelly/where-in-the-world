@@ -3,11 +3,18 @@ package com.swizel.android.whereintheworld.screens
 import android.view.animation.BounceInterpolator
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.tween
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeContentPadding
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.QuestionMark
+import androidx.compose.material3.Icon
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -23,6 +30,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.google.android.gms.maps.GoogleMapOptions
@@ -38,9 +46,15 @@ import com.google.maps.android.compose.rememberUpdatedMarkerState
 import com.swizel.android.whereintheworld.BuildConfig
 import com.swizel.android.whereintheworld.Config
 import com.swizel.android.whereintheworld.R
+import com.swizel.android.whereintheworld.composables.AppButton
 import com.swizel.android.whereintheworld.composables.BasicScaffold
+import com.swizel.android.whereintheworld.composables.HintSelectionDialog
 import com.swizel.android.whereintheworld.composables.LoadingType
 import com.swizel.android.whereintheworld.composables.UiState
+import com.swizel.android.whereintheworld.composables.label
+import com.swizel.android.whereintheworld.composables.toSelectedHint
+import com.swizel.android.whereintheworld.model.GameDifficulty
+import com.swizel.android.whereintheworld.model.Hint
 import com.swizel.android.whereintheworld.theme.WhereInTheWorldTheme
 import com.swizel.android.whereintheworld.utils.SettingsUtils
 import com.swizel.android.whereintheworld.utils.bitmapDescriptorFromVectorDrawable
@@ -53,6 +67,11 @@ import kotlinx.coroutines.delay
 internal data class GuessLocationUiState(
     val numRounds: Int,
     val currentRound: Int,
+    val landmark: String,
+    val country: String,
+    val gameDifficulty: GameDifficulty,
+    val currentHint: Hint,
+    val revealedHints: List<Hint>,
 )
 
 private val MAP_CENTER = LatLng(25.0, 0.0)
@@ -86,6 +105,7 @@ internal fun GuessLocationScreen(
         var nextPinAnimationKey by remember(data.currentRound) { mutableLongStateOf(0L) }
         var hasSeededTutorialPin by remember(data.currentRound) { mutableStateOf(!shouldShowTutorialInitially) }
         var showTutorialOverlay by remember(data.currentRound) { mutableStateOf(shouldShowTutorialInitially) }
+        var showHintDialog by remember(data.currentRound) { mutableStateOf(false) }
         var droppedPin by remember(data.currentRound) { mutableStateOf<GuessPin?>(null) }
         val markerIcon = remember(context) {
             bitmapDescriptorFromVectorDrawable(context, R.drawable.ic_action_pin)
@@ -222,21 +242,86 @@ internal fun GuessLocationScreen(
                 }
             }
 
-            if (showTutorialOverlay) {
-                Surface(
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(16.dp),
+                verticalArrangement = androidx.compose.foundation.layout.Arrangement.SpaceBetween,
+            ) {
+                Column(
                     modifier = Modifier
-                        .align(Alignment.TopCenter)
-                        .padding(16.dp)
+                        .fillMaxWidth()
                         .safeContentPadding(),
-                    color = appColors.mapOverlayStrongContainer,
-                    contentColor = appColors.onMapOverlay,
                 ) {
-                    Text(
-                        text = stringResource(id = R.string.tutorial_snippet),
-                        style = WhereInTheWorldTheme.typography.bodyLarge,
-                        modifier = Modifier.padding(horizontal = 16.dp, vertical = 12.dp),
+                    if (showTutorialOverlay) {
+                        Surface(
+                            modifier = Modifier.align(Alignment.CenterHorizontally),
+                            color = appColors.mapOverlayStrongContainer,
+                            contentColor = appColors.onMapOverlay,
+                        ) {
+                            Text(
+                                text = stringResource(id = R.string.tutorial_snippet),
+                                style = WhereInTheWorldTheme.typography.bodyLarge,
+                                modifier = Modifier.padding(horizontal = 16.dp, vertical = 12.dp),
+                            )
+                        }
+                    }
+
+                    data.revealedHints
+                        .mapNotNull { hint -> hint.toSelectedHint(country = data.country, landmark = data.landmark) }
+                        .forEach { hint ->
+                            Text(
+                                text = stringResource(
+                                    id = R.string.hint_revealed,
+                                    hint.hint.label(),
+                                    hint.value,
+                                ),
+                                style = WhereInTheWorldTheme.typography.bodyLarge,
+                                color = appColors.onMapOverlay,
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(top = 8.dp)
+                                    .background(appColors.mapOverlayStrongContainer)
+                                    .padding(horizontal = 16.dp, vertical = 8.dp),
+                            )
+                        }
+                }
+
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .safeContentPadding(),
+                    horizontalArrangement = androidx.compose.foundation.layout.Arrangement.Center,
+                ) {
+                    AppButton(
+                        content = {
+                            Icon(
+                                imageVector = Icons.Filled.QuestionMark,
+                                contentDescription = null,
+                            )
+                            Text(
+                                text = stringResource(id = R.string.btn_hint),
+                                textAlign = TextAlign.Center,
+                            )
+                        },
+                        enabled = data.gameDifficulty != GameDifficulty.EXTREME,
+                        onClick = {
+                            showHintDialog = true
+                        },
                     )
                 }
+            }
+
+            if (showHintDialog) {
+                HintSelectionDialog(
+                    onDismissRequest = {
+                        showHintDialog = false
+                    },
+                    onHintSelected = { hint ->
+                        showHintDialog = false
+                        onAction(GuessLocationViewModel.Action.HintRequested(hint = hint))
+                    },
+                )
             }
         }
     }
@@ -252,6 +337,11 @@ private fun GuessLocationScreenPreview() {
                 data = GuessLocationUiState(
                     numRounds = 5,
                     currentRound = 1,
+                    landmark = "Ocean",
+                    country = "Atlantis",
+                    gameDifficulty = GameDifficulty.EASY,
+                    currentHint = Hint.NONE,
+                    revealedHints = emptyList(),
                 ),
             ),
             isExpandedWidth = false,

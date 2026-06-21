@@ -19,6 +19,7 @@ class GetCurrentRoundUseCaseTest {
             every { currentRound } returns 3
             every { difficulty } returns GameDifficulty.HARD
             every { currentHint } returns Hint.COUNTRY
+            every { currentRevealedHints } returns listOf(Hint.LANDMARK, Hint.COUNTRY)
             every { currentRoundData } returns sampleRound
         }
         val useCase = GetCurrentRoundUseCase(repository)
@@ -33,5 +34,6 @@ class GetCurrentRoundUseCaseTest {
         assertEquals(sampleRound.country, result.country)
         assertEquals(GameDifficulty.HARD, result.gameDifficulty)
         assertEquals(Hint.COUNTRY, result.currentHint)
+        assertEquals(listOf(Hint.LANDMARK, Hint.COUNTRY), result.revealedHints)
     }
 }

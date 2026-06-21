@@ -24,6 +24,7 @@ class GetCurrentRoundUseCase(
             country = currentRound.country,
             gameDifficulty = gameSessionRepository.difficulty,
             currentHint = gameSessionRepository.currentHint,
+            revealedHints = gameSessionRepository.currentRevealedHints,
         )
     }
 
@@ -36,5 +37,6 @@ class GetCurrentRoundUseCase(
         val country: String,
         val gameDifficulty: GameDifficulty,
         val currentHint: Hint,
+        val revealedHints: List<Hint>,
     )
 }

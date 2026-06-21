@@ -42,6 +42,7 @@ class GameState {
     }
 
     private val _gameRounds = mutableListOf<GameRound>()
+    private val currentRevealedHints = linkedSetOf<Hint>()
 
     /** Guesses keyed by round index. Null entry means the player ran out of time for that round. */
     private val guesses = mutableMapOf<Int, Guess>()
@@ -63,12 +64,15 @@ class GameState {
         private set
     var currentHint: Hint = Hint.NONE
         private set
+    val revealedHintsForCurrentRound: List<Hint>
+        get() = currentRevealedHints.toList()
 
     fun newGame(
         gameDifficulty: GameDifficulty,
         config: JSONObject,
     ) {
         _gameRounds.clear()
+        currentRevealedHints.clear()
         guesses.clear()
         currentRound = -1 // we'll increment this to 0 soon.
         difficulty = gameDifficulty
@@ -105,6 +109,14 @@ class GameState {
         currentHint = hint
     }
 
+    fun revealHintForCurrentRound(
+        hint: Hint,
+    ) {
+        if (hint != Hint.NONE) {
+            currentRevealedHints += hint
+        }
+    }
+
     fun setTimeTakenForCurrentRound(
         timeTaken: Duration,
     ) {
@@ -122,6 +134,7 @@ class GameState {
     fun prepareNextRound(): Boolean {
         currentRound++
         currentHint = Hint.NONE
+        currentRevealedHints.clear()
         currentTimeTaken = Duration.ZERO
         return currentRound < numRounds
     }

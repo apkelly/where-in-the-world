@@ -26,6 +26,8 @@ class GameSessionRepository(
 
     val currentHint: Hint
         get() = gameState.currentHint
+    val currentRevealedHints: List<Hint>
+        get() = gameState.revealedHintsForCurrentRound
 
     val currentTimeTaken: Duration
         get() = gameState.currentTimeTaken
@@ -52,6 +54,7 @@ class GameSessionRepository(
     fun requestHintForCurrentRound(
         hint: Hint,
     ): Hint {
+        gameState.revealHintForCurrentRound(hint = hint)
         val scoringHint = if (hint.multiplier < gameState.currentHint.multiplier) {
             hint
         } else {
