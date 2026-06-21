@@ -18,6 +18,8 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.toArgb
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.platform.LocalResources
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
@@ -29,12 +31,14 @@ import com.google.android.gms.maps.model.PinConfig
 import com.google.maps.android.compose.AdvancedMarker
 import com.google.maps.android.compose.GoogleMap
 import com.google.maps.android.compose.MapProperties
+import com.google.maps.android.compose.Marker
 import com.google.maps.android.compose.MapType
 import com.google.maps.android.compose.MapUiSettings
 import com.google.maps.android.compose.Polyline
 import com.google.maps.android.compose.rememberCameraPositionState
 import com.google.maps.android.compose.rememberUpdatedMarkerState
 import com.swizel.android.whereintheworld.BuildConfig
+import com.swizel.android.whereintheworld.Config
 import com.swizel.android.whereintheworld.R
 import com.swizel.android.whereintheworld.composables.AppButton
 import com.swizel.android.whereintheworld.composables.BasicScaffold
@@ -42,6 +46,7 @@ import com.swizel.android.whereintheworld.composables.LoadingType
 import com.swizel.android.whereintheworld.composables.UiState
 import com.swizel.android.whereintheworld.model.GameRoundResult
 import com.swizel.android.whereintheworld.theme.WhereInTheWorldTheme
+import com.swizel.android.whereintheworld.utils.bitmapDescriptorFromVectorDrawable
 import com.swizel.android.whereintheworld.viewmodels.GameOverViewModel
 
 @Immutable
@@ -62,10 +67,14 @@ internal fun GameOverScreen(
     BasicScaffold(
         uiState = uiState,
     ) { data ->
+        val context = LocalContext.current
         val cameraPositionState = rememberCameraPositionState {
             position = CameraPosition.fromLatLngZoom(LatLng(0.0, 0.0), 2f)
         }
         val appColors = WhereInTheWorldTheme.appColors
+        val guessMarkerIcon = remember(context) {
+            bitmapDescriptorFromVectorDrawable(context, R.drawable.ic_action_pin)
+        }
         val mapProperties = remember {
             MapProperties(
                 maxZoomPreference = 15f,
@@ -115,14 +124,11 @@ internal fun GameOverScreen(
                     )
 
                     guess?.let {
-                        val guessPinConfig = PinConfig.builder()
-                            .setBackgroundColor(appColors.guessLocationPin.toArgb())
-                            .build()
-
-                        AdvancedMarker(
+                        Marker(
                             state = rememberUpdatedMarkerState(position = guess.guessedLatLng),
+                            anchor = Offset(Config.MAP_GUESS_H_ANCHOR, Config.MAP_GUESS_V_ANCHOR),
+                            icon = guessMarkerIcon,
                             title = stringResource(id = R.string.guess_location_marker_title, roundNumber),
-                            pinConfig = guessPinConfig,
                         )
 
                         // Join the guess and the original location together.

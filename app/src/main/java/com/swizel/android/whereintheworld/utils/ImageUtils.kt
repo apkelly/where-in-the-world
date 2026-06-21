@@ -6,6 +6,7 @@ import android.graphics.Color
 import android.graphics.Paint
 import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.Drawable
+import androidx.core.graphics.createBitmap
 
 object ImageUtils {
 
@@ -23,7 +24,7 @@ object ImageUtils {
         val bitmap = if (drawable is BitmapDrawable) {
             drawable.bitmap.copy(Bitmap.Config.ARGB_8888, true)
         } else {
-            Bitmap.createBitmap(drawable.intrinsicWidth, drawable.intrinsicHeight, Bitmap.Config.ARGB_8888)
+            createBitmap(drawable.intrinsicWidth, drawable.intrinsicHeight)
         }
 
         val canvas = Canvas(bitmap)
@@ -40,7 +41,7 @@ object ImageUtils {
         val bitmap = if (drawable is BitmapDrawable) {
             drawable.bitmap.copy(Bitmap.Config.ARGB_8888, true)
         } else {
-            Bitmap.createBitmap(drawable.intrinsicWidth, drawable.intrinsicHeight, Bitmap.Config.ARGB_8888)
+            createBitmap(drawable.intrinsicWidth, drawable.intrinsicHeight)
         }
 
         val canvas = Canvas(bitmap)

@@ -1,9 +1,6 @@
 package com.swizel.android.whereintheworld.screens
 
-import android.content.Context
-import android.graphics.Canvas
 import android.view.animation.BounceInterpolator
-import androidx.annotation.DrawableRes
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.layout.Box
@@ -28,12 +25,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.core.content.ContextCompat
-import androidx.core.graphics.createBitmap
 import com.google.android.gms.maps.GoogleMapOptions
-import com.google.android.gms.maps.MapsInitializer
-import com.google.android.gms.maps.model.BitmapDescriptor
-import com.google.android.gms.maps.model.BitmapDescriptorFactory
 import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.LatLng
 import com.google.maps.android.compose.GoogleMap
@@ -51,8 +43,10 @@ import com.swizel.android.whereintheworld.composables.LoadingType
 import com.swizel.android.whereintheworld.composables.UiState
 import com.swizel.android.whereintheworld.theme.WhereInTheWorldTheme
 import com.swizel.android.whereintheworld.utils.SettingsUtils
+import com.swizel.android.whereintheworld.utils.bitmapDescriptorFromVectorDrawable
 import com.swizel.android.whereintheworld.viewmodels.GuessLocationViewModel
 import kotlin.time.Duration.Companion.milliseconds
+import kotlin.time.Duration.Companion.seconds
 import kotlinx.coroutines.delay
 
 @Immutable
@@ -63,6 +57,7 @@ internal data class GuessLocationUiState(
 
 private val MAP_CENTER = LatLng(25.0, 0.0)
 private val TUTORIAL_PIN = LatLng(15.0, 0.0)
+private val TUTORIAL_REMINDER_DELAY = 30.seconds
 
 private data class GuessPin(
     val position: LatLng,
@@ -78,20 +73,20 @@ internal fun GuessLocationScreen(
 ) {
     BasicScaffold(
         uiState = uiState,
-    ) { _ ->
+    ) { data ->
         val context = LocalContext.current
         val appColors = WhereInTheWorldTheme.appColors
-        val shouldShowTutorialInitially = remember {
+        val shouldShowTutorialInitially = remember(data.currentRound) {
             SettingsUtils.getBooleanPreference(context, SettingsUtils.FIRST_EVER_GUESS, true)
         }
         val cameraPositionState = rememberCameraPositionState {
             position = CameraPosition.fromLatLngZoom(MAP_CENTER, 2f)
         }
-        var isMapLoaded by remember { mutableStateOf(false) }
-        var nextPinAnimationKey by remember { mutableLongStateOf(0L) }
-        var hasSeededTutorialPin by remember { mutableStateOf(!shouldShowTutorialInitially) }
-        var showTutorialOverlay by remember { mutableStateOf(shouldShowTutorialInitially) }
-        var droppedPin by remember { mutableStateOf<GuessPin?>(null) }
+        var isMapLoaded by remember(data.currentRound) { mutableStateOf(false) }
+        var nextPinAnimationKey by remember(data.currentRound) { mutableLongStateOf(0L) }
+        var hasSeededTutorialPin by remember(data.currentRound) { mutableStateOf(!shouldShowTutorialInitially) }
+        var showTutorialOverlay by remember(data.currentRound) { mutableStateOf(shouldShowTutorialInitially) }
+        var droppedPin by remember(data.currentRound) { mutableStateOf<GuessPin?>(null) }
         val markerIcon = remember(context) {
             bitmapDescriptorFromVectorDrawable(context, R.drawable.ic_action_pin)
         }
@@ -115,17 +110,42 @@ internal fun GuessLocationScreen(
             )
         }
 
+        fun showTutorialPromptWithPin() {
+            showTutorialOverlay = true
+            val nextAnimationKey = nextPinAnimationKey + 1
+            nextPinAnimationKey = nextAnimationKey
+            droppedPin = GuessPin(
+                position = TUTORIAL_PIN,
+                isTutorial = true,
+                animationKey = nextAnimationKey,
+            )
+            hasSeededTutorialPin = true
+        }
+
         LaunchedEffect(isMapLoaded, hasSeededTutorialPin, shouldShowTutorialInitially) {
             if (!isMapLoaded || hasSeededTutorialPin || !shouldShowTutorialInitially) {
                 return@LaunchedEffect
             }
-            nextPinAnimationKey += 1
-            droppedPin = GuessPin(
-                position = TUTORIAL_PIN,
-                isTutorial = true,
-                animationKey = nextPinAnimationKey,
-            )
-            hasSeededTutorialPin = true
+            showTutorialPromptWithPin()
+        }
+
+        LaunchedEffect(isMapLoaded, droppedPin?.isTutorial, showTutorialOverlay) {
+            if (!isMapLoaded || showTutorialOverlay || droppedPin?.isTutorial == false) {
+                return@LaunchedEffect
+            }
+            if (droppedPin == null) {
+                delay(TUTORIAL_REMINDER_DELAY)
+                if (droppedPin == null) {
+                    showTutorialPromptWithPin()
+                }
+            }
+        }
+
+        LaunchedEffect(isMapLoaded, showTutorialOverlay, droppedPin?.isTutorial) {
+            if (!isMapLoaded || !showTutorialOverlay || droppedPin?.isTutorial == true) {
+                return@LaunchedEffect
+            }
+            showTutorialPromptWithPin()
         }
 
         Box(modifier = Modifier.fillMaxSize()) {
@@ -220,21 +240,6 @@ internal fun GuessLocationScreen(
             }
         }
     }
-}
-
-private fun bitmapDescriptorFromVectorDrawable(
-    context: Context,
-    @DrawableRes drawableId: Int,
-): BitmapDescriptor? {
-    val drawable = ContextCompat.getDrawable(context, drawableId) ?: return null
-    val bitmap = createBitmap(drawable.intrinsicWidth, drawable.intrinsicHeight)
-    val canvas = Canvas(bitmap)
-    drawable.setBounds(0, 0, canvas.width, canvas.height)
-    drawable.draw(canvas)
-    return runCatching {
-        MapsInitializer.initialize(context.applicationContext)
-        BitmapDescriptorFactory.fromBitmap(bitmap)
-    }.getOrNull()
 }
 
 @Preview
