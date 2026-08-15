@@ -29,7 +29,7 @@
 
     <string name="hint_dialog_title">Choose a Hint</string>
     <string name="quit_game_title">Quit game?</string>
-    <string name="quit_game_message">Your current progress will be lost.</string>
+    <string name="quit_game_message">Are you sure you want to quit? Your current progress will be lost.</string>
     <string name="quit_game_confirm">Quit</string>
     <string name="hint_dialog_message">Hints reduce the score multiplier for this round. Choose one, or cancel to keep your full score.</string>
     <string name="hint_score_multiplier">%1$s score multiplier</string>
